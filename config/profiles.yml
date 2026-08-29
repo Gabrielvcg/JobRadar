@@ -1,0 +1,16 @@
+default_profile_key: "engineering"
+
+profiles:
+  engineering:
+    label: "Engineering"
+    description: "Backend Java / AWS / DevOps / AppSec"
+    profile_config: "profile.yml"
+    scoring_config: "scoring.yml"
+    searches_config: "searches.yml"
+
+  operations:
+    label: "Operations"
+    description: "Administration, accounting, and office roles"
+    profile_config: "profiles/operations/profile.yml"
+    scoring_config: "profiles/operations/scoring.yml"
+    searches_config: "profiles/operations/searches.yml"

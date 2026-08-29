@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JobRadar</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --text: #17202a;
+      --muted: #637083;
+      --line: #d9e0ea;
+      --accent: #0f766e;
+      --accent-dark: #0b5f59;
+      --warn: #b45309;
+      --bad: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+    }
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+    main {
+      width: min(100%, 1540px);
+      margin: 0 auto;
+      padding: 20px 24px 40px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    form.filters {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    label {
+      color: var(--muted);
+      display: grid;
+      gap: 4px;
+      font-size: 12px;
+    }
+    input, select, button {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 8px;
+      font: inherit;
+      background: #fff;
+    }
+    button, .button {
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    button:hover, .button:hover { background: var(--accent-dark); }
+    .secondary {
+      background: #eef4f4;
+      color: var(--accent-dark);
+      border-color: #bfdbd8;
+    }
+    .filter-shortcuts,
+    .profile-tabs,
+    .job-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .job-toolbar {
+      justify-content: space-between;
+    }
+    .job-list {
+      display: grid;
+      gap: 10px;
+    }
+    .job-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 74px minmax(260px, 1.4fr) minmax(230px, 1fr) minmax(230px, 0.9fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .score {
+      font-weight: 700;
+      font-size: 26px;
+      line-height: 1;
+    }
+    .level-excellent { color: #047857; }
+    .level-good { color: #0f766e; }
+    .level-possible { color: var(--warn); }
+    .level-low { color: var(--bad); }
+    .muted { color: var(--muted); }
+    .job-title {
+      margin: 0 0 6px;
+      font-size: 18px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    .job-title a {
+      color: var(--text);
+      text-decoration: none;
+    }
+    .job-title a:hover { color: var(--accent-dark); }
+    .company-line {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .techs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .pill {
+      background: #eef2f7;
+      color: #344256;
+      border-radius: 999px;
+      padding: 3px 7px;
+      font-size: 12px;
+    }
+    .meta-grid {
+      display: grid;
+      gap: 8px;
+    }
+    .meta-item {
+      display: grid;
+      gap: 2px;
+    }
+    .meta-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    .meta-important {
+      color: var(--warn);
+      font-weight: 700;
+    }
+    .job-actions {
+      display: grid;
+      gap: 10px;
+      justify-items: start;
+    }
+    details { max-width: 100%; }
+    summary { cursor: pointer; color: var(--accent-dark); }
+    ul { margin: 8px 0 0; padding-left: 18px; }
+    .status-form {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .profile-tabs {
+      width: 100%;
+      margin-top: 8px;
+      margin-bottom: 0;
+    }
+    .profile-tab {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 7px 10px;
+      color: var(--accent-dark);
+      background: #fff;
+      text-decoration: none;
+    }
+    .profile-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .user-panel {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .inline-check {
+      display: flex;
+      grid-template-columns: none;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+    }
+    .inline-check input {
+      min-height: auto;
+      width: 16px;
+      height: 16px;
+    }
+    a { color: var(--accent-dark); }
+    .empty {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    @media (max-width: 1100px) {
+      header,
+      main {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      .job-card {
+        grid-template-columns: 70px minmax(0, 1fr);
+      }
+      .meta-grid,
+      .job-actions {
+        grid-column: 2;
+      }
+    }
+    @media (max-width: 640px) {
+      .job-card {
+        grid-template-columns: 1fr;
+      }
+      .meta-grid,
+      .job-actions {
+        grid-column: auto;
+      }
+      .score {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>JobRadar</h1>
+      <div class="muted">{{ active_profile.description }}</div>
+      <nav class="profile-tabs" aria-label="Profiles">
+        {% for profile in profiles %}
+          <a class="profile-tab {% if profile.key == active_profile_key %}active{% endif %}"
+             href="/?profile={{ profile.key }}&min_score={{ filters.min_score or 0 }}">
+            {{ profile.label }}
+          </a>
+        {% endfor %}
+      </nav>
+    </div>
+    <div class="top-actions">
+      <div class="user-panel">
+        <span class="muted">{{ current_user.display_name }} &middot; {{ current_user.email }}</span>
+        <form method="post" action="/logout">
+          <button class="secondary" type="submit">Log out</button>
+        </form>
+      </div>
+      <form method="post" action="/web/ingestion/run">
+        <input type="hidden" name="profile" value="{{ active_profile_key }}">
+        <button type="submit">Run ingestion</button>
+      </form>
+      <a class="button secondary" href="/jobs/export?profile={{ active_profile_key }}">Export CSV</a>
+      <a class="button secondary" href="/?profile={{ active_profile_key }}&min_score=0">Show all</a>
+      {% if active_profile_key == "operations" %}
+        <a class="button secondary" href="https://www.adzuna.es" target="_blank" rel="noopener">Adzuna</a>
+        <a class="button secondary" href="https://www.infoempleo.com" target="_blank" rel="noopener">Infoempleo</a>
+        <a class="button secondary" href="https://www.trabajos.com" target="_blank" rel="noopener">Trabajos.com</a>
+        <a class="button secondary" href="https://jobtoday.com" target="_blank" rel="noopener">JobToday</a>
+        <a class="button secondary" href="https://www.pagepersonnel.es" target="_blank" rel="noopener">Page Personnel</a>
+        <a class="button secondary" href="https://jobs.eurofirms.com" target="_blank" rel="noopener">Eurofirms</a>
+        <a class="button secondary" href="https://es.talent.com" target="_blank" rel="noopener">Talent.com</a>
+        <a class="button secondary" href="https://jobs.faster.es" target="_blank" rel="noopener">Faster</a>
+        <a class="button secondary" href="https://empleo.imancorp.es" target="_blank" rel="noopener">IMAN</a>
+        <a class="button secondary" href="https://jobs.grupo-crit.com" target="_blank" rel="noopener">Grupo Crit</a>
+        <a class="button secondary" href="https://www.domestiko.com" target="_blank" rel="noopener">Doméstiko</a>
+        <a class="button secondary" href="https://www.infojobs.net" target="_blank" rel="noopener">InfoJobs</a>
+        <a class="button secondary" href="https://www.empleate.gob.es" target="_blank" rel="noopener">SEPE Empleate</a>
+      {% else %}
+        <a class="button secondary" href="https://www.arbeitnow.com" target="_blank" rel="noopener">Arbeitnow</a>
+        <a class="button secondary" href="https://remotive.com" target="_blank" rel="noopener">Remotive</a>
+        <a class="button secondary" href="https://remoteok.com" target="_blank" rel="noopener">Remote OK</a>
+        <a class="button secondary" href="https://weworkremotely.com" target="_blank" rel="noopener">WWR</a>
+        <a class="button secondary" href="https://jobicy.com" target="_blank" rel="noopener">Jobicy</a>
+        <a class="button secondary" href="https://himalayas.app" target="_blank" rel="noopener">Himalayas</a>
+        <a class="button secondary" href="https://www.greenhouse.com" target="_blank" rel="noopener">Greenhouse</a>
+        <a class="button secondary" href="https://www.lever.co" target="_blank" rel="noopener">Lever</a>
+        <a class="button secondary" href="https://www.ashbyhq.com" target="_blank" rel="noopener">Ashby</a>
+        <a class="button secondary" href="https://www.workable.com" target="_blank" rel="noopener">Workable</a>
+        <a class="button secondary" href="https://recruitee.com" target="_blank" rel="noopener">Recruitee</a>
+        <a class="button secondary" href="https://www.pinpointhq.com" target="_blank" rel="noopener">Pinpoint</a>
+        <a class="button secondary" href="https://www.personio.com" target="_blank" rel="noopener">Personio</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main>
+    <section class="stats" aria-label="Job stats">
+      <div class="stat"><strong>{{ stats.total }}</strong><span class="muted">visible offers</span></div>
+      <div class="stat"><strong>{{ "%.1f"|format(stats.average_score) }}</strong><span class="muted">avg score</span></div>
+      <div class="stat"><strong>{{ stats.by_match_level.get("excellent", 0) }}</strong><span class="muted">excellent</span></div>
+      <div class="stat"><strong>{{ stats.by_status.get("interested", 0) }}</strong><span class="muted">interested</span></div>
+    </section>
+
+    <form class="filters" method="get" action="/">
+      <input type="hidden" name="profile" value="{{ active_profile_key }}">
+      <label>Min score
+        <input type="number" min="0" max="100" name="min_score" value="{{ filters.min_score or '' }}">
+      </label>
+      <label>Match level
+        <select name="match_level">
+          <option value="">Any</option>
+          {% for level in ["excellent", "good", "possible", "low"] %}
+            <option value="{{ level }}" {% if filters.match_level == level %}selected{% endif %}>{{ level }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Skill
+        <input name="technology" value="{{ filters.technology or '' }}"
+               placeholder="{% if active_profile_key == 'operations' %}Excel, contabilidad...{% else %}Java{% endif %}">
+      </label>
+      <label>Remote type
+        <select name="remote_type">
+          <option value="">Any</option>
+          {% for remote_type in remote_types %}
+            <option value="{{ remote_type.value }}" {% if filters.remote_type == remote_type %}selected{% endif %}>{{ remote_type.value }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Status
+        <select name="status">
+          <option value="">Any</option>
+          {% for status in statuses %}
+            <option value="{{ status.value }}" {% if filters.status == status %}selected{% endif %}>{{ status.value }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="inline-check">Published salary/rate
+        <input type="checkbox" name="salary_known" value="true" {% if filters.salary_known %}checked{% endif %}>
+      </label>
+      <label>Text
+        <input name="q" value="{{ filters.q or '' }}" placeholder="AWS, Sevilla...">
+      </label>
+      <label>Sort
+        <select name="sort">
+          <option value="score" {% if filters.sort == "score" %}selected{% endif %}>score</option>
+          <option value="date" {% if filters.sort == "date" %}selected{% endif %}>date</option>
+        </select>
+      </label>
+      <label>Order
+        <select name="order">
+          <option value="desc" {% if filters.order == "desc" %}selected{% endif %}>desc</option>
+          <option value="asc" {% if filters.order == "asc" %}selected{% endif %}>asc</option>
+        </select>
+      </label>
+      <label>&nbsp;
+        <button type="submit">Filter</button>
+      </label>
+    </form>
+
+    <div class="job-toolbar">
+      <div class="filter-shortcuts">
+        <a class="button secondary" href="/?profile={{ active_profile_key }}&min_score=50">50+ strong</a>
+        <a class="button secondary" href="/?profile={{ active_profile_key }}&min_score=35">35+ review</a>
+        <a class="button secondary" href="/?profile={{ active_profile_key }}&min_score=0">All</a>
+      </div>
+      <span class="muted">Showing up to 200 offers</span>
+    </div>
+
+    <div class="job-list">
+      {% for job in jobs %}
+        <article class="job-card">
+          <div>
+            <div class="score level-{{ job.match_level }}">{{ job.match_score }}</div>
+            <div class="muted">{{ job.match_level }}</div>
+          </div>
+
+          <div>
+            <h2 class="job-title">
+              {% if job.url %}
+                <a href="{{ job.url }}" target="_blank" rel="noopener">{{ job.title }}</a>
+              {% else %}
+                {{ job.title }}
+              {% endif %}
+            </h2>
+            <div class="company-line">
+              <strong>{{ job.company.name }}</strong>
+              <span class="muted">&middot; {{ job.source.name }}</span>
+              {% if job.publication_date %}
+                <span class="muted">&middot; {{ job.publication_date.date() }}</span>
+              {% endif %}
+            </div>
+            <div class="techs">
+              {% for technology in job.technologies[:10] %}
+                <span class="pill">{{ technology }}</span>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Salary / rate</span>
+              {% set formatted_salary = salary_label(job.salary_min, job.salary_max, job.salary_currency, job.salary_unknown) %}
+              <span class="{% if formatted_salary == 'unknown' %}muted{% endif %}">{{ formatted_salary }}</span>
+              {% set salary_detail = salary_original_detail(formatted_salary, job.salary_original_text) %}
+              {% if salary_detail %}
+                <span class="muted">{{ salary_detail }}</span>
+              {% endif %}
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Location</span>
+              <span>{{ job.location or "unknown" }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Mode</span>
+              <span>{{ job.remote_type.value }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Experience</span>
+              {% set formatted_experience = experience_label(job.experience_min_years, job.experience_max_years) %}
+              <span class="{% if formatted_experience == 'not specified' %}muted{% else %}meta-important{% endif %}">
+                {{ formatted_experience }}
+              </span>
+            </div>
+          </div>
+
+          <div class="job-actions">
+            <form class="status-form" method="post" action="/web/jobs/{{ job.id }}/status">
+              {% set effective_status = user_statuses.get(job.id|string, job.status) %}
+              <select name="status">
+                {% for status in statuses %}
+                  <option value="{{ status.value }}" {% if effective_status == status %}selected{% endif %}>{{ status.value }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit">Save</button>
+            </form>
+            <details>
+              <summary>Reasons</summary>
+              {% if job.match_reasons.get("positive") %}
+                <strong>Positive</strong>
+                <ul>
+                  {% for reason in job.match_reasons.get("positive", []) %}
+                    <li>{{ reason }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+              {% if job.negative_reasons.get("negative") %}
+                <strong>Negative</strong>
+                <ul>
+                  {% for reason in job.negative_reasons.get("negative", []) %}
+                    <li>{{ reason }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </details>
+          </div>
+        </article>
+      {% else %}
+        <div class="empty">No matching jobs yet. Lower the score filter or run ingestion.</div>
+      {% endfor %}
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,27 @@
+queries:
+  - "Auxiliar administrativo"
+  - "Administrativo"
+  - "Administrativa"
+  - "Administracion y finanzas"
+  - "Administración y finanzas"
+  - "Contabilidad"
+  - "Gestion documental"
+  - "Gestión documental"
+  - "Atencion al cliente"
+  - "Atención al cliente"
+  - "Recepcion"
+  - "Recepción"
+  - "Back office"
+  - "Facturacion"
+  - "Facturación"
+
+locations:
+  countries: []
+  cities:
+    - "Spain"
+    - "Europe"
+  remote_from: []
+
+languages:
+  - "es"
+  - "en"

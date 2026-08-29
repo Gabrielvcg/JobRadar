@@ -1,0 +1,31 @@
+profile:
+  current_role: "Administracion y direccion de empresas"
+  location:
+    city: "Spain"
+    country: "Spain"
+    preferred_locations:
+      - "Spain"
+      - "Europe"
+  salary:
+    minimum_monthly_net_eur: 1200
+    minimum_annual_eur: 18000
+    target_min_annual_eur: 20000
+    target_max_annual_eur: 30000
+  schedule:
+    preferred:
+      - "jornada intensiva"
+      - "jornada continua"
+      - "horario de manana"
+      - "mañana"
+  priorities:
+    - "Auxiliar administrativo"
+    - "Administrativo"
+    - "Administracion y finanzas"
+    - "Contabilidad"
+    - "Gestion documental"
+    - "Atencion al cliente"
+    - "Recepcion"
+    - "Back office"
+    - "Facturacion"
+    - "Compras"
+    - "Recursos humanos"

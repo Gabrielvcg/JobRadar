@@ -1,0 +1,20 @@
+profile:
+  current_role: "Backend developer"
+  location:
+    city: "Spain"
+    country: "Spain"
+    preferred_locations:
+      - "Spain"
+      - "Europe"
+  salary:
+    minimum_annual_eur: 22000
+    target_min_annual_eur: 26000
+    target_max_annual_eur: 42000
+  priorities:
+    - "Backend Engineer with AWS"
+    - "Junior Cloud Engineer"
+    - "Junior DevOps Engineer"
+    - "Junior Platform Engineer"
+    - "Junior DevSecOps Engineer"
+    - "Junior Application Security Engineer"
+    - "Junior Cloud Security Engineer"

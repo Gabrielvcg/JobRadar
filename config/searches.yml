@@ -1,0 +1,33 @@
+queries:
+  - "Java backend"
+  - "Java Spring Boot"
+  - "Backend Engineer Java"
+  - "Software Engineer Java"
+  - "Java AWS"
+  - "Backend AWS"
+  - "Cloud Engineer junior"
+  - "Junior DevOps"
+  - "DevOps Java"
+  - "Platform Engineer junior"
+  - "DevSecOps junior"
+  - "Application Security junior"
+  - "AppSec Engineer"
+  - "Cloud Security junior"
+  - "AWS junior"
+  - "Backend developer remote Spain"
+
+locations:
+  countries:
+    - "Spain"
+    - "European Union"
+  cities:
+    - "Spain"
+    - "Madrid"
+    - "Malaga"
+    - "Barcelona"
+  remote_from:
+    - "Spain"
+
+languages:
+  - "es"
+  - "en"

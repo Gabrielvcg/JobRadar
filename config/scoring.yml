@@ -1,0 +1,293 @@
+weights:
+  role_fit: 25
+  technologies: 30
+  salary: 20
+  experience: 10
+  location: 10
+  career_growth: 5
+
+match_levels:
+  excellent: 80
+  good: 65
+  possible: 50
+  low: 0
+
+role_keywords:
+  strong:
+    - "backend"
+    - "java"
+    - "spring"
+    - "software engineer"
+    - "api"
+    - "devops"
+    - "sre"
+    - "ciberseguridad"
+    - "cybersecurity"
+    - "sistemas"
+    - "infraestructura"
+    - "infraestructuras"
+    - "data engineer"
+    - "data analyst"
+    - "analista de datos"
+  security_focus:
+    - "application security"
+    - "appsec"
+    - "devsecops"
+    - "product security"
+    - "cloud security"
+    - "secure development"
+    - "threat modeling"
+    - "owasp"
+    - "ciberseguridad"
+    - "seguridad de aplicaciones"
+    - "siem"
+    - "soar"
+    - "waf"
+    - "edr"
+    - "firewall"
+  growth:
+    - "aws"
+    - "cloud"
+    - "devops"
+    - "platform"
+    - "devsecops"
+    - "application security"
+    - "appsec"
+    - "cloud security"
+    - "ciberseguridad"
+    - "cybersecurity"
+    - "sre"
+    - "observability"
+    - "observabilidad"
+  disability_focus:
+    - "discapacidad"
+    - "certificado de discapacidad"
+    - "personas con discapacidad"
+    - "igual o superior al 33"
+    - "33%"
+
+messages:
+  disability_focus: "Oferta dirigida a personas con certificado de discapacidad"
+
+technologies:
+  high:
+    Java:
+      - "\\bjava\\b"
+    Spring Boot:
+      - "\\bspring boot\\b"
+      - "\\bspring\\b"
+    REST:
+      - "\\brest\\b"
+      - "\\bapi(?:s)?\\b"
+    PostgreSQL:
+      - "\\bpostgres(?:ql)?\\b"
+    SQL:
+      - "\\bsql\\b"
+    Docker:
+      - "\\bdocker\\b"
+    Linux:
+      - "\\blinux\\b"
+    Git:
+      - "\\bgit\\b"
+    GitHub Actions:
+      - "\\bgithub actions\\b"
+    CI/CD:
+      - "\\bci/cd\\b"
+      - "\\bcontinuous integration\\b"
+    AWS:
+      - "\\baws\\b"
+      - "\\bamazon web services\\b"
+    Terraform:
+      - "\\bterraform\\b"
+
+  medium:
+    Kubernetes:
+      - "\\bkubernetes\\b"
+      - "\\bk8s\\b"
+    Microservices:
+      - "\\bmicroservices?\\b"
+    Spring Security:
+      - "\\bspring security\\b"
+    OAuth2:
+      - "\\boauth2\\b"
+    JWT:
+      - "\\bjwt\\b"
+    SonarQube:
+      - "\\bsonarqube\\b"
+      - "\\bsonarcloud\\b"
+    OWASP:
+      - "\\bowasp\\b"
+    DevSecOps:
+      - "\\bdevsecops\\b"
+    Application Security:
+      - "\\bapplication security\\b"
+      - "\\bappsec\\b"
+    Cloud Security:
+      - "\\bcloud security\\b"
+    Cybersecurity:
+      - "\\bciberseguridad\\b"
+      - "\\bcybersecurity\\b"
+    SIEM:
+      - "\\bsiem\\b"
+    SOAR:
+      - "\\bsoar\\b"
+    WAF:
+      - "\\bwaf\\b"
+    EDR:
+      - "\\bedr\\b"
+    Firewall:
+      - "\\bfirewall\\b"
+      - "\\bfirewalls\\b"
+    Python:
+      - "\\bpython\\b"
+    Power BI:
+      - "\\bpower bi\\b"
+    Windows:
+      - "\\bwindows\\b"
+    IAM:
+      - "\\biam\\b"
+    Threat Modeling:
+      - "\\bthreat model(?:ing)?\\b"
+    SAST:
+      - "\\bsast\\b"
+      - "\\bstatic application security testing\\b"
+    DAST:
+      - "\\bdast\\b"
+      - "\\bdynamic application security testing\\b"
+    SCA:
+      - "\\bsca\\b"
+      - "\\bsoftware composition analysis\\b"
+    Vulnerability Management:
+      - "\\bvulnerability management\\b"
+      - "\\bvulnerabilit(?:y|ies) management\\b"
+    Container Security:
+      - "\\bcontainer security\\b"
+      - "\\bkubernetes security\\b"
+    Observability:
+      - "\\bobservability\\b"
+      - "\\bobservabilidad\\b"
+    Prometheus:
+      - "\\bprometheus\\b"
+    Grafana:
+      - "\\bgrafana\\b"
+    RabbitMQ:
+      - "\\brabbitmq\\b"
+    Kafka:
+      - "\\bkafka\\b"
+    Redis:
+      - "\\bredis\\b"
+
+  secondary:
+    Pentesting:
+      - "\\bpentest(?:ing)?\\b"
+      - "\\bpenetration testing\\b"
+    Burp Suite:
+      - "\\bburp suite\\b"
+    Nmap:
+      - "\\bnmap\\b"
+    Vulnerability Assessment:
+      - "\\bvulnerability assessment\\b"
+    Offensive Security:
+      - "\\boffensive security\\b"
+
+penalties:
+  low_salary:
+    points: -50
+  missing_technical_fit:
+    points: -35
+  missing_primary_stack:
+    points: -35
+    required_keywords:
+      - "java"
+      - "spring"
+      - "spring boot"
+      - "jvm"
+      - "kotlin"
+      - "hibernate"
+      - "maven"
+      - "gradle"
+    exception_keywords:
+      - "application security"
+      - "appsec"
+      - "devsecops"
+      - "product security"
+      - "cloud security"
+      - "secure development"
+      - "discapacidad"
+      - "certificado de discapacidad"
+  senior:
+    points: -15
+    keywords:
+      - "\\bsenior\\b"
+      - "\\bsr\\b"
+  senior_leadership:
+    points: -60
+    keywords:
+      - "\\blead\\b"
+      - "\\bprincipal\\b"
+      - "\\bstaff\\b"
+      - "\\bmanager\\b"
+      - "\\bdirector\\b"
+      - "\\bhead of\\b"
+  too_much_experience:
+    points: -25
+    threshold_years: 5
+  helpdesk:
+    points: -35
+    keywords:
+      - "\\bhelpdesk\\b"
+      - "\\btier 1\\b"
+      - "\\bsoporte tecnico\\b"
+      - "\\bmicroinformatica\\b"
+  non_developer_role:
+    points: -35
+    keywords:
+      - "\\bproduct owner\\b"
+      - "\\bproject manager\\b"
+      - "\\bprojektmanager\\b"
+      - "\\bqa automation\\b"
+      - "\\bquality assurance\\b"
+      - "\\btest engineer\\b"
+      - "\\bsecurity risk management\\b"
+      - "\\brisk management specialist\\b"
+      - "\\bgrc\\b"
+      - "\\bbusiness analyst\\b"
+      - "\\bsystemadministrator\\b"
+      - "\\bsysadmin\\b"
+      - "\\bsteuerberater\\b"
+      - "\\btax consultant\\b"
+      - "\\bberechnungsingenieur\\b"
+      - "\\bstrukturanalyse\\b"
+      - "\\bstructural analysis\\b"
+      - "\\bmarketing\\b"
+      - "\\bpsychologie\\b"
+      - "\\bpsychology\\b"
+      - "\\bpraktikant\\b"
+      - "\\binternship\\b"
+      - "\\bsocial media\\b"
+      - "\\brecruiter\\b"
+      - "\\bsap\\b"
+  frontend_pure:
+    points: -30
+    keywords:
+      - "\\bfrontend\\b"
+      - "\\bfront-end\\b"
+      - "\\breact\\b"
+      - "\\bangular\\b"
+      - "\\bvue\\b"
+  mobile_pure:
+    points: -30
+    keywords:
+      - "\\bandroid\\b"
+      - "\\bios\\b"
+      - "\\bmobile\\b"
+  soc_l1:
+    points: -20
+    keywords:
+      - "\\bsoc l1\\b"
+      - "\\bsoc analyst l1\\b"
+  pentesting_pure:
+    points: -10
+    keywords:
+      - "\\bpentest(?:er|ing)?\\b"
+      - "\\boffensive security\\b"

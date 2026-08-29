@@ -1,0 +1,44 @@
+[
+  {
+    "source_job_id": "operations-admin-example-1",
+    "company_name": "Example Administrative Services",
+    "title": "Auxiliar administrativo/a",
+    "description": "Puesto de administracion y gestion documental con atencion al cliente, archivo, facturacion y soporte a compras. Manejo de Excel, Word, Outlook y paquete Office.",
+    "requirements": "Jornada continua de manana. Experiencia valorable de 1 ano. Office, Excel y habilidades organizativas.",
+    "location": "Spain",
+    "country": "Spain",
+    "remote_type": "onsite",
+    "employment_type": "full-time",
+    "salary_original_text": "Salario 18.000 EUR anual",
+    "url": "https://example.test/operations/admin-example",
+    "publication_date": "2026-07-02T08:00:00+00:00"
+  },
+  {
+    "source_job_id": "operations-accounting-example-1",
+    "company_name": "Example Accounting Services",
+    "title": "Administrativo/a contable",
+    "description": "Funciones de contabilidad, facturacion, gestion documental y apoyo financiero en empresa agroalimentaria. Se valoran Microdata, Excel y Power BI.",
+    "requirements": "ADE o administracion y finanzas. Jornada intensiva. 1-2 anos de experiencia.",
+    "location": "Spain",
+    "country": "Spain",
+    "remote_type": "onsite",
+    "employment_type": "full-time",
+    "salary_original_text": "18.000-22.000 EUR anuales",
+    "url": "https://example.test/operations/accounting-example",
+    "publication_date": "2026-07-02T08:00:00+00:00"
+  },
+  {
+    "source_job_id": "operations-noise-1",
+    "company_name": "Retail Example",
+    "title": "Comercial puerta fria",
+    "description": "Ventas a puerta fria por objetivos. No hay tareas administrativas.",
+    "requirements": "Carnet de conducir y disponibilidad completa.",
+    "location": "Spain",
+    "country": "Spain",
+    "remote_type": "onsite",
+    "employment_type": "full-time",
+    "salary_original_text": "Salario 14.000 EUR anual",
+    "url": "https://example.test/operations/comercial",
+    "publication_date": "2026-07-02T08:00:00+00:00"
+  }
+]

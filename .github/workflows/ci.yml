@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: jobradar_test
+          POSTGRES_USER: jobradar
+          POSTGRES_PASSWORD: jobradar
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U jobradar -d jobradar_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://jobradar:jobradar@localhost:5432/jobradar_test
+      POSTGRES_TEST_URL: postgresql+psycopg://jobradar:jobradar@localhost:5432/jobradar_test
+      CONFIG_DIR: config
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: python -m pip install -e ".[dev]"
+      - name: Ruff
+        run: ruff check .
+      - name: Mypy
+        run: mypy app tests
+      - name: Pytest
+        run: pytest
+      - name: Docker build
+        run: docker build -t jobradar:ci .
+

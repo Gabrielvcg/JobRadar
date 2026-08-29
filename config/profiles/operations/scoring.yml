@@ -1,0 +1,212 @@
+weights:
+  role_fit: 25
+  technologies: 30
+  salary: 20
+  experience: 10
+  location: 10
+  career_growth: 5
+
+match_levels:
+  excellent: 80
+  good: 65
+  possible: 50
+  low: 0
+
+messages:
+  role_direct_fit: "El puesto encaja con administracion, contabilidad u oficina"
+  role_signal: "El puesto contiene senales administrativas relevantes"
+  career_growth: "Alinea con contabilidad, facturacion, compras, RRHH o analisis de datos"
+  location_preferred: "Ubicacion compatible en Spain or Europe"
+  missing_technical_fit: "No hay senales claras de administracion, oficina o contabilidad"
+  missing_primary_stack: "No contiene senales claras de administracion, oficina o contabilidad"
+  non_developer_role: "Rol no alineado con administracion u oficina"
+  senior_leadership: "Puesto de responsabilidad alta o direccion"
+  unsupported_language: "Requiere portugues u otro idioma no compatible"
+
+role_keywords:
+  direct_fit:
+    - "auxiliar administrativo"
+    - "auxiliar administrativa"
+    - "administrativo"
+    - "administrativa"
+    - "adminitrativo"
+    - "administracion y finanzas"
+    - "administración y finanzas"
+    - "contabilidad"
+    - "gestion documental"
+    - "gestión documental"
+    - "atencion al cliente"
+    - "atención al cliente"
+    - "recepcion"
+    - "recepción"
+    - "back office"
+  strong:
+    - "administracion"
+    - "administración"
+    - "adminitrativo"
+    - "oficina"
+    - "contabilidad"
+    - "facturacion"
+    - "facturación"
+    - "documentacion"
+    - "documentación"
+    - "office"
+    - "excel"
+    - "microdata"
+  growth:
+    - "facturacion"
+    - "facturación"
+    - "compras"
+    - "recursos humanos"
+    - "rrhh"
+    - "financiero"
+    - "financiera"
+    - "power bi"
+    - "analisis de datos"
+    - "análisis de datos"
+    - "microdata"
+
+technologies:
+  high:
+    Excel:
+      - "\\bexcel\\b"
+      - "\\bhojas de calculo\\b"
+      - "\\bhojas de cálculo\\b"
+    Word:
+      - "\\bword\\b"
+    Outlook:
+      - "\\boutlook\\b"
+    PowerPoint:
+      - "\\bpowerpoint\\b"
+      - "\\bpower point\\b"
+    Office:
+      - "\\boffice\\b"
+      - "\\bpaquete office\\b"
+      - "\\bmicrosoft 365\\b"
+    Microdata:
+      - "\\bmicrodata\\b"
+    Contabilidad:
+      - "\\bcontabilidad\\b"
+      - "\\bcontable\\b"
+    Facturacion:
+      - "\\bfacturaci[oó]n\\b"
+      - "\\bfacturas?\\b"
+    Gestion documental:
+      - "\\bgesti[oó]n documental\\b"
+      - "\\barchivo\\b"
+      - "\\bdocumentaci[oó]n\\b"
+    Atencion al cliente:
+      - "\\batenci[oó]n al cliente\\b"
+      - "\\bsoporte administrativo\\b"
+
+  medium:
+    Power BI:
+      - "\\bpower bi\\b"
+    Analisis de datos:
+      - "\\ban[aá]lisis de datos\\b"
+      - "\\bdata analysis\\b"
+    ERP:
+      - "\\berp\\b"
+    SAP:
+      - "\\bsap\\b"
+    Sage:
+      - "\\bsage\\b"
+    A3:
+      - "\\ba3\\b"
+    Navision:
+      - "\\bnavision\\b"
+      - "\\bdynamics\\b"
+    Compras:
+      - "\\bcompras\\b"
+    RRHH:
+      - "\\brrhh\\b"
+      - "\\brecursos humanos\\b"
+
+  secondary:
+    Ingles B1:
+      - "\\bingl[eé]s\\b"
+      - "\\bb1\\b"
+    Agroalimentario:
+      - "\\bagroalimentari[oa]\\b"
+      - "\\bagricola\\b"
+      - "\\bagr[ií]cola\\b"
+
+penalties:
+  low_salary:
+    points: -45
+  missing_technical_fit:
+    points: -35
+  missing_primary_stack:
+    points: -30
+    required_keywords:
+      - "administrativo"
+      - "administrativa"
+      - "adminitrativo"
+      - "administracion"
+      - "administración"
+      - "contabilidad"
+      - "facturacion"
+      - "facturación"
+      - "gestion documental"
+      - "gestión documental"
+      - "atencion al cliente"
+      - "atención al cliente"
+      - "recepcion"
+      - "recepción"
+      - "back office"
+      - "office"
+      - "excel"
+    exception_keywords:
+      - "compras"
+      - "recursos humanos"
+      - "rrhh"
+      - "facturas"
+      - "archivo"
+  senior:
+    points: -8
+    keywords:
+      - "\\bsenior\\b"
+  senior_leadership:
+    points: -35
+    keywords:
+      - "\\bresponsable\\b"
+      - "\\bjefe\\b"
+      - "\\bjefa\\b"
+      - "\\bdirector\\b"
+      - "\\bdirectora\\b"
+      - "\\bmanager\\b"
+  too_much_experience:
+    points: -35
+    threshold_years: 5
+  unsupported_language:
+    points: -70
+    keywords:
+      - "\\bportugu.s\\b"
+      - "\\bportugues\\b"
+      - "\\bportuguese\\b"
+      - "franc"
+      - "alem"
+      - "\\bb[uú]lgar[oa]\\b"
+      - "\\bcatal[aá]n\\b"
+      - "\\bluso.?fono\\b"
+      - "\\bestagi.ri[oa]\\b"
+      - "\\bcontabilidade\\b"
+      - "\\bescolaridade\\b"
+      - "\\bconhecimentos?\\b"
+      - "\\bferramentas? inform[aá]ticas\\b"
+  non_developer_role:
+    points: -40
+    keywords:
+      - "\\bdesarrollador\\b"
+      - "\\bdeveloper\\b"
+      - "\\bjava\\b"
+      - "\\bprogramador\\b"
+      - "\\bcomercial puerta fria\\b"
+      - "\\bcomercial puerta fría\\b"
+      - "\\bventas a puerta fria\\b"
+      - "\\bventas a puerta fría\\b"
+      - "\\bmozo de almac[eé]n\\b"
+      - "\\bcamarer[oa]\\b"
+      - "\\blimpieza\\b"
+      - "\\bprofesor\\b"
+      - "\\bprofesora\\b"
