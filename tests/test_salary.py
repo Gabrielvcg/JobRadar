@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from app.formatting import salary_label
 from app.scoring.salary import extract_salary
 
 
@@ -104,8 +105,7 @@ def test_extracts_sek_range_from_context_currency() -> None:
 
 def test_ignores_benefit_day_count_near_salary_word() -> None:
     salary = extract_salary(
-        "Strong base salary. Flexible work location. Spend up to 30 days per year working "
-        "remotely."
+        "Strong base salary. Flexible work location. Spend up to 30 days per year working remotely."
     )
 
     assert salary.unknown is True
@@ -170,3 +170,14 @@ def test_does_not_extract_location_postcode_as_salary_range() -> None:
     salary = extract_salary("Kraków, 30-347, Poland")
 
     assert salary.unknown is True
+
+
+def test_salary_ceiling_does_not_invent_a_lower_bound() -> None:
+    salary = extract_salary("Salario hasta 33K")
+    assert salary.salary_min is None
+    assert salary.salary_max == 33000
+    assert salary.unknown is False
+    assert (
+        salary_label(salary.salary_min, salary.salary_max, salary.currency, False)
+        == "up to 33,000 EUR"
+    )

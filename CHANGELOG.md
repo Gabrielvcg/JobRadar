@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.41 - 2026-10-21
+
+- Preserve published salary ceilings as an upper bound with no invented lower bound, display them as up to that amount, and require confirmation of the minimum change salary.
+- Correct legacy career offers carrying explicit salary ceilings during rescoring, without replacing unrelated structured salary evidence.
+
 ## 0.1.40 - 2026-10-21
 
 - Prefer SmartRecruiters public posting URLs over preview/application aliases after a live preview URL returned HTTP 403 while the canonical listing and form were accessible.

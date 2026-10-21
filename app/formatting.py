@@ -11,9 +11,12 @@ def salary_label(
     currency: str | None,
     salary_unknown: bool,
 ) -> str:
-    if salary_unknown or salary_min is None:
+    if salary_unknown or (salary_min is None and salary_max is None):
         return "unknown"
     currency_label = currency or "EUR"
+    if salary_min is None and salary_max is not None:
+        return f"up to {_money(salary_max)} {currency_label}"
+    assert salary_min is not None
     if salary_max and salary_max != salary_min:
         return f"{_money(salary_min)}-{_money(salary_max)} {currency_label}"
     return f"{_money(salary_min)} {currency_label}"

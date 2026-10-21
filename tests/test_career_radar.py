@@ -257,10 +257,12 @@ def test_platform_development_is_a_growth_path_but_operations_is_not() -> None:
         (23000, 26000, "overlapping_minimum"),
         (24000, 25000, "minimum_met"),
         (30000, 35000, "target_or_above"),
+        (None, 33000, "overlapping_minimum"),
+        (None, 23000, "below_minimum"),
     ],
 )
 def test_salary_respects_minimum_without_inventing_acceptance(
-    minimum: int,
+    minimum: int | None,
     maximum: int,
     expected: str,
 ) -> None:

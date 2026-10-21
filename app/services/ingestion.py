@@ -14,6 +14,7 @@ from app.models.job import IngestionRun, JobOffer, JobSource
 from app.repositories.jobs import JobFilters, JobRepository
 from app.schemas.jobs import IngestionRunRead, IngestionSummary
 from app.scoring.engine import ScoringEngine
+from app.scoring.salary import extract_salary
 from app.scoring.text import (
     canonical_url,
     clean_job_text,
@@ -140,6 +141,23 @@ class IngestionService:
                 normalized = normalized_from_offer(offer, rehydrate=engine.career_enabled)
                 if engine.career_enabled:
                     evidence = f"{normalized.description}\n{normalized.requirements or ''}"
+                    salary = extract_salary(evidence)
+                    if not salary.unknown and salary.salary_min is None and salary.salary_max:
+                        normalized = replace(
+                            normalized,
+                            salary_min=None,
+                            salary_max=salary.salary_max,
+                            salary_currency=salary.currency,
+                            salary_period=salary.period,
+                            salary_original_text=salary.original_text,
+                            salary_unknown=False,
+                        )
+                        offer.salary_min = normalized.salary_min
+                        offer.salary_max = normalized.salary_max
+                        offer.salary_currency = normalized.salary_currency
+                        offer.salary_period = normalized.salary_period
+                        offer.salary_original_text = normalized.salary_original_text
+                        offer.salary_unknown = normalized.salary_unknown
                     minimum, maximum = extract_experience_years(evidence)
                     normalized = replace(
                         normalized,
