@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 from app.api import routes
+from app.core.availability import VERIFICATION_KEY
 from app.db.base import Base
 from app.db.session import get_session
 from app.main import app
@@ -112,6 +113,57 @@ def test_duplicate_across_sources_with_tracking_url_keeps_status(session: Sessio
     )
     assert not created and updated.id == offer.id
     assert updated.status == JobStatus.APPLIED
+
+
+def test_verification_roundtrip_caches_failures_and_preserves_application_state(
+    session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from app.services import verification
+
+    first = persist(session, "Java Backend Developer", "open")
+    second = persist(session, "Backend Java Engineer", "closed")
+    first.status = JobStatus.INTERESTED
+    calls: list[str] = []
+
+    async def fake_check(client: Any, url: str, title: str) -> dict[str, Any]:
+        calls.append(url)
+        return {
+            "state": "closed" if url.endswith("closed") else "active",
+            "listing_url": url,
+            "checked_at": datetime.now(UTC).isoformat(),
+            "application_url": url + "/apply",
+            "reason": "Synthetic page evidence",
+        }
+
+    async def no_wait(*args: Any) -> None:
+        return None
+
+    monkeypatch.setattr(verification, "verify_listing", fake_check)
+    monkeypatch.setattr(verification.asyncio, "sleep", no_wait)
+    result = asyncio.run(verification.OfferVerificationService().run(session))
+    assert result["checked"] == 2 and result["active"] == 1 and result["closed"] == 1
+    assert first.status == JobStatus.INTERESTED
+    assert first.raw_payload[VERIFICATION_KEY]["state"] == "active"
+    assert JobRepository().list_jobs(session, JobFilters(verified_only=True)) == [first]
+    assert second.match_reasons["assessment"]["radar"] == "excluded"
+    assert asyncio.run(verification.OfferVerificationService().run(session))["checked"] == 0
+    assert len(calls) == 2
+
+
+def test_rescore_restores_original_html_boundaries(session: Session) -> None:
+    offer = persist(session, "Java Backend Developer", "legacy-html")
+    offer.description = "Required 2 years Java experience Preferred 8 years AWS experience"
+    offer.requirements = None
+    offer.raw_payload = {
+        "description": "<p>Required: 2 years of Java experience.</p>"
+        "<p>Preferred: 8 years of AWS experience.</p>"
+    }
+    session.commit()
+    IngestionService().score_all_jobs(session)
+    evidence = offer.match_reasons["assessment"]["experience_requirements"]
+    assert [item["kind"] for item in evidence] == ["mandatory", "desirable"]
+    assert offer.experience_min_years == 2
 
 
 def test_http_and_dashboard_keep_assessment_and_separate_radars(

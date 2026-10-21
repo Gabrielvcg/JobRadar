@@ -7,6 +7,7 @@ from dataclasses import asdict, replace
 from datetime import UTC, date, datetime
 from typing import TYPE_CHECKING, Any
 
+from app.core.availability import current_verification
 from app.core.experience import professional_months
 from app.scoring.engine import ScoreResult
 from app.scoring.evidence import (
@@ -58,6 +59,10 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         re.search(r"\b(java|spring)\b", fold(clause)) for clause in development
     )
     aligned = (primary and backend and java_work) or transition
+    if re.search(
+        r"\b(ai coding tasks|coding evaluator|ai trainer|data annotator)\b", fold(job.title)
+    ):
+        aligned = False
     if not aligned:
         negative.append(
             "No hay encaje suficiente con backend Java/Spring o desarrollo AppSec/cloud"
@@ -203,6 +208,17 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
     if salary_status == "below_minimum":
         blockers.append("salary_below_minimum")
 
+    availability = current_verification(job.raw_payload, job.url)
+    if availability["state"] == "closed":
+        blockers.append("listing_closed")
+        negative.append("La pagina confirma que la oferta ya no acepta candidaturas")
+    elif availability["state"] == "active":
+        positive.append("Pagina accesible con un control habilitado para presentar candidatura")
+    else:
+        uncertain.append(
+            "Solicitud sin verificar; una ingesta reciente no demuestra que siga abierta"
+        )
+
     freshness_points = 100
     freshness = "undated"
     if job.expiration_date and _day(job.expiration_date) < today:
@@ -297,6 +313,7 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         "salary_evidence": "published" if not job.salary_unknown else "unknown",
         "english_requirement": english,
         "freshness": freshness,
+        "availability": availability,
         "blockers": blockers,
         "uncertainties": uncertain,
         "development_evidence": development[:4],

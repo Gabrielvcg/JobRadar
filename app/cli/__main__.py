@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import csv
+import json
 import sys
 from typing import Annotated
 
@@ -16,6 +17,27 @@ from app.security.auth import validate_password_strength
 from app.services.ingestion import IngestionService
 
 app = typer.Typer(help="JobRadar command line interface.")
+
+
+@app.command("verify-offers")
+def verify_offers(
+    limit: Annotated[int, typer.Option("--limit", min=1, max=100)] = 20,
+    profile: Annotated[str | None, typer.Option("--profile")] = None,
+    force: Annotated[bool, typer.Option("--force")] = False,
+) -> None:
+    """Check listing/application availability without sending applications."""
+    from app.services.verification import OfferVerificationService
+
+    with new_session() as session:
+        result = asyncio.run(
+            OfferVerificationService().run(
+                session,
+                limit=limit,
+                profile_key=resolve_profile_key(profile),
+                force=force,
+            )
+        )
+    typer.echo(json.dumps(result))
 
 
 @app.command()

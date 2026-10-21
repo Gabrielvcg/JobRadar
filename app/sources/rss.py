@@ -108,6 +108,7 @@ class RssJobSource:
             url=_child_text(item, "link"),
             publication_date=_parse_rss_datetime(_child_text(item, "pubDate")),
             raw_payload={
+                "description": description,
                 "title": raw_title,
                 "region": region,
                 "category": category,

@@ -21,6 +21,7 @@ class JobFilters:
     match_level: str | None = None
     radar: str | None = None
     category: str | None = None
+    verified_only: bool = False
     technology: str | None = None
     source: str | None = None
     company: str | None = None
@@ -89,7 +90,7 @@ class JobRepository:
         score: ScoreResult,
     ) -> tuple[JobOffer, bool]:
         company = self.get_or_create_company(session, job.company_name, job.company_website)
-        existing = self._find_existing(session, source, job)
+        existing = self.find_existing(session, source, job)
         now = datetime.now(UTC)
         if existing is None:
             offer = JobOffer(
@@ -188,9 +189,7 @@ class JobRepository:
         if radar and radar != "all":
             filters.append(JobOffer.match_reasons["assessment"]["radar"].as_string() == radar)
         total = (
-            session.scalar(
-                select(func.count(JobOffer.id)).join(JobOffer.source).where(*filters)
-            )
+            session.scalar(select(func.count(JobOffer.id)).join(JobOffer.source).where(*filters))
             or 0
         )
         average = (
@@ -236,7 +235,7 @@ class JobRepository:
             )
         )
 
-    def _find_existing(
+    def find_existing(
         self, session: Session, source: JobSource, job: NormalizedJob
     ) -> JobOffer | None:
         if job.source_job_id:
@@ -320,6 +319,15 @@ class JobRepository:
         if filters.category:
             statement = statement.where(
                 JobOffer.match_reasons["assessment"]["category"].as_string() == filters.category
+            )
+        if filters.verified_only:
+            from app.core.availability import VERIFICATION_TTL
+
+            proof = JobOffer.match_reasons["assessment"]["availability"]
+            statement = statement.where(
+                proof["state"].as_string() == "active",
+                proof["checked_at"].as_string()
+                >= (datetime.now(UTC) - VERIFICATION_TTL).isoformat(),
             )
         if filters.technology:
             statement = statement.where(JobOffer.technologies.contains([filters.technology]))

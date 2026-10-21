@@ -77,6 +77,12 @@ projects do not add professional months. Its dashboard defaults to current appli
 with separate strategic and excluded views. API clients can use
 `/jobs?radar=current|strategic|excluded|all&category=A|B|C`; omit `category` for any category.
 Scores expose `career_assessment` with three heuristic dimensions and uncertainty evidence.
+Use `verified_only=true` or the dashboard's **Verified active** view for listings
+whose application control was checked within 24 hours. Ingestion checks at most
+20 pending listings per run, caches blocked pages without bypassing them, and
+marks removed/closed vacancies separately. `python -m app.cli verify-offers --limit 20`
+runs the same check explicitly. This verifies an application path, not a promised
+interview, employer response, residence eligibility or salary.
 The existing ingestion schedule refreshes old assessments daily and after configuration
 changes. `python -m app.cli score-all` performs an explicit local recalculation.
 For personal deployments, mount private configuration under `runtime-config/` and
