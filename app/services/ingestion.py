@@ -6,6 +6,7 @@ from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.orm import Session
 
+from app.core.availability import VERIFICATION_KEY
 from app.core.experience import career_today
 from app.core.profiles import resolve_profile_key
 from app.models.enums import RemoteType
@@ -13,7 +14,12 @@ from app.models.job import IngestionRun, JobOffer, JobSource
 from app.repositories.jobs import JobFilters, JobRepository
 from app.schemas.jobs import IngestionRunRead, IngestionSummary
 from app.scoring.engine import ScoringEngine
-from app.scoring.text import detect_remote_type, extract_experience_years
+from app.scoring.text import (
+    canonical_url,
+    clean_job_text,
+    detect_remote_type,
+    extract_experience_years,
+)
 from app.services.normalizer import JobNormalizer, NormalizedJob
 from app.sources.base import JobSourceAdapter, SearchConfig
 from app.sources.registry import (
@@ -92,7 +98,15 @@ class IngestionService:
             jobs_created=sum(result.created for result in results),
             jobs_updated=sum(result.updated for result in results),
             errors=[result.error for result in results if result.error],
+            verification=await self.verify_offers(session),
         )
+
+    async def verify_offers(self, session: Session) -> dict[str, int]:
+        from app.services.verification import OfferVerificationService
+
+        result = await OfferVerificationService().run(session)
+        logger.info("Vacancy application verification completed", extra=result)
+        return result
 
     def sync_configured_sources(self, session: Session) -> None:
         for name, settings in configured_sources().items():
@@ -123,9 +137,9 @@ class IngestionService:
                     )
                 ):
                     continue
-                normalized = normalized_from_offer(offer)
+                normalized = normalized_from_offer(offer, rehydrate=engine.career_enabled)
                 if engine.career_enabled:
-                    evidence = f"{offer.description}\n{offer.requirements or ''}"
+                    evidence = f"{normalized.description}\n{normalized.requirements or ''}"
                     minimum, maximum = extract_experience_years(evidence)
                     normalized = replace(
                         normalized,
@@ -140,6 +154,8 @@ class IngestionService:
                     offer.experience_min_years = minimum
                     offer.experience_max_years = maximum
                     offer.remote_type = normalized.remote_type
+                    offer.description = normalized.description
+                    offer.url = normalized.url
                 score = engine.score(normalized)
                 offer.match_score = score.score
                 offer.match_level = score.level
@@ -172,6 +188,15 @@ class IngestionService:
                 if not _matches_search_scope(normalized, search_config):
                     scope_rejected += 1
                     continue
+                existing = self.repository.find_existing(session, source, normalized)
+                if existing is not None and VERIFICATION_KEY in existing.raw_payload:
+                    normalized = replace(
+                        normalized,
+                        raw_payload={
+                            **normalized.raw_payload,
+                            VERIFICATION_KEY: existing.raw_payload[VERIFICATION_KEY],
+                        },
+                    )
                 score = scoring.score(normalized)
                 # Keep viable strategic references even when current-fit score is low.
                 strategic = (
@@ -247,14 +272,21 @@ class IngestionService:
         return scoring
 
 
-def normalized_from_offer(offer: JobOffer) -> NormalizedJob:
+def normalized_from_offer(offer: JobOffer, *, rehydrate: bool = False) -> NormalizedJob:
+    description = offer.description
+    if rehydrate:
+        for key in ("description", "jobDescription", "content", "descriptionPlain"):
+            original = offer.raw_payload.get(key)
+            if isinstance(original, str) and len(original) > 40:
+                description = clean_job_text(original)
+                break
     return NormalizedJob(
         source_job_id=offer.source_job_id,
         company_name=offer.company.name,
         company_website=offer.company.website,
         title=offer.title,
         normalized_title=offer.normalized_title,
-        description=offer.description,
+        description=description,
         requirements=offer.requirements,
         location=offer.location,
         country=offer.country,
@@ -268,7 +300,7 @@ def normalized_from_offer(offer: JobOffer) -> NormalizedJob:
         salary_period=offer.salary_period,
         salary_original_text=offer.salary_original_text,
         salary_unknown=offer.salary_unknown,
-        url=offer.url,
+        url=canonical_url(offer.url) if rehydrate else offer.url,
         publication_date=offer.publication_date,
         expiration_date=offer.expiration_date,
         technologies=offer.technologies,

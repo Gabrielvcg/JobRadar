@@ -349,6 +349,9 @@
     <form class="filters" method="get" action="/">
       <input type="hidden" name="profile" value="{{ active_profile_key }}">
       {% if career_profile %}
+      <label class="inline-check">Verified application open
+        <input type="checkbox" name="verified_only" value="true" {% if filters.verified_only %}checked{% endif %}>
+      </label>
       <label>Radar
         <select name="radar">
           {% for value in ["current", "strategic", "excluded", "all"] %}
@@ -422,6 +425,7 @@
     <div class="job-toolbar">
       <div class="filter-shortcuts">
         {% if career_profile %}
+        <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=current&verified_only=true&min_score=35">Verified active</a>
         <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=current&min_score=35">Current applications</a>
         <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=strategic&min_score=0">Future references</a>
         <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=all&min_score=0">All assessments</a>
@@ -451,12 +455,15 @@
             </h2>
             {% set assessment = job.match_reasons.get("assessment") %}
             {% if assessment %}
+            {% set proof = current_verification(job.raw_payload, job.url) %}
             <div class="muted">
               Category {{ assessment.category }} &middot; {{ assessment.radar }}
               &middot; Fit {{ assessment.professional_fit }}/100
               &middot; Growth {{ assessment.growth }}/100
               &middot; Feasibility {{ assessment.viability }}/100
               <br>Heuristic scores, not hiring probabilities.
+              <br>Application: {{ proof.state }}{% if proof.checked_at %} &middot; checked {{ proof.checked_at[:16] }} UTC{% endif %}
+              {% if proof.state != "active" %}<br>{{ proof.reason }}{% endif %}
             </div>
             {% endif %}
             <div class="company-line">
@@ -501,6 +508,9 @@
           </div>
 
           <div class="job-actions">
+            {% if assessment and proof.state == "active" and proof.application_url %}
+            <a class="button" href="{{ proof.application_url }}" target="_blank" rel="noopener">Apply on verified page</a>
+            {% endif %}
             <form class="status-form" method="post" action="/web/jobs/{{ job.id }}/status">
               {% set effective_status = user_statuses.get(job.id|string, job.status) %}
               <select name="status">

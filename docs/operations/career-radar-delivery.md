@@ -46,3 +46,33 @@ must be recorded below only after their actual checks finish.
   application availability, repeated refresh behavior and unchanged user state.
 - Report failures and uncertainty; a successful build is not a successful deployment
   and a recently fetched portal listing is not proof that an employer is hiring.
+
+## Verified release 0.1.38
+
+- Published work branch: `codex/career-radar-release`, revision
+  `2eebad07c06fa4f1de92763b92b00d7dba44ad2d`.
+- [CI](https://github.com/Gabrielvcg/JobRadar/actions/runs/39665444696) passed:
+  175 tests including PostgreSQL, Ruff, mypy and Docker build. The first candidate
+  exposed a SQLAlchemy 2.1 typing change; the corrected release stays on the tested
+  2.0 series and passed before deployment.
+- A hash-checked archive of that exact commit was built on the existing VPS with
+  matching OCI revision/version labels. The environment and Compose file were
+  backed up, a compressed database backup passed gzip validation, and an image
+  rollback tag was retained. Private profiles moved to a read-only runtime mount.
+- Public HTTPS health returned 200 with version 0.1.38 and the exact revision.
+  Only the JobRadar proxy's explicit 404 was removed; Nginx validation passed,
+  registration remained blocked, and the existing database container was retained.
+- All 684 stored offers were rescored. Both private profile identifiers remained.
+  The public login page returned 200 and registration returned 403.
+- Live ranking review identified legacy flattened requirements inflating fit and
+  confirmed that some portal HTML checks receive 403. Those observations justify
+  release 0.1.39's description rehydration and explicit availability evidence.
+
+## Release 0.1.39 preparation
+
+The new verification policy distinguishes accessible application controls, explicit
+closure, and uncertainty. A blocked request is cached as unverified, never called
+closed. Checks are bounded and never send forms, applications, or recruiter messages.
+Verified-only filtering expires old evidence even between ingestion runs. Original
+HTML is recovered from source payloads where available; unrelated AI evaluation work
+and operations-heavy SRE duties receive no backend-career recommendation.

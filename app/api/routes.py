@@ -14,6 +14,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from app.core.availability import current_verification
 from app.core.config import get_settings
 from app.core.profiles import get_profile, load_profiles, resolve_profile_key, uses_career_radar
 from app.db.session import get_session
@@ -168,6 +169,7 @@ def web_index(
     profile: str | None = None,
     radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
     category: str | None = Query(default=None, pattern="^([ABC])?$"),
+    verified_only: bool = False,
     sort: str = Query(default="score", pattern="^(score|date)$"),
     order: str = Query(default="desc", pattern="^(asc|desc)$"),
 ) -> Response:
@@ -179,6 +181,7 @@ def web_index(
         profile_key=active_profile_key,
         radar=radar if uses_career_radar(active_profile_key) else None,
         category=category if uses_career_radar(active_profile_key) else None,
+        verified_only=verified_only,
         min_score=min_score,
         match_level=match_level,
         technology=technology,
@@ -210,6 +213,7 @@ def web_index(
             "active_profile": get_profile(active_profile_key),
             "active_profile_key": active_profile_key,
             "career_profile": uses_career_radar(active_profile_key),
+            "current_verification": current_verification,
             "statuses": list(JobStatus),
             "remote_types": list(RemoteType),
             "experience_label": experience_label,
@@ -289,6 +293,7 @@ def list_jobs(
     profile: str | None = None,
     radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
     category: str | None = Query(default=None, pattern="^([ABC])?$"),
+    verified_only: bool = False,
     sort: str = Query(default="score", pattern="^(score|date)$"),
     order: str = Query(default="desc", pattern="^(asc|desc)$"),
     limit: int = Query(default=50, ge=1, le=200),
@@ -300,6 +305,7 @@ def list_jobs(
         profile_key=active_profile_key,
         radar=radar if uses_career_radar(active_profile_key) else None,
         category=category if uses_career_radar(active_profile_key) else None,
+        verified_only=verified_only,
         min_score=min_score,
         match_level=match_level,
         technology=technology,

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 
-from app.scoring.evidence import development_evidence, operations_only
+from app.scoring.evidence import development_evidence, fold, operations_only
 
 
 def matches_career_transition(title: str, text: str) -> bool:
@@ -20,7 +20,23 @@ def matches_career_transition(title: str, text: str) -> bool:
             r"\b(?:owasp|sast|dast|iam|sdlc|threat model\w*|aws|azure|gcp)\b",
         ),
     )
-    return bool(development_evidence(text)) and not operations_only(title, text) and any(
-        re.search(role, title, re.IGNORECASE) and re.search(stack, text, re.IGNORECASE)
-        for role, stack in paths
+    infrastructure_role = re.search(paths[0][0], title, re.IGNORECASE)
+    if infrastructure_role and not any(
+        re.search(
+            r"\b(build|develop|implement|automate|write|desarroll\w*|automatiz\w*)\b", fold(c)
+        )
+        and re.search(
+            r"\b(apis?|tools?|software|services?|pipelines?|code|herramientas?|servicios?)\b",
+            fold(c),
+        )
+        for c in development_evidence(text)
+    ):
+        return False
+    return (
+        bool(development_evidence(text))
+        and not operations_only(title, text)
+        and any(
+            re.search(role, title, re.IGNORECASE) and re.search(stack, text, re.IGNORECASE)
+            for role, stack in paths
+        )
     )

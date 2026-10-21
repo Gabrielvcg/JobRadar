@@ -6,6 +6,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.core.availability import current_verification
 from app.models.enums import JobStatus, RemoteType
 
 
@@ -40,6 +41,8 @@ class JobOfferRead(BaseModel):
     match_level: str
     match_reasons: dict[str, Any]
     career_assessment: dict[str, Any] | None = None
+    application_url: str | None = None
+    availability_status: str = "unverified"
     negative_reasons: dict[str, list[str]]
     status: JobStatus
     language: str | None
@@ -109,9 +112,14 @@ class IngestionSummary(BaseModel):
     jobs_created: int
     jobs_updated: int
     errors: list[str]
+    verification: dict[str, int] = Field(default_factory=dict)
 
 
 def job_offer_to_read(job: Any, status_override: JobStatus | None = None) -> JobOfferRead:
+    proof = current_verification(job.raw_payload, job.url)
+    assessment = job.match_reasons.get("assessment")
+    if assessment:
+        assessment = {**assessment, "availability": proof}
     return JobOfferRead(
         id=job.id,
         profile_key=job.profile_key,
@@ -142,7 +150,9 @@ def job_offer_to_read(job: Any, status_override: JobStatus | None = None) -> Job
         match_score=job.match_score,
         match_level=job.match_level,
         match_reasons=job.match_reasons,
-        career_assessment=job.match_reasons.get("assessment"),
+        career_assessment=assessment,
+        application_url=proof.get("application_url") if proof["state"] == "active" else None,
+        availability_status=proof["state"],
         negative_reasons=job.negative_reasons,
         status=status_override or job.status,
         language=job.language,

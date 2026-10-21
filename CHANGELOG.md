@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.39 - 2026-10-21
+
+- Verify current listing/application availability with bounded public GET requests, explicit active/closed/unverified states, a 24-hour evidence lifetime, and cached access failures. Never submit applications or bypass blocked pages.
+- Add a verified-active filter and direct application link to the dashboard/API, and include verification counts in ingestion summaries and a dedicated CLI command.
+- Restore original description boundaries from source payloads when rescoring legacy offers, retain RSS HTML for future refreshes, and prevent unrelated AI evaluation tasks or operations-heavy SRE duties from inflating the backend ranking.
+- Preserve vacancy verification across source updates, keep user application state, and invalidate stale or mismatched URL evidence.
+
+
 ## 0.1.38 - 2026-10-21
 
 - Keep the repository's tested SQLAlchemy 2.0 typing contract and make SmartRecruiters payload typing explicit for newer type-checker releases; validate this boundary in CI before deployment.
