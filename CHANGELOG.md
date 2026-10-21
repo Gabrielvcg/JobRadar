@@ -5,6 +5,7 @@
 - Prefer SmartRecruiters public posting URLs over preview/application aliases after a live preview URL returned HTTP 403 while the canonical listing and form were accessible.
 - Verify the platform's observed JavaScript application control and ignore empty notification headings when matching the vacancy title; retain the public listing as the application destination.
 - Correct two further live-review cases: a remote-Spain label cannot override explicit residence in Galicia, and experience of up to three years is an upper limit rather than a three-year minimum.
+- Recheck availability when a source corrects the listing URL, without retaining a cached access failure for the old URL.
 
 ## 0.1.39 - 2026-10-21
 

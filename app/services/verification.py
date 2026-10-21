@@ -202,7 +202,9 @@ class OfferVerificationService:
                 ]
                 # Access failures are cached too; avoid repeatedly hitting a blocked portal.
                 pending = [
-                    offer for offer in pending if force or not _checked_recently(offer.raw_payload)
+                    offer
+                    for offer in pending
+                    if force or not _checked_recently(offer.raw_payload, offer.url)
                 ]
                 pending.sort(
                     key=lambda offer: (
@@ -227,9 +229,9 @@ class OfferVerificationService:
         return counts
 
 
-def _checked_recently(payload: dict[str, Any]) -> bool:
+def _checked_recently(payload: dict[str, Any], url: str | None) -> bool:
     value = payload.get(VERIFICATION_KEY)
     if not isinstance(value, dict):
         return False
-    proof = current_verification(payload, value.get("listing_url"))
+    proof = current_verification(payload, url)
     return proof.get("reason") != "Previous verification has expired" and "checked_at" in proof
