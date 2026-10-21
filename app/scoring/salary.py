@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 
 @dataclass(frozen=True)
@@ -84,7 +84,16 @@ def extract_salary(text: str) -> SalaryExtraction:
         )
         if not _amounts_are_plausible(amount, amount, period, currency, original):
             continue
-        return _build_salary(amount, amount, period, original, currency)
+        salary = _build_salary(amount, amount, period, original, currency)
+        prefix = normalized[max(0, match.start() - 30) : match.start()]
+        ceiling = re.search(r"\b(?:hasta|up to|at most|maximum(?: of)?)\s*$", prefix, re.I)
+        if ceiling:
+            return replace(
+                salary,
+                salary_min=None,
+                original_text=prefix[ceiling.start() :] + original,
+            )
+        return salary
 
     return SalaryExtraction(None, None, None, None, None, True)
 

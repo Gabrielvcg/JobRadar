@@ -107,3 +107,30 @@ and operations-heavy SRE duties receive no backend-career recommendation.
 - Review of the live top 20 also exposed an explicit Galicia residence condition
   hidden by a broad Spain-remote label, and a role allowing up to three years
   interpreted as requiring three. The same 0.1.40 candidate corrects both cases.
+
+## Verified release 0.1.40
+
+- Deployed revision `d56c83017d866e623cc995d642dd3fcfab1b8bf5` after
+  [201-test CI](https://github.com/Gabrielvcg/JobRadar/actions/runs/39669315266)
+  passed, including PostgreSQL and Docker. Public health matched exactly.
+- Two real curated-source GET refreshes each returned six records, updated the
+  same three stored offers, created zero, and rejected three at the score gate.
+  Both completed without errors. The second preserved the verified application
+  evidence and offer identity. A full refresh respected polling intervals.
+- Verification found the canonical T-Systems Backend Java page active. A temporary
+  non-admin user completed public HTTPS login (303), dashboard (200) and the
+  verified-only view (200), with that actual application link. The user was removed
+  in a finally block. Unauthenticated dashboard access continued to redirect.
+- Existing users, password hashes, role flags and application states matched their
+  pre-deployment fingerprints. Both private profiles remained; duplicate URL excess
+  remained zero. Runtime evidence and backups are private host/local artifacts.
+
+## Final bounded salary correction — 0.1.41
+
+The manual sample also revealed IRIUM's "Salario hasta 33K" had been normalized as
+an exact EUR 33,000 salary. The upper limit is published, but it guarantees no lower
+limit or increase over the candidate's change minimum. The correction stores no
+invented minimum, displays "up to", and treats the minimum as requiring employer
+confirmation. Rescoring repairs this explicit ceiling in legacy career records.
+Local validation: 203 passed, two PostgreSQL tests awaiting CI; Ruff/mypy passed.
+The release is not considered deployed until the following evidence is recorded.

@@ -172,6 +172,17 @@ def test_rescore_restores_original_html_boundaries(session: Session) -> None:
     assert offer.experience_min_years == 2
 
 
+def test_rescore_recovers_salary_ceiling_without_guaranteeing_minimum(session: Session) -> None:
+    offer = persist(session, "Java Backend Developer", "ceiling")
+    offer.description = "Build Java Spring Boot APIs. Salario hasta 33K."
+    offer.salary_min = offer.salary_max = 33000
+    offer.salary_unknown = False
+    session.commit()
+    IngestionService().score_all_jobs(session)
+    assert offer.salary_min is None and offer.salary_max == 33000
+    assert offer.match_reasons["assessment"]["salary_status"] == "overlapping_minimum"
+
+
 def test_http_and_dashboard_keep_assessment_and_separate_radars(
     session: Session,
     monkeypatch: pytest.MonkeyPatch,

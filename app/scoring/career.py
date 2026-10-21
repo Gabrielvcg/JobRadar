@@ -369,7 +369,7 @@ def _growth(text: str) -> tuple[int, list[str]]:
 
 
 def _salary(engine: ScoringEngine, job: NormalizedJob) -> tuple[str, int, str]:
-    if job.salary_unknown or job.salary_min is None:
+    if job.salary_unknown or (job.salary_min is None and job.salary_max is None):
         return "unknown", 65, "Salario desconocido; se conserva sin estimaciones inventadas"
     if job.salary_currency != "EUR" or job.salary_period not in {None, "annual", "monthly"}:
         return (
@@ -379,13 +379,14 @@ def _salary(engine: ScoringEngine, job: NormalizedJob) -> tuple[str, int, str]:
         )
     minimum = int(engine.salary_config["minimum_annual_eur"])
     upper = job.salary_max if job.salary_max is not None else job.salary_min
+    assert upper is not None
     if upper < minimum:
         return "below_minimum", 0, f"Salario publicado inferior al minimo de cambio: {minimum} EUR"
-    if job.salary_min < minimum:
+    if job.salary_min is None or job.salary_min < minimum:
         return (
             "overlapping_minimum",
             60,
-            f"Rango publicado cruza el minimo de {minimum} EUR; confirmar oferta final",
+            f"El salario publicado no garantiza el minimo de {minimum} EUR; confirmar oferta final",
         )
     if job.salary_min >= int(engine.salary_config["target_min_annual_eur"]):
         return (
