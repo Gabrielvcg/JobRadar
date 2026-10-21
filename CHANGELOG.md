@@ -2,6 +2,8 @@
 
 ## 0.1.38 - 2026-10-21
 
+- Keep the repository's tested SQLAlchemy 2.0 typing contract and make SmartRecruiters payload typing explicit for newer type-checker releases; validate this boundary in CI before deployment.
+
 - Preserve private/custom profile identifiers across API, CLI and dashboard policy selection; expose the installed version and image revision through health metadata.
 - Support a read-only runtime configuration mount for deployment without publishing private candidate profiles or replacing existing user/profile identities.
 

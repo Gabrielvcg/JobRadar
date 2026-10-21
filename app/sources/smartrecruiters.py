@@ -119,7 +119,7 @@ class SmartRecruitersJobSource(GreenhouseJobSource):
             else (RemoteType.REMOTE if location.get("remote") else RemoteType.UNKNOWN)
         )
         # Keep job evidence, excluding creator/contact metadata from the public response.
-        payload = {
+        payload: dict[str, Any] = {
             key: item[key] for key in ("id", "name", "jobAd", "location", "active") if key in item
         }
         return RawJob(
