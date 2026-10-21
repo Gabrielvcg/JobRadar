@@ -69,6 +69,11 @@ def experience_requirements(text: str) -> list[ExperienceRequirement]:
                 continue
             minimum = float(match.group("min").replace(",", "."))
             maximum = float((match.group("max") or match.group("min")).replace(",", "."))
+            prefix = normalized[max(0, match.start() - 20) : match.start()]
+            if not match.group("max") and re.search(
+                r"\b(?:up to|at most|hasta|maximo(?: de)?)\s*$", prefix
+            ):
+                minimum = 0
             if minimum > maximum or maximum > 45:
                 continue
             found.append(

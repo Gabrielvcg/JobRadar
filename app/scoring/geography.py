@@ -44,6 +44,18 @@ def assess_location(
             0,
             f"Residencia obligatoria fuera de Espana: {restricted.group(1)}",
         )
+    regional = re.search(
+        r"\b(?:resida[ns]?|residencia obligatoria|debes? residir)\s+en\s+"
+        r"(galicia|madrid|barcelona|cataluna|pais vasco|valencia|zaragoza|bilbao)\b",
+        text,
+    )
+    if regional:
+        return LocationAssessment(
+            "incompatible",
+            "regional_residence",
+            0,
+            f"Exige residencia fuera de Sevilla: {regional.group(1)}",
+        )
     local = any(re.search(rf"(?<!\w){re.escape(fold(term))}(?!\w)", place) for term in local_terms)
     remote_spain = re.search(
         r"\b(?:remote (?:from|within|in)|remoto (?:desde|en)|teletrabajo (?:desde|en))"

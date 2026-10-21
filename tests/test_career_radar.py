@@ -134,6 +134,23 @@ def test_remote_europe_with_explicit_residence_restriction_is_excluded() -> None
     assert "location_incompatible" in result.assessment["blockers"]
 
 
+def test_remote_spain_does_not_override_required_residence_in_galicia() -> None:
+    result = score(
+        job(
+            location="Spain",
+            description=("Build Java APIs. Es importante que el candidato/a resida en Galicia."),
+        )
+    )
+    assert "location_incompatible" in result.assessment["blockers"]
+
+
+@pytest.mark.parametrize("phrase", ["Experiencia de hasta 3 anos", "Up to 3 years of experience"])
+def test_experience_upper_limit_is_not_a_required_minimum(phrase: str) -> None:
+    requirement = binding_experience(experience_requirements(phrase))
+    assert requirement is not None
+    assert requirement.minimum == 0 and requirement.maximum == 3
+
+
 def test_hybrid_with_remote_days_is_not_full_remote() -> None:
     raw = RawJob(
         source_name="synthetic",
