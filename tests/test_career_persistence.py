@@ -149,6 +149,7 @@ def test_verification_roundtrip_caches_failures_and_preserves_application_state(
     assert second.match_reasons["assessment"]["radar"] == "excluded"
     assert asyncio.run(verification.OfferVerificationService().run(session))["checked"] == 0
     assert len(calls) == 2
+    assert first.url is not None
     first.url += "-canonical"
     session.commit()
     assert asyncio.run(verification.OfferVerificationService().run(session))["checked"] == 1
