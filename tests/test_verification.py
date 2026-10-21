@@ -51,6 +51,21 @@ def test_generic_page_or_disabled_control_is_not_verified_active(body: str) -> N
     assert check(200, body)["state"] == "unverified"
 
 
+def test_smartrecruiters_javascript_control_and_empty_notification_heading() -> None:
+    proof = check(
+        200,
+        '<h1 data-i18n="notification"></h1><h1>Java Backend Developer</h1>'
+        '<a class="button js-oneclick" data-sr-track="apply">Me interesa</a>',
+    )
+    assert proof["state"] == "active"
+    assert proof["application_url"] == URL
+
+
+def test_unbound_anchor_does_not_establish_an_application_path() -> None:
+    proof = check(200, '<h1>Java Backend Developer</h1><a>Me interesa</a>')
+    assert proof["state"] == "unverified"
+
+
 @pytest.mark.parametrize("status", [403, 429, 500])
 def test_access_failure_does_not_mean_the_vacancy_closed(status: int) -> None:
     assert check(status, "Access denied")["state"] == "unverified"

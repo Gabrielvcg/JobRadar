@@ -76,3 +76,31 @@ closed. Checks are bounded and never send forms, applications, or recruiter mess
 Verified-only filtering expires old evidence even between ingestion runs. Original
 HTML is recovered from source payloads where available; unrelated AI evaluation work
 and operations-heavy SRE duties receive no backend-career recommendation.
+
+## Verified release 0.1.39 and corrective release 0.1.40
+
+- Revision `43fa81531f1168ab72897040baa7b83546b515ba` passed
+  [CI](https://github.com/Gabrielvcg/JobRadar/actions/runs/39667403011):
+  196 tests including PostgreSQL, Ruff, mypy and image build.
+- Public health confirmed 0.1.39 and that revision after deployment. All 688 offers
+  then present were rescored, including four added by the existing schedule after
+  the first deployment. The two profiles and the existing database were retained.
+- On the same 533 candidate-profile rows, current offers at score >=35 decreased
+  from 92 to 82 after legacy description and role corrections. The initial 20 page
+  checks found ten removed listings and ten uncertain responses; the next bounded
+  batch found two further removed pages. These are page-check counts, not market
+  coverage or statistical hiring estimates.
+- The full refresh immediately after deployment fetched zero records because the
+  configured polling intervals had not elapsed. It completed without errors and
+  ran its bounded verification batch. This validates interval handling, not a new
+  source fetch; a real curated-source fetch is checked separately below.
+- A live SmartRecruiters `applyUrl` containing `oga=true` returned 403, whereas
+  `postingUrl` returned 200. The canonical page's empty notification heading and
+  JavaScript-bound application anchor also required platform-aware interpretation.
+  A browser check opened the actual Backend Java application form with personal
+  details, CV and hiring-team message fields. No fields or applications were sent.
+- Release 0.1.40 therefore prefers `postingUrl`, matches the nonempty job heading,
+  and recognizes only the observed platform-specific JavaScript apply anchor on
+  its supported host. It retains the listing URL rather than guessing a form URL.
+  Local validation: 196 passed, two PostgreSQL tests pending CI; Ruff/mypy passed.
+  Publication, deployment and subsequent live results are recorded only once done.

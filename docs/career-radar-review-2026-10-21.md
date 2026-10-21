@@ -1,5 +1,9 @@
 # Career radar review — 2026-10-21
 
+This report records the initial local review phase. The subsequently authorized
+pushes, successive deployments and production validation are recorded in
+[the operational delivery record](operations/career-radar-delivery.md).
+
 ## Scope and baseline
 
 Local, unpublished changes only. No production requests, database connections,
