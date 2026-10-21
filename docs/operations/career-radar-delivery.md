@@ -104,3 +104,6 @@ and operations-heavy SRE duties receive no backend-career recommendation.
   its supported host. It retains the listing URL rather than guessing a form URL.
   Local validation: 196 passed, two PostgreSQL tests pending CI; Ruff/mypy passed.
   Publication, deployment and subsequent live results are recorded only once done.
+- Review of the live top 20 also exposed an explicit Galicia residence condition
+  hidden by a broad Spain-remote label, and a role allowing up to three years
+  interpreted as requiring three. The same 0.1.40 candidate corrects both cases.
