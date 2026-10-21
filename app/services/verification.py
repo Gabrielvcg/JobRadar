@@ -117,12 +117,22 @@ async def verify_listing(
             }
         if title:
             expected = set(re.findall(r"\w+", fold(title)))
-            heading = soup.find("h1") or soup.title
-            actual = set(re.findall(r"\w+", fold(heading.get_text(" ") if heading else "")))
-            if not expected or len(expected & actual) / len(expected) < 0.6:
+            headings = [h for h in soup.select("h1, title") if h.get_text(strip=True)]
+            matches = any(
+                len(expected & set(re.findall(r"\w+", fold(h.get_text(" ")))))
+                / max(1, len(expected))
+                >= 0.6
+                for h in headings
+            )
+            if not expected or not matches:
                 result["reason"] = "Page does not confirm the expected vacancy title"
                 return result
-        for element in soup.select("a[href], button, input[type=submit]"):
+        controls = list(soup.select("a[href], button, input[type=submit]"))
+        # SmartRecruiters binds its observed public application links with JavaScript.
+        # Keep the user on the verified listing rather than guessing a form URL.
+        if urlsplit(target).hostname == "jobs.smartrecruiters.com":
+            controls.extend(soup.select('a.js-oneclick[data-sr-track="apply"]'))
+        for element in controls:
             label = fold(element.get_text(" ", strip=True) or str(element.get("value") or ""))
             label = label.strip(" \t›→!…")
             if (

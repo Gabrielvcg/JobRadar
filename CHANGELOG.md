@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.40 - 2026-10-21
+
+- Prefer SmartRecruiters public posting URLs over preview/application aliases after a live preview URL returned HTTP 403 while the canonical listing and form were accessible.
+- Verify the platform's observed JavaScript application control and ignore empty notification headings when matching the vacancy title; retain the public listing as the application destination.
+
 ## 0.1.39 - 2026-10-21
 
 - Verify current listing/application availability with bounded public GET requests, explicit active/closed/unverified states, a 24-hour evidence lifetime, and cached access failures. Never submit applications or bypass blocked pages.

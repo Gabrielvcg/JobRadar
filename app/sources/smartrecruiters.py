@@ -134,7 +134,8 @@ class SmartRecruitersJobSource(GreenhouseJobSource):
             remote_type=mode,
             employment_type=str((item.get("typeOfEmployment") or {}).get("label") or "") or None,
             url=str(
-                item.get("applyUrl")
+                item.get("postingUrl")
+                or item.get("applyUrl")
                 or f"https://jobs.smartrecruiters.com/{company_slug}/{item['id']}"
             ),
             publication_date=_parse_datetime(item.get("releasedDate")),

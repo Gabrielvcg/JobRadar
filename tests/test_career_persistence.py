@@ -214,6 +214,8 @@ def test_smartrecruiters_mapping_request_bounds_and_active_public_only(
             json={
                 "id": request.url.path[-1],
                 "name": "Java Backend Developer",
+                "postingUrl": "https://jobs.smartrecruiters.com/example/1-java-backend",
+                "applyUrl": "https://jobs.smartrecruiters.com/example/1-java-backend?oga=true",
                 "active": request.url.path[-1] != "2",
                 "creator": {"email": "private@test.invalid"},
                 "location": {"city": "Sevilla", "country": "es", "hybrid": True},
@@ -245,3 +247,4 @@ def test_smartrecruiters_mapping_request_bounds_and_active_public_only(
     assert jobs[0].country == "Spain"
     assert "creator" not in jobs[0].raw_payload
     assert jobs[0].requirements == "2 years of Java experience"
+    assert jobs[0].url == "https://jobs.smartrecruiters.com/example/1-java-backend"
