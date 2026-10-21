@@ -134,3 +134,92 @@ invented minimum, displays "up to", and treats the minimum as requiring employer
 confirmation. Rescoring repairs this explicit ceiling in legacy career records.
 Local validation: 203 passed, two PostgreSQL tests awaiting CI; Ruff/mypy passed.
 The release is not considered deployed until the following evidence is recorded.
+
+## Final production result — 2026-10-21, 20:27 UTC
+
+Release **0.1.41**, revision `d4ea420191cbb266e1f0007f4c086fa1c7f6d6e5`, is live.
+[CI passed 205 tests](https://github.com/Gabrielvcg/JobRadar/actions/runs/39669994964),
+including PostgreSQL, type checks, lint and the image build. The dependency workflow
+also passed. Local tests passed 203 with the two PostgreSQL cases deferred to CI.
+The exact hash-checked source was built on the VPS; public HTTPS health matched
+version/revision, both containers were healthy, and the existing database container
+was retained. The new compressed backup passed gzip integrity validation. Backups
+were not restored into production and this work makes no restore-test claim.
+
+Final HTTPS login, the authenticated dashboard, and verified-only filtering passed
+again. The IRIUM API record now has `salary_min=null`, `salary_max=33000`, and
+`salary_status=overlapping_minimum`; the dashboard shows "up to 33,000 EUR".
+The temporary validation user was removed, and existing account/status fingerprints
+still matched. No employer application, CV upload or contact message was sent.
+
+### Like-for-like live comparison
+
+The baseline is the saved 0.1.38 snapshot immediately before 0.1.39; both columns
+refer to the same 688 stored offers, including 533 in the candidate profile. This
+is distinct from the fixed 1,171-record public diagnostic pool in the initial report.
+The original 0.1.33 installation had 684 offers; the existing scheduled 20:00 UTC
+ingestion added four during 0.1.38, including the three curated ATS records.
+
+| Measure | 0.1.38 snapshot | Final 0.1.41 |
+| --- | ---: | ---: |
+| Stored offers, both profiles | 688 | 688 |
+| Candidate-profile offers | 533 | 533 |
+| Current radar, score >=35 | 92 | 72 |
+| Strategic references | 57 | 45 |
+| Excluded from the candidate radar | 384 | 416 |
+| Current offers with fresh verified application controls | 0 | 1 |
+| Listings with confirmed HTTP removal | Not checked | 12 |
+| Exact URL duplicate excess | 0 | 0 |
+| Private profiles retained | 2 | 2 |
+
+The candidate-profile verification totals are 1 active, 12 removed, and 520
+unverified (unchecked, blocked, unsupported, or insufficient evidence). They include
+strategic/excluded records, so they must not be confused with the 72 current offers.
+No error or blocking response was interpreted as proof of closure.
+
+### Ranking and application examples
+
+| Live example | Before | Final treatment |
+| --- | --- | --- |
+| Sporty Group, Weekend DevOps Engineer | 87, current | 34, excluded: operations duties do not establish the desired development path |
+| Askable, Software Engineer, AI Coding Tasks | 74, current | 34, excluded: task evaluation is not the requested backend career |
+| knowmad mood, Java Developer, sector textil | 71 in 0.1.39 | 34, excluded: explicit Galicia residence conflicts with Sevilla |
+| IRIUM, Full Stack Developer, Java and Angular | 73 in 0.1.39; three years treated as minimum, EUR 33,000 treated as exact | 78, current: up to three years; salary ceiling only, minimum EUR 24,000 unconfirmed |
+| T-Systems Iberia, Backend Java | 65; preview URL blocked | 65, current: canonical listing and application form verified; Sevilla hybrid explicitly available |
+
+The verified [T-Systems application opportunity](https://jobs.smartrecruiters.com/T-SystemsIberia/744000153460609-desarrollador-a-backend-java-m-f-d-)
+requires backend Java experience without a numerical minimum. It mentions Git,
+collaboration with architecture/QA/DevOps, and learning opportunities. Its salary
+is unpublished; neither a EUR 24,000 minimum nor employer acceptance is established.
+The browser opened its real form, including CV and hiring-team message fields.
+
+### Refresh evidence and limits
+
+- The existing half-hour cron remained in place. Its 20:00 run during 0.1.38
+  fetched six curated records and created three, plus one WWR offer.
+- The two deliberate 0.1.40 curated refreshes each fetched six, updated three,
+  created zero, and score-rejected three. Stable offer identities, application
+  state and verification evidence were preserved.
+- Full refreshes in 0.1.39, 0.1.40 and final 0.1.41 all completed without errors
+  while respecting source intervals. The final run fetched/created/updated zero
+  because no source was due, and checked 20 further pages as uncertain. These runs
+  demonstrate interval handling; they are not represented as new feed retrievals.
+- Checks expire after 24 hours. A verified control proves an available application
+  path at check time, not form submission, an interview, a salary increase, or
+  employer responsiveness. Scores are heuristics, never hiring probabilities.
+- The present utility is demonstrated but coverage is limited: one current offer
+  has verified application availability. The other 71 current results require
+  manual confirmation. Portal access blocks and similar employer variants remain.
+- Changes were pushed on `codex/career-radar-release`; no merge to the shared base
+  branch was performed. Existing unrelated local deployment/backup work was retained.
+
+### Three next priorities
+
+1. **High benefit, medium effort:** add a small number of Spain-compatible Java
+   employers through existing official ATS adapters, gated by actual current-role
+   and application-path yield rather than raw listing volume.
+2. **High benefit, medium effort:** review a larger real shortlist against mandatory
+   skills, years, residence and current availability; use the judgments to measure
+   ranking precision and requirement ambiguity instead of only synthetic cases.
+3. **Medium benefit, medium effort:** detect reworded employer variants and expose
+   duplicate provenance so similar portal titles do not crowd out distinct roles.
