@@ -5,6 +5,7 @@ import io
 import uuid
 from collections import Counter
 from datetime import datetime
+from importlib.metadata import version
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
@@ -14,7 +15,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.core.profiles import get_profile, load_profiles, resolve_profile_key
+from app.core.profiles import get_profile, load_profiles, resolve_profile_key, uses_career_radar
 from app.db.session import get_session
 from app.formatting import experience_label, salary_label, salary_original_detail
 from app.models.enums import JobStatus, RemoteType
@@ -48,7 +49,7 @@ user_repository = UserRepository()
 @router.get("/health")
 def health(session: Annotated[Session, Depends(get_session)]) -> dict[str, str]:
     session.execute(text("SELECT 1"))
-    return {"status": "ok"}
+    return {"status": "ok", "version": version("jobradar"), "revision": get_settings().app_revision}
 
 
 @router.get("/login", response_class=HTMLResponse)
@@ -165,6 +166,8 @@ def web_index(
     salary_known: bool = Query(default=False),
     q: str | None = None,
     profile: str | None = None,
+    radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
+    category: str | None = Query(default=None, pattern="^([ABC])?$"),
     sort: str = Query(default="score", pattern="^(score|date)$"),
     order: str = Query(default="desc", pattern="^(asc|desc)$"),
 ) -> Response:
@@ -174,6 +177,8 @@ def web_index(
     active_profile_key = resolve_profile_key(profile)
     filters = JobFilters(
         profile_key=active_profile_key,
+        radar=radar if uses_career_radar(active_profile_key) else None,
+        category=category if uses_career_radar(active_profile_key) else None,
         min_score=min_score,
         match_level=match_level,
         technology=technology,
@@ -204,6 +209,7 @@ def web_index(
             "profiles": list(load_profiles().values()),
             "active_profile": get_profile(active_profile_key),
             "active_profile_key": active_profile_key,
+            "career_profile": uses_career_radar(active_profile_key),
             "statuses": list(JobStatus),
             "remote_types": list(RemoteType),
             "experience_label": experience_label,
@@ -251,6 +257,7 @@ def job_stats(
     request: Request,
     session: Annotated[Session, Depends(get_session)],
     profile: str | None = None,
+    radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
 ) -> JobStats:
     current_user = get_current_user(request, session)
     active_profile_key = resolve_profile_key(profile)
@@ -259,6 +266,7 @@ def job_stats(
             session,
             user_id=current_user.id if current_user else None,
             profile_key=active_profile_key,
+            radar=radar if uses_career_radar(active_profile_key) else None,
         )
     )
 
@@ -279,6 +287,8 @@ def list_jobs(
     published_after: datetime | None = None,
     q: str | None = None,
     profile: str | None = None,
+    radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
+    category: str | None = Query(default=None, pattern="^([ABC])?$"),
     sort: str = Query(default="score", pattern="^(score|date)$"),
     order: str = Query(default="desc", pattern="^(asc|desc)$"),
     limit: int = Query(default=50, ge=1, le=200),
@@ -288,6 +298,8 @@ def list_jobs(
     active_profile_key = resolve_profile_key(profile)
     filters = JobFilters(
         profile_key=active_profile_key,
+        radar=radar if uses_career_radar(active_profile_key) else None,
+        category=category if uses_career_radar(active_profile_key) else None,
         min_score=min_score,
         match_level=match_level,
         technology=technology,
@@ -319,11 +331,13 @@ def export_jobs(
     session: Annotated[Session, Depends(get_session)],
     min_score: int | None = Query(default=None, ge=0, le=100),
     profile: str | None = None,
+    radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
 ) -> StreamingResponse:
     current_user = get_current_user(request, session)
     active_profile_key = resolve_profile_key(profile)
     filters = JobFilters(
         profile_key=active_profile_key,
+        radar=radar if uses_career_radar(active_profile_key) else None,
         min_score=min_score,
         user_id=current_user.id if current_user else None,
         limit=10_000,
@@ -465,10 +479,7 @@ def _visible_stats(jobs: list[Any], user_statuses: dict[str, JobStatus]) -> dict
             "by_status": {},
             "by_match_level": {},
         }
-    statuses = [
-        str(user_statuses.get(str(job.id), job.status).value)
-        for job in jobs
-    ]
+    statuses = [str(user_statuses.get(str(job.id), job.status).value) for job in jobs]
     return {
         "total": len(jobs),
         "average_score": round(sum(job.match_score for job in jobs) / len(jobs), 1),

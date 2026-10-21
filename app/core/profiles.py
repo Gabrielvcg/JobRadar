@@ -67,3 +67,9 @@ def resolve_profile_key(profile_key: str | None) -> str:
 def get_profile(profile_key: str | None = None) -> ProfileDefinition:
     key = resolve_profile_key(profile_key)
     return load_profiles()[key]
+
+
+def uses_career_radar(profile_key: str | None = None) -> bool:
+    """Select policy by configuration, including private/custom profile keys."""
+    profile = get_profile(profile_key)
+    return bool(load_yaml_config(profile.profile_config).get("profile", {}).get("career"))

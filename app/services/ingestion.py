@@ -1,16 +1,19 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.orm import Session
 
+from app.core.experience import career_today
+from app.core.profiles import resolve_profile_key
 from app.models.enums import RemoteType
 from app.models.job import IngestionRun, JobOffer, JobSource
 from app.repositories.jobs import JobFilters, JobRepository
 from app.schemas.jobs import IngestionRunRead, IngestionSummary
 from app.scoring.engine import ScoringEngine
+from app.scoring.text import detect_remote_type, extract_experience_years
 from app.services.normalizer import JobNormalizer, NormalizedJob
 from app.sources.base import JobSourceAdapter, SearchConfig
 from app.sources.registry import (
@@ -42,6 +45,9 @@ class IngestionService:
 
     async def run_enabled_sources(self, session: Session) -> IngestionSummary:
         self.sync_configured_sources(session)
+        # The existing ingestion schedule refreshes stored offers daily, including
+        # tenure milestones and expired jobs even if no source returns them again.
+        self.score_all_jobs(session, only_stale=True)
         results: list[SourceRunResult] = []
         for adapter in build_enabled_sources():
             profile_key = source_profile_key(adapter)
@@ -95,20 +101,53 @@ class IngestionService:
                 name=name,
                 enabled=bool(settings.get("enabled", False)),
                 base_url=_optional_str(settings.get("base_url")),
-                profile_key=str(settings.get("profile_key") or "engineering"),
+                profile_key=resolve_profile_key(settings.get("profile_key")),
             )
         session.commit()
 
-    def score_all_jobs(self, session: Session) -> int:
+    def score_all_jobs(self, session: Session, *, only_stale: bool = False) -> int:
         count = 0
-        for offer in self.repository.list_jobs(session, filters=_all_jobs_filter()):
-            normalized = normalized_from_offer(offer)
-            score = self._scoring_for(offer.profile_key).score(normalized)
-            offer.match_score = score.score
-            offer.match_level = score.level
-            offer.match_reasons = {"positive": score.positive}
-            offer.negative_reasons = {"negative": score.negative}
-            count += 1
+        offset = 0
+        while True:
+            offers = self.repository.list_jobs(session, filters=_all_jobs_filter(offset))
+            if not offers:
+                break
+            for offer in offers:
+                engine = self._scoring_for(offer.profile_key)
+                previous = offer.match_reasons.get("assessment", {})
+                if only_stale and (
+                    not engine.career_enabled
+                    or (
+                        previous.get("evaluated_on") == career_today().isoformat()
+                        and previous.get("version") == engine.policy_version
+                    )
+                ):
+                    continue
+                normalized = normalized_from_offer(offer)
+                if engine.career_enabled:
+                    evidence = f"{offer.description}\n{offer.requirements or ''}"
+                    minimum, maximum = extract_experience_years(evidence)
+                    normalized = replace(
+                        normalized,
+                        experience_min_years=minimum,
+                        experience_max_years=maximum,
+                        remote_type=detect_remote_type(
+                            evidence,
+                            offer.remote_type,
+                            location=offer.location,
+                        ),
+                    )
+                    offer.experience_min_years = minimum
+                    offer.experience_max_years = maximum
+                    offer.remote_type = normalized.remote_type
+                score = engine.score(normalized)
+                offer.match_score = score.score
+                offer.match_level = score.level
+                offer.match_reasons = score.match_reasons()
+                offer.negative_reasons = {"negative": score.negative}
+                count += 1
+            session.flush()
+            offset += len(offers)
         session.commit()
         return count
 
@@ -134,7 +173,11 @@ class IngestionService:
                     scope_rejected += 1
                     continue
                 score = scoring.score(normalized)
-                if score.score < adapter.minimum_score:
+                # Keep viable strategic references even when current-fit score is low.
+                strategic = (
+                    score.assessment is not None and score.assessment["radar"] == "strategic"
+                )
+                if score.score < adapter.minimum_score and not strategic:
                     score_rejected += 1
                     continue
                 _, was_created = self.repository.upsert_job(session, source, normalized, score)
@@ -242,8 +285,8 @@ def _optional_str(value: object) -> str | None:
     return text or None
 
 
-def _all_jobs_filter() -> JobFilters:
-    return JobFilters(limit=10_000, offset=0, include_disabled_sources=True)
+def _all_jobs_filter(offset: int = 0) -> JobFilters:
+    return JobFilters(limit=500, offset=offset, include_disabled_sources=True, sort="id")
 
 
 def _should_skip_source(source: JobSource, min_interval_minutes: int) -> bool:
@@ -268,15 +311,19 @@ def _matches_target_location(job: NormalizedJob, search_config: SearchConfig) ->
     if job.remote_type == RemoteType.REMOTE:
         if not location:
             return True
-        remote_terms = target_terms | _remote_region_terms(search_config) | {
-            "remote",
-            "worldwide",
-            "world",
-            "anywhere",
-            "global",
-            "europe",
-            "emea",
-        }
+        remote_terms = (
+            target_terms
+            | _remote_region_terms(search_config)
+            | {
+                "remote",
+                "worldwide",
+                "world",
+                "anywhere",
+                "global",
+                "europe",
+                "emea",
+            }
+        )
         return any(term in location for term in remote_terms)
     return any(term in location for term in target_terms)
 

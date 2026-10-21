@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Iterator
+from dataclasses import replace
 from datetime import UTC, datetime
 
 import pytest
@@ -11,8 +12,8 @@ from sqlalchemy.orm import Session
 from app.db.base import Base
 from app.models.enums import JobStatus, RemoteType
 from app.models.job import JobOffer
-from app.repositories.jobs import JobRepository
-from app.scoring.engine import ScoreResult
+from app.repositories.jobs import JobFilters, JobRepository
+from app.scoring.engine import ScoreResult, ScoringEngine
 from app.services.normalizer import NormalizedJob
 
 pytestmark = pytest.mark.integration
@@ -53,6 +54,28 @@ def test_upsert_deduplicates_by_canonical_url_and_preserves_status(pg_session: S
     assert updated_offer.id == offer.id
     assert updated_offer.status == JobStatus.INTERESTED
     assert pg_session.scalar(select(func.count(JobOffer.id))) == 1
+
+
+def test_postgres_career_jsonb_filters_and_statuses(pg_session: Session) -> None:
+    repository = JobRepository()
+    source = repository.get_or_create_source(pg_session, "career-fixture", True, None)
+    engine = ScoringEngine()
+    current = replace(_job("current"), requirements="2 years of Java experience")
+    future = replace(
+        current,
+        source_job_id="future",
+        title="Senior Java Backend Engineer",
+        normalized_title="senior java backend engineer",
+        url="https://example.test/future",
+        content_hash="future-hash",
+        requirements="8 years of Java experience",
+    )
+    offer, _ = repository.upsert_job(pg_session, source, current, engine.score(current))
+    reference, _ = repository.upsert_job(pg_session, source, future, engine.score(future))
+    pg_session.commit()
+    assert repository.list_jobs(pg_session, JobFilters(radar="current", limit=1)) == [offer]
+    assert repository.list_jobs(pg_session, JobFilters(radar="strategic")) == [reference]
+    assert repository.stats(pg_session, profile_key="engineering", radar="current")["total"] == 1
 
 
 def _job(source_job_id: str) -> NormalizedJob:

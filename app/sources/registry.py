@@ -32,6 +32,7 @@ from app.sources.portalento import PortalentoJobSource
 from app.sources.remoteok import RemoteOkJobSource
 from app.sources.remotive import RemotiveJobSource
 from app.sources.rss import RssJobSource
+from app.sources.smartrecruiters import SmartRecruitersJobSource
 from app.sources.talent import TalentJobSource
 from app.sources.tecnoempleo import TecnoempleoJobSource
 from app.sources.trabajos import TrabajosJobSource
@@ -88,6 +89,8 @@ def build_enabled_sources() -> list[JobSourceAdapter]:
             adapter = HimalayasJobSource(raw_settings)
         elif adapter_name == "greenhouse":
             adapter = GreenhouseJobSource(raw_settings)
+        elif adapter_name == "smartrecruiters":
+            adapter = SmartRecruitersJobSource(raw_settings)
         elif adapter_name == "lever":
             adapter = LeverJobSource(raw_settings)
         elif adapter_name == "ashby":

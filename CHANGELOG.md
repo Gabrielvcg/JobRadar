@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.38 - 2026-10-21
+
+- Preserve private/custom profile identifiers across API, CLI and dashboard policy selection; expose the installed version and image revision through health metadata.
+- Support a read-only runtime configuration mount for deployment without publishing private candidate profiles or replacing existing user/profile identities.
+
+- Added an opt-in Engineering career policy with professional tenure calculated from a start month, separate professional/project evidence, and explainable fit, growth, and application viability dimensions.
+- Separated current applications, strategic senior/architecture references, and excluded offers in the API, dashboard, statistics, and CLI listing while retaining the Operations scoring policy.
+- Classified mandatory, desirable, and indicative experience, used range minima, and distinguished residence eligibility, salary uncertainty, unsupported languages, stale offers, and development responsibilities from keyword mentions.
+- Set Engineering's minimum change salary to EUR 24,000 and its preferred range to EUR 26,000–35,000; stopped using unverified fixed exchange rates for Engineering decisions.
+- Refresh Engineering assessments daily through the existing ingestion schedule and when profile/scoring settings change; preserve application status and refresh stored experience/modality evidence.
+- Preserved job-description boundaries and decoded escaped HTML; canonicalize documented tracking parameters for cross-source deduplication.
+- Reused existing ATS adapters and added a bounded official SmartRecruiters source for T-Systems Iberia after local public-feed verification. Removed premature Engineering seniority exclusions so strategic references can reach scoring.
+- Added functional, persistence, HTTP, dashboard, and source-bound tests, a read-only sample evaluator, and a dated diagnosis/validation report in `docs/career-radar-review-2026-10-21.md`.
+
+
 ## 0.1.34 - 2026-08-10
 
 - Repaired corrupted UTF-8 text in source filters, scoring expressions, and public documentation so accented Spanish and Portuguese terms match correctly and render professionally.

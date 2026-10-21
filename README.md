@@ -71,6 +71,23 @@ Configuration lives under `config/`:
 
 Additional profile-specific files live under `config/profiles/<profile>/`. The web UI accepts `?profile=<key>`, and the CLI `list` and `export` commands accept `--profile`.
 
+Engineering also supports `profile.career.professional_start_month` (`YYYY-MM`).
+Tenure is calculated at month precision in Europe/Madrid; certifications and personal
+projects do not add professional months. Its dashboard defaults to current applications,
+with separate strategic and excluded views. API clients can use
+`/jobs?radar=current|strategic|excluded|all&category=A|B|C`; omit `category` for any category.
+Scores expose `career_assessment` with three heuristic dimensions and uncertainty evidence.
+The existing ingestion schedule refreshes old assessments daily and after configuration
+changes. `python -m app.cli score-all` performs an explicit local recalculation.
+For personal deployments, mount private configuration under `runtime-config/` and
+set `CONFIG_DIR=/app/runtime-config`; keep existing profile keys and source assignments.
+That directory is excluded from Git and Docker build contexts. The checked-in
+profile is a synthetic backend example; real candidate profiles stay private.
+After an authorized rollout, rescore existing records before relying on the default
+current view; `radar=all` also exposes records without a career assessment.
+See [the career radar review](docs/career-radar-review-2026-10-21.md) for measured
+results, compatibility, source limits, and the offline evaluator.
+
 Runtime values use environment variables. Copy `.env.example` to `.env`, set a long random `APP_SECRET_KEY`, and adjust `DATABASE_URL` if needed. Do not put real secrets in the repository.
 
 Set `PUBLIC_REGISTRATION_ENABLED=false` in public deployments and create users with the CLI
@@ -89,6 +106,7 @@ Initial adapters:
 - `weworkremotely`: public RSS feeds from We Work Remotely programming categories, filtered for Java/Spring/JVM fit.
 - `jobicy`: public API from Jobicy with Java-tagged remote requests and local Java/Spring/JVM filtering.
 - `himalayas`: public API from Himalayas with Java/Spring/Kotlin searches for Spain and worldwide remote roles.
+- `smartrecruiters_curated`: official public Posting API for T-Systems Iberia, limited to Java listings in Spain, with bounded pagination/detail requests and a 12-hour refresh interval.
 - `fundacion_adecco`: fixed public Fundación Adecco disability IT listing pages for Engineering's Java/backend/cloud/AppSec profile, enriched from public offer pages and filtered to avoid support, sales, and administrative noise.
 - `tecnoempleo`: fixed public Tecnoempleo disability/certificate IT search pages for Engineering, enriched from public `JobPosting` detail data and filtered for backend, DevOps, systems, data, and cybersecurity fit.
 - `portalento`: public Por Talento/Inserta sitemap plus selected public offer details for Engineering's disability-focused cybersecurity/backend searches.

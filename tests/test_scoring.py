@@ -10,7 +10,10 @@ from app.services.normalizer import NormalizedJob
 def test_scores_strong_backend_cloud_offer_highly() -> None:
     job = _job(
         title="Backend Engineer Java AWS",
-        description="Java Spring Boot REST APIs PostgreSQL Docker AWS Terraform GitHub Actions",
+        description=(
+            "Build Java Spring Boot REST APIs with PostgreSQL, Docker and GitHub Actions. "
+            "Design distributed services on AWS and automate pipelines with Terraform."
+        ),
         technologies=["Java", "Spring Boot", "REST", "PostgreSQL", "Docker", "AWS", "Terraform"],
         salary_min=32000,
         salary_max=35000,
@@ -89,8 +92,8 @@ def test_scores_appsec_offer_as_profile_variation() -> None:
     job = _job(
         title="Application Security Engineer",
         description=(
-            "Secure development with OWASP, threat modeling, SAST, cloud security, AWS "
-            "and CI/CD."
+            "Review APIs for secure development with OWASP, threat modeling, SAST, "
+            "cloud security, AWS and CI/CD."
         ),
         technologies=[
             "Application Security",
@@ -136,7 +139,7 @@ def test_non_java_backend_with_only_owasp_signal_does_not_rank() -> None:
     assert any("java" in reason.lower() for reason in result.negative)
 
 
-def test_converts_pln_salary_before_low_salary_penalty() -> None:
+def test_pln_salary_is_published_without_unverified_conversion() -> None:
     job = _job(
         title="Backend Java Engineer",
         description="Build Java Spring Boot APIs.",
@@ -150,11 +153,12 @@ def test_converts_pln_salary_before_low_salary_penalty() -> None:
 
     result = ScoringEngine().score(job)
 
-    assert all("salario" not in reason.lower() for reason in result.negative)
-    assert result.score >= 65
+    assert result.assessment is not None
+    assert result.assessment["salary_status"] == "published_not_comparable"
+    assert result.assessment["radar"] == "excluded"
 
 
-def test_penalizes_low_pln_salary_after_conversion() -> None:
+def test_pln_salary_does_not_invent_euro_salary_threshold() -> None:
     job = _job(
         title="Backend Java Engineer",
         description="Build Java Spring Boot APIs.",
@@ -169,10 +173,12 @@ def test_penalizes_low_pln_salary_after_conversion() -> None:
     result = ScoringEngine().score(job)
 
     assert result.score < 50
-    assert any("salario" in reason.lower() for reason in result.negative)
+    assert result.assessment is not None
+    assert result.assessment["salary_status"] == "published_not_comparable"
+    assert "salary_below_minimum" not in result.assessment["blockers"]
 
 
-def test_converts_czk_salary_before_low_salary_penalty() -> None:
+def test_czk_salary_is_published_without_unverified_conversion() -> None:
     job = _job(
         title="Backend Java Engineer",
         description="Build Java Spring Boot APIs.",
@@ -186,11 +192,12 @@ def test_converts_czk_salary_before_low_salary_penalty() -> None:
 
     result = ScoringEngine().score(job)
 
-    assert all("salario" not in reason.lower() for reason in result.negative)
-    assert result.score >= 65
+    assert result.assessment is not None
+    assert result.assessment["salary_status"] == "published_not_comparable"
+    assert result.assessment["radar"] == "excluded"
 
 
-def test_converts_sek_salary_before_scoring() -> None:
+def test_sek_salary_is_published_without_unverified_conversion() -> None:
     job = _job(
         title="Backend Java Engineer",
         description="Build Java Spring Boot APIs.",
@@ -204,8 +211,9 @@ def test_converts_sek_salary_before_scoring() -> None:
 
     result = ScoringEngine().score(job)
 
-    assert all("salario" not in reason.lower() for reason in result.negative)
-    assert result.score >= 65
+    assert result.assessment is not None
+    assert result.assessment["salary_status"] == "published_not_comparable"
+    assert result.assessment["radar"] == "excluded"
 
 
 def test_staff_word_in_description_does_not_trigger_leadership_penalty() -> None:
@@ -236,7 +244,7 @@ def test_recruiter_word_in_description_does_not_trigger_role_penalty() -> None:
         salary_min=None,
         salary_max=None,
         remote_type=RemoteType.REMOTE,
-        location="Prague, Czechia",
+        location="Remote Spain",
         requirements="Backend engineering and PostgreSQL.",
         experience_min_years=None,
         experience_max_years=None,
@@ -256,7 +264,7 @@ def test_senior_word_in_description_does_not_trigger_senior_penalty() -> None:
         salary_min=None,
         salary_max=None,
         remote_type=RemoteType.HYBRID,
-        location="Mannheim, Germany",
+        location="Sevilla, Spain",
         requirements="Java and Spring backend engineering.",
         experience_min_years=None,
         experience_max_years=None,
@@ -276,7 +284,7 @@ def test_production_support_in_backend_description_is_not_helpdesk() -> None:
         salary_min=None,
         salary_max=None,
         remote_type=RemoteType.HYBRID,
-        location="Prague, Czechia",
+        location="Sevilla, Spain",
         requirements="3-5 years of Java experience.",
         experience_min_years=3,
         experience_max_years=5,
@@ -362,7 +370,8 @@ def test_product_owner_with_platform_signal_does_not_rank() -> None:
     result = ScoringEngine().score(job)
 
     assert result.score < 20
-    assert any("rol no alineado" in reason.lower() for reason in result.negative)
+    assert result.assessment is not None
+    assert "role_mismatch" in result.assessment["blockers"]
 
 
 def test_engineering_profile_flags_disability_technical_offer() -> None:
@@ -388,7 +397,7 @@ def test_engineering_profile_flags_disability_technical_offer() -> None:
     assert any("discapacidad" in reason.lower() for reason in result.positive)
 
 
-def test_engineering_profile_keeps_backend_disability_offer_without_java_visible() -> None:
+def test_disability_is_not_a_substitute_for_evidence_of_development_fit() -> None:
     job = _job(
         title="Backend Engineer con discapacidad",
         description=(
@@ -407,8 +416,9 @@ def test_engineering_profile_keeps_backend_disability_offer_without_java_visible
 
     result = ScoringEngine("engineering").score(job)
 
-    assert result.score >= 35
-    assert all("java" not in reason.lower() for reason in result.negative)
+    assert result.assessment is not None
+    assert result.assessment["radar"] == "excluded"
+    assert any("discapacidad" in reason.lower() for reason in result.positive)
 
 
 def test_engineering_profile_keeps_non_technical_disability_offer_low() -> None:
@@ -527,8 +537,7 @@ def test_operations_profile_rejects_portuguese_job_text() -> None:
 
     assert result.score < 35
     assert any(
-        "idioma" in reason.lower() or "portugues" in reason.lower()
-        for reason in result.negative
+        "idioma" in reason.lower() or "portugues" in reason.lower() for reason in result.negative
     )
 
 

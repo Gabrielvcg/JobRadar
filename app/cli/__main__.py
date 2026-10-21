@@ -8,7 +8,7 @@ from typing import Annotated
 import typer
 
 from app.core.logging import configure_logging
-from app.core.profiles import resolve_profile_key
+from app.core.profiles import resolve_profile_key, uses_career_radar
 from app.db.session import new_session
 from app.repositories.jobs import JobFilters, JobRepository
 from app.repositories.users import UserAlreadyExistsError, UserRepository
@@ -47,14 +47,24 @@ def list_jobs(
     min_score: Annotated[int, typer.Option("--min-score", min=0, max=100)] = 0,
     limit: Annotated[int, typer.Option("--limit", min=1, max=200)] = 25,
     profile: Annotated[str | None, typer.Option("--profile")] = None,
+    radar: Annotated[
+        str, typer.Option("--radar", help="current, strategic, excluded or all")
+    ] = "current",
 ) -> None:
     """List jobs ordered by score."""
     repository = JobRepository()
     profile_key = resolve_profile_key(profile)
+    if radar not in {"current", "strategic", "excluded", "all"}:
+        raise typer.BadParameter("radar must be current, strategic, excluded or all")
     with new_session() as session:
         jobs = repository.list_jobs(
             session,
-            JobFilters(profile_key=profile_key, min_score=min_score, limit=limit),
+            JobFilters(
+                profile_key=profile_key,
+                min_score=min_score,
+                limit=limit,
+                radar=radar if uses_career_radar(profile_key) else None,
+            ),
         )
         for job in jobs:
             typer.echo(

@@ -1,4 +1,27 @@
 sources:
+  smartrecruiters_curated:
+    enabled: true
+    adapter: "smartrecruiters"
+    base_url: "https://api.smartrecruiters.com"
+    query: "Java"
+    country: "es"
+    min_interval_minutes: 720
+    timeout_seconds: 20
+    retries: 2
+    rate_limit_seconds: 1
+    max_pages: 1
+    page_size: 50
+    max_details_per_company: 20
+    minimum_score: 35
+    companies:
+      - slug: "T-SystemsIberia"
+        name: "T-Systems Iberia"
+    must_have_any_keywords: ["java", "spring"]
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software", "developer", "desarrollador", "arquitecto"]
+    excluded_keywords: ["recruiter", "sales", "product owner"]
+    attribution_url: "https://careers.smartrecruiters.com/T-SystemsIberia"
+
   fixtures:
     enabled: true
     production_enabled: false
@@ -9,6 +32,7 @@ sources:
 
   arbeitnow:
     enabled: true
+    allow_career_transitions: true
     adapter: "arbeitnow"
     base_url: "https://www.arbeitnow.com/api/job-board-api"
     max_pages: 5
@@ -52,9 +76,6 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "product owner"
       - "project manager"
@@ -79,6 +100,7 @@ sources:
 
   remotive:
     enabled: true
+    allow_career_transitions: true
     adapter: "remotive"
     base_url: "https://remotive.com/api/remote-jobs"
     min_interval_minutes: 360
@@ -122,9 +144,6 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "product manager"
       - "product owner"
       - "project manager"
@@ -140,6 +159,7 @@ sources:
 
   remoteok:
     enabled: true
+    allow_career_transitions: true
     adapter: "remoteok"
     base_url: "https://remoteok.com/api"
     min_interval_minutes: 360
@@ -187,12 +207,7 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
-      - "head of"
-      - "architect"
       - "product owner"
       - "project manager"
       - "sales"
@@ -278,12 +293,7 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
-      - "head of"
-      - "architect"
       - "business development"
       - "sales"
       - "finance"
@@ -362,12 +372,7 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
-      - "head of"
-      - "architect"
       - "business development"
       - "sales"
       - "finance"
@@ -435,12 +440,7 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
-      - "head of"
-      - "architect"
       - "business development"
       - "sales"
       - "finance"
@@ -468,6 +468,7 @@ sources:
 
   weworkremotely_devops:
     enabled: true
+    allow_career_transitions: true
     adapter: "rss"
     base_url: "https://weworkremotely.com/categories/remote-devops-sysadmin-jobs.rss"
     min_interval_minutes: 180
@@ -509,12 +510,7 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
-      - "head of"
-      - "architect"
       - "business development"
       - "sales"
       - "finance"
@@ -539,6 +535,7 @@ sources:
 
   jobicy:
     enabled: true
+    allow_career_transitions: true
     adapter: "jobicy"
     base_url: "https://jobicy.com/api/v2/remote-jobs"
     min_interval_minutes: 360
@@ -615,13 +612,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "sales"
       - "business development"
       - "marketing"
@@ -672,6 +664,7 @@ sources:
 
   himalayas:
     enabled: true
+    allow_career_transitions: true
     adapter: "himalayas"
     base_url: "https://himalayas.app/jobs/api/search"
     min_interval_minutes: 360
@@ -693,6 +686,12 @@ sources:
         worldwide: "true"
       - q: "kotlin"
         worldwide: "true"
+      - q: "devops"
+        country: "Spain"
+      - q: "cloud engineer"
+        country: "Spain"
+      - q: "application security"
+        country: "Spain"
     must_have_any_keywords:
       - "java"
       - "spring"
@@ -736,12 +735,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
       - "android"
       - "mobile"
       - "teacher"
@@ -1128,6 +1123,7 @@ sources:
 
   greenhouse_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "greenhouse"
     base_url: "https://boards-api.greenhouse.io"
     min_interval_minutes: 360
@@ -1223,13 +1219,8 @@ sources:
       - "sre"
       - "site reliability"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - "sales"
@@ -1278,6 +1269,7 @@ sources:
 
   lever_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "lever"
     base_url: "https://api.lever.co"
     min_interval_minutes: 360
@@ -1369,13 +1361,8 @@ sources:
       - "sre"
       - "site reliability"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - "sales"
@@ -1423,6 +1410,7 @@ sources:
 
   ashby_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "ashby"
     base_url: "https://api.ashbyhq.com"
     min_interval_minutes: 360
@@ -1515,13 +1503,8 @@ sources:
       - "sre"
       - "site reliability"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - "sales"
@@ -1567,6 +1550,7 @@ sources:
 
   workable_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "workable"
     base_url: "https://apply.workable.com"
     min_interval_minutes: 360
@@ -1620,13 +1604,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - "sales"
@@ -1664,6 +1643,7 @@ sources:
 
   recruitee_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "recruitee"
     base_url: "https://{company}.recruitee.com"
     min_interval_minutes: 360
@@ -1717,13 +1697,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - ".net"
@@ -1773,6 +1748,7 @@ sources:
 
   pinpoint_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "pinpoint"
     base_url: "https://{company}.pinpointhq.com"
     min_interval_minutes: 360
@@ -1820,13 +1796,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - "react native"
@@ -1867,6 +1838,7 @@ sources:
 
   personio_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "personio"
     base_url: "https://{company}.jobs.personio.de"
     language: "en"
@@ -1931,13 +1903,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "frontend"
       - "front-end"
       - "front end"

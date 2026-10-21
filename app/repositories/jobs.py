@@ -19,6 +19,8 @@ class JobFilters:
     profile_key: str | None = None
     min_score: int | None = None
     match_level: str | None = None
+    radar: str | None = None
+    category: str | None = None
     technology: str | None = None
     source: str | None = None
     company: str | None = None
@@ -177,11 +179,14 @@ class JobRepository:
         session: Session,
         user_id: int | None = None,
         profile_key: str | None = None,
+        radar: str | None = None,
     ) -> dict[str, Any]:
         enabled_filter = JobSource.enabled.is_(True)
         filters: list[Any] = [enabled_filter]
         if profile_key:
             filters.append(JobOffer.profile_key == profile_key)
+        if radar and radar != "all":
+            filters.append(JobOffer.match_reasons["assessment"]["radar"].as_string() == radar)
         total = (
             session.scalar(
                 select(func.count(JobOffer.id)).join(JobOffer.source).where(*filters)
@@ -199,7 +204,7 @@ class JobRepository:
         by_status = {
             str(status): count
             for status, count in self._status_counts(
-                session, user_id, int(total), profile_key
+                session, user_id, int(total), profile_key, radar
             ).items()
         }
         by_level = {
@@ -291,7 +296,7 @@ class JobRepository:
         offer.content_hash = job.content_hash
         offer.match_score = score.score
         offer.match_level = score.level
-        offer.match_reasons = {"positive": score.positive}
+        offer.match_reasons = score.match_reasons()
         offer.negative_reasons = {"negative": score.negative}
         offer.language = job.language
 
@@ -308,6 +313,14 @@ class JobRepository:
             statement = statement.where(JobOffer.match_score >= filters.min_score)
         if filters.match_level:
             statement = statement.where(JobOffer.match_level == filters.match_level)
+        if filters.radar and filters.radar != "all":
+            statement = statement.where(
+                JobOffer.match_reasons["assessment"]["radar"].as_string() == filters.radar
+            )
+        if filters.category:
+            statement = statement.where(
+                JobOffer.match_reasons["assessment"]["category"].as_string() == filters.category
+            )
         if filters.technology:
             statement = statement.where(JobOffer.technologies.contains([filters.technology]))
         if filters.source:
@@ -368,10 +381,13 @@ class JobRepository:
         user_id: int | None,
         total: int,
         profile_key: str | None,
+        radar: str | None = None,
     ) -> dict[JobStatus, int]:
         filters: list[Any] = [JobSource.enabled.is_(True)]
         if profile_key:
             filters.append(JobOffer.profile_key == profile_key)
+        if radar and radar != "all":
+            filters.append(JobOffer.match_reasons["assessment"]["radar"].as_string() == radar)
         if user_id is None:
             return {
                 status: count
@@ -397,6 +413,8 @@ class JobRepository:
     def _apply_sort(
         self, statement: Select[tuple[JobOffer]], filters: JobFilters
     ) -> Select[tuple[JobOffer]]:
+        if filters.sort == "id":
+            return statement.order_by(JobOffer.id)
         sort_column = JobOffer.publication_date if filters.sort == "date" else JobOffer.match_score
         if filters.order.lower() == "asc":
             return statement.order_by(sort_column.asc().nullslast(), JobOffer.created_at.desc())

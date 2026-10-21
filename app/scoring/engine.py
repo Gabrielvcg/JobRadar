@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from dataclasses import dataclass
+from datetime import date
 from typing import Any
 
+from app.core.career_paths import matches_career_transition
 from app.core.config import load_yaml_config
+from app.core.experience import career_today
 from app.core.profiles import get_profile, resolve_profile_key
 from app.models.enums import RemoteType
 from app.services.normalizer import NormalizedJob
@@ -31,20 +36,43 @@ class ScoreResult:
     level: str
     positive: list[str]
     negative: list[str]
+    assessment: dict[str, Any] | None = None
+
+    def match_reasons(self) -> dict[str, Any]:
+        reasons: dict[str, Any] = {"positive": self.positive}
+        if self.assessment is not None:
+            reasons["assessment"] = self.assessment
+        return reasons
 
 
 class ScoringEngine:
-    def __init__(self, profile_key: str | None = None) -> None:
+    def __init__(self, profile_key: str | None = None, *, as_of: date | None = None) -> None:
         self.profile_key = resolve_profile_key(profile_key)
         profile = get_profile(self.profile_key)
         self.profile_config = load_yaml_config(profile.profile_config)
         self.scoring_config = load_yaml_config(profile.scoring_config)
         self.salary_config = self.profile_config.get("profile", {}).get("salary", {})
+        self.as_of = as_of
+        self.career_enabled = bool(self.profile_config.get("profile", {}).get("career"))
+        self.policy_version = (
+            "career-v1-"
+            + hashlib.sha256(
+                json.dumps(
+                    [self.profile_config, self.scoring_config],
+                    sort_keys=True,
+                    default=str,
+                ).encode()
+            ).hexdigest()[:12]
+        )
         self.messages = self.scoring_config.get("messages", {})
         if not isinstance(self.messages, dict):
             self.messages = {}
 
     def score(self, job: NormalizedJob) -> ScoreResult:
+        if self.career_enabled:
+            from app.scoring.career import score_career
+
+            return score_career(self, job, self.as_of or career_today())
         positive: list[str] = []
         negative: list[str] = []
         score = 0
@@ -75,9 +103,7 @@ class ScoringEngine:
             else []
         )
         direct_fit = (
-            _string_list(role_config.get("direct_fit", []))
-            if isinstance(role_config, dict)
-            else []
+            _string_list(role_config.get("direct_fit", [])) if isinstance(role_config, dict) else []
         )
         matches = [keyword for keyword in strong if _keyword_in_text(keyword, text)]
         direct_matches = [keyword for keyword in direct_fit if _keyword_in_text(keyword, text)]
@@ -99,6 +125,9 @@ class ScoringEngine:
                     "El puesto combina Java con cloud, DevOps o platform",
                 )
             )
+            return 22
+        if self._matches_career_transition(job):
+            positive.append("Via de evolucion compatible hacia cloud, DevOps, platform o AppSec")
             return 22
         if any(_keyword_in_text(keyword, text) for keyword in security_focus):
             positive.append(
@@ -278,7 +307,8 @@ class ScoringEngine:
         total += self._missing_technical_fit_penalty(
             penalties, role_score, technology_score, negative
         )
-        total += self._missing_primary_stack_penalty(text, penalties, negative)
+        if not self._matches_career_transition(job):
+            total += self._missing_primary_stack_penalty(text, penalties, negative)
         total += self._salary_penalty(job, penalties, negative)
         title_text = f"{job.title} {job.normalized_title}".lower()
         total += self._keyword_penalty(
@@ -346,6 +376,11 @@ class ScoringEngine:
         )
         total += self._pentesting_penalty(text, penalties, negative)
         return total
+
+    def _matches_career_transition(self, job: NormalizedJob) -> bool:
+        return bool(self.scoring_config.get("allow_career_transitions", False)) and (
+            matches_career_transition(job.title, _job_text(job))
+        )
 
     def _missing_technical_fit_penalty(
         self,

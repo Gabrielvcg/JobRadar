@@ -11,6 +11,7 @@ from typing import Any
 
 import httpx
 
+from app.core.career_paths import matches_career_transition
 from app.core.config import get_settings
 from app.models.enums import RemoteType
 from app.sources.base import RawJob, SearchConfig
@@ -34,6 +35,7 @@ class GreenhouseJobSource:
         self.minimum_score = int(settings.get("minimum_score", 35))
         self.rate_limit_seconds = float(settings.get("rate_limit_seconds", 1))
         self.companies = _company_settings(settings.get("companies", []))
+        self.allow_career_transitions = bool(settings.get("allow_career_transitions", False))
         self.must_have_any_keywords = _string_list(settings.get("must_have_any_keywords", []))
         self.required_any_keywords = _string_list(settings.get("required_any_keywords", []))
         self.title_required_any_keywords = _string_list(
@@ -69,6 +71,7 @@ class GreenhouseJobSource:
             self.excluded_keywords,
             self.allowed_location_keywords,
             self.must_have_any_keywords,
+            self.allow_career_transitions,
         )
 
     async def _fetch_payload(
@@ -140,6 +143,7 @@ class LeverJobSource:
         self.minimum_score = int(settings.get("minimum_score", 35))
         self.rate_limit_seconds = float(settings.get("rate_limit_seconds", 1))
         self.companies = _company_settings(settings.get("companies", []))
+        self.allow_career_transitions = bool(settings.get("allow_career_transitions", False))
         self.must_have_any_keywords = _string_list(settings.get("must_have_any_keywords", []))
         self.required_any_keywords = _string_list(settings.get("required_any_keywords", []))
         self.title_required_any_keywords = _string_list(
@@ -175,6 +179,7 @@ class LeverJobSource:
             self.excluded_keywords,
             self.allowed_location_keywords,
             self.must_have_any_keywords,
+            self.allow_career_transitions,
         )
 
     async def _fetch_items(
@@ -247,6 +252,7 @@ class AshbyJobSource:
         self.minimum_score = int(settings.get("minimum_score", 35))
         self.rate_limit_seconds = float(settings.get("rate_limit_seconds", 1))
         self.companies = _company_settings(settings.get("companies", []))
+        self.allow_career_transitions = bool(settings.get("allow_career_transitions", False))
         self.must_have_any_keywords = _string_list(settings.get("must_have_any_keywords", []))
         self.required_any_keywords = _string_list(settings.get("required_any_keywords", []))
         self.title_required_any_keywords = _string_list(
@@ -282,6 +288,7 @@ class AshbyJobSource:
             self.excluded_keywords,
             self.allowed_location_keywords,
             self.must_have_any_keywords,
+            self.allow_career_transitions,
         )
 
     async def _fetch_payload(
@@ -350,6 +357,7 @@ class WorkableJobSource:
         self.minimum_score = int(settings.get("minimum_score", 35))
         self.rate_limit_seconds = float(settings.get("rate_limit_seconds", 1))
         self.companies = _company_settings(settings.get("companies", []))
+        self.allow_career_transitions = bool(settings.get("allow_career_transitions", False))
         self.must_have_any_keywords = _string_list(settings.get("must_have_any_keywords", []))
         self.required_any_keywords = _string_list(settings.get("required_any_keywords", []))
         self.title_required_any_keywords = _string_list(
@@ -385,6 +393,7 @@ class WorkableJobSource:
             self.excluded_keywords,
             self.allowed_location_keywords,
             self.must_have_any_keywords,
+            self.allow_career_transitions,
         )
 
     async def _fetch_payload(
@@ -459,6 +468,7 @@ class RecruiteeJobSource:
         self.minimum_score = int(settings.get("minimum_score", 35))
         self.rate_limit_seconds = float(settings.get("rate_limit_seconds", 1))
         self.companies = _company_settings(settings.get("companies", []))
+        self.allow_career_transitions = bool(settings.get("allow_career_transitions", False))
         self.must_have_any_keywords = _string_list(settings.get("must_have_any_keywords", []))
         self.required_any_keywords = _string_list(settings.get("required_any_keywords", []))
         self.title_required_any_keywords = _string_list(
@@ -494,6 +504,7 @@ class RecruiteeJobSource:
             self.excluded_keywords,
             self.allowed_location_keywords,
             self.must_have_any_keywords,
+            self.allow_career_transitions,
         )
 
     async def _fetch_payload(
@@ -571,6 +582,7 @@ class PinpointJobSource:
         self.minimum_score = int(settings.get("minimum_score", 35))
         self.rate_limit_seconds = float(settings.get("rate_limit_seconds", 1))
         self.companies = _company_settings(settings.get("companies", []))
+        self.allow_career_transitions = bool(settings.get("allow_career_transitions", False))
         self.must_have_any_keywords = _string_list(settings.get("must_have_any_keywords", []))
         self.required_any_keywords = _string_list(settings.get("required_any_keywords", []))
         self.title_required_any_keywords = _string_list(
@@ -606,6 +618,7 @@ class PinpointJobSource:
             self.excluded_keywords,
             self.allowed_location_keywords,
             self.must_have_any_keywords,
+            self.allow_career_transitions,
         )
 
     async def _fetch_payload(
@@ -687,6 +700,7 @@ class PersonioJobSource:
         self.minimum_score = int(settings.get("minimum_score", 35))
         self.rate_limit_seconds = float(settings.get("rate_limit_seconds", 1))
         self.companies = _company_settings(settings.get("companies", []))
+        self.allow_career_transitions = bool(settings.get("allow_career_transitions", False))
         self.must_have_any_keywords = _string_list(settings.get("must_have_any_keywords", []))
         self.required_any_keywords = _string_list(settings.get("required_any_keywords", []))
         self.title_required_any_keywords = _string_list(
@@ -722,6 +736,7 @@ class PersonioJobSource:
             self.excluded_keywords,
             self.allowed_location_keywords,
             self.must_have_any_keywords,
+            self.allow_career_transitions,
         )
 
     async def _fetch_payload(
@@ -790,6 +805,7 @@ def _filtered_jobs(
     excluded_keywords: list[str],
     allowed_location_keywords: list[str],
     must_have_any_keywords: list[str],
+    allow_career_transitions: bool = False,
 ) -> list[RawJob]:
     filtered = [
         job
@@ -802,6 +818,7 @@ def _filtered_jobs(
             excluded_keywords,
             allowed_location_keywords,
             must_have_any_keywords,
+            allow_career_transitions,
         )
     ]
     return _dedupe_job_variants(filtered)
@@ -876,6 +893,7 @@ def _matches_affinity(
     excluded_keywords: list[str],
     allowed_location_keywords: list[str],
     must_have_any_keywords: list[str] | None = None,
+    allow_career_transitions: bool = False,
 ) -> bool:
     title = job.title.lower()
     location = (job.location or "").lower()
@@ -885,8 +903,10 @@ def _matches_affinity(
         keyword.lower() in location for keyword in allowed_location_keywords
     ):
         return False
-    if must_have_any_keywords and not any(
-        _contains_keyword(haystack, keyword) for keyword in must_have_any_keywords
+    if (
+        must_have_any_keywords
+        and not any(_contains_keyword(haystack, keyword) for keyword in must_have_any_keywords)
+        and not (allow_career_transitions and matches_career_transition(job.title, haystack))
     ):
         return False
     if any(_contains_keyword(exclusion_text, keyword) for keyword in excluded_keywords):

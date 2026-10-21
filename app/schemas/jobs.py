@@ -38,7 +38,8 @@ class JobOfferRead(BaseModel):
     content_hash: str
     match_score: int
     match_level: str
-    match_reasons: dict[str, list[str]]
+    match_reasons: dict[str, Any]
+    career_assessment: dict[str, Any] | None = None
     negative_reasons: dict[str, list[str]]
     status: JobStatus
     language: str | None
@@ -141,6 +142,7 @@ def job_offer_to_read(job: Any, status_override: JobStatus | None = None) -> Job
         match_score=job.match_score,
         match_level=job.match_level,
         match_reasons=job.match_reasons,
+        career_assessment=job.match_reasons.get("assessment"),
         negative_reasons=job.negative_reasons,
         status=status_override or job.status,
         language=job.language,
