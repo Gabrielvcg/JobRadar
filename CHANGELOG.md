@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.43 - 2026-10-22
+
+- Fix explicit Java/Spring affinity in employer feeds when private search queries differ.
+- Reuse bounded official RSS for Whiteam and TalentConnect after checking real Spain backend vacancies and public application forms.
+- Verify Teamtailor's explicitly linked public application page, including its actual CV upload component and enabled submission control; preserve listing-only status when evidence is missing.
+
 ## 0.1.42 - 2026-10-22
 
 - Discover jobs from knowmad mood's documented Teamtailor RSS feed and IRIUM's bounded public JazzHR board; extend the existing SmartRecruiters source to reviewed Scalian and Talan employers.

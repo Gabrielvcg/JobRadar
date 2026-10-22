@@ -38,6 +38,7 @@ sources:
     minimum_score: 35
     allow_career_transitions: true
     must_have_any_keywords: ["java", "spring"]
+    required_any_keywords: ["java", "spring"]
     title_required_any_keywords: ["java", "backend", "software", "cloud", "platform", "security"]
     excluded_keywords: ["recruiter", "sales", "product owner"]
     attribution_url: "https://knowmadmood.teamtailor.com"
@@ -55,9 +56,44 @@ sources:
     rate_limit_seconds: 1
     minimum_score: 35
     must_have_any_keywords: ["java", "spring"]
+    required_any_keywords: ["java", "spring"]
     title_required_any_keywords: ["java", "backend", "software", "fullstack", "full stack"]
     excluded_keywords: ["recruiter", "sales", "product owner"]
     attribution_url: "https://iriumspain.applytojob.com"
+
+  whiteam_official:
+    enabled: true
+    adapter: "rss"
+    company_name: "The White Team"
+    base_url: "https://careers.twtspain.com/jobs.rss?per_page=200"
+    min_interval_minutes: 720
+    timeout_seconds: 25
+    retries: 1
+    max_jobs: 200
+    minimum_score: 35
+    allow_career_transitions: true
+    must_have_any_keywords: ["java", "spring"]
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "back-end", "software"]
+    excluded_keywords: ["recruiter", "sales", "product owner"]
+    attribution_url: "https://careers.twtspain.com"
+
+  talentconnect_official:
+    enabled: true
+    adapter: "rss"
+    company_name: "Talent Connect"
+    base_url: "https://jobs.talentconnect.ai/jobs.rss?per_page=200"
+    min_interval_minutes: 720
+    timeout_seconds: 25
+    retries: 1
+    max_jobs: 200
+    minimum_score: 35
+    allow_career_transitions: true
+    must_have_any_keywords: ["java", "spring"]
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "back-end", "software"]
+    excluded_keywords: ["recruiter", "sales", "product owner"]
+    attribution_url: "https://jobs.talentconnect.ai"
 
   fixtures:
     enabled: true
