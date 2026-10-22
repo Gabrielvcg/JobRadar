@@ -1,242 +1,165 @@
-# Career opportunity coverage — 2026-10-22
+# Career coverage delivery — 2026-10-22
 
-## Authorized outcome and current-state baseline
+JobRadar now reads bounded official employer feeds, retains employer provenance and
+original dates, and exposes freshly checked application routes. Production is
+**0.1.45 / c7c0b750b81d56bd731ef8b52aee37e582e7ebad**. The existing dashboard's
+[current, verified filter](https://jobradar.vacaro.es/?radar=current&verified_only=true&min_score=35)
+is the most direct shortlist. Verification establishes an application route; fit,
+experience, geography and pay remain separate assessments.
 
-The user explicitly authorized continued public-source research, scoped development,
+## Measured outcome
 
-tests, commits, work-branch pushes, successive JobRadar VPS deployments and controlled
+Snapshots: 09:21 UTC before the first deployment; 14:27 UTC after final validation.
+Earlier 08:49 counts were identical. All counts below refer to the candidate
+profile except the total across both profiles.
 
-ingestion. Applications, uploads and employer messages remain out of scope.
+| Measure | 0.1.41 | 0.1.45 |
+| --- | ---: | ---: |
+| Total stored offers, both profiles | 715 | 750 |
+| Candidate-profile offers | 560 | 595 |
+| Current radar, score >=35 | 77 | 92 |
+| Freshly verified current application routes | 3 | 47 |
+| Confirmed removed postings, candidate profile | 12 | 15 |
+| Exact URL duplicates | 0 | 0 |
+| Current source errors | 0 | 0 |
 
-Existing unrelated local deployment/backup changes are preserved.
+The 47 routes comprise **39 retrieved candidate forms, seven explicitly recorded
+application controls and one previously verified legacy control**. There are 67
+current records with compatible location evidence, 23 with a published minimum
+experience of at most three years, and 46 with unknown minimum experience. Five
+current records publish an EUR24k-or-higher salary floor; salary, fit and location
+are independent, so this does not prove five fully suitable jobs.
 
-At 08:49 UTC the public service was healthy on 0.1.41 / `d4ea420`.
+The 35 new rows comprise 20 current, 14 strategic and one excluded record. They
+include title/location variants and unproved specialist requirements. Two new
+Java/Spring families are conservatively documented as potentially useful:
 
-The real baseline is 715 offers across two profiles, 560 in the candidate profile,
+- [Talent Connect — Java/Spring/AWS](https://jobs.talentconnect.ai/jobs/612354-backend-developer-java-spring-boot-aws-spain-hybrid-remote/applications/new):
+  Spain remote outside its listed hybrid cities; three-plus years, B2, salary
+  unknown. Professional AWS experience requires confirmation. The original posting
+  is 161 days old, but its candidate form was freshly retrieved.
+- [Whiteam — Java/Spring/microservices](https://careers.twtspain.com/jobs/8559939-desarrollador-a-backend-java-spring-boot-microservicios/applications/new):
+  Spain remote, four years, salary unknown. This is a lower-priority stretch.
 
-77 current at score >=35 and three freshly verified application controls. Only
+Other useful routes now checked include
+[Talan Java/Spring](https://jobs.smartrecruiters.com/talan/744000154386250-ssr-java-springboot-developer)
+and [knowmad Java backend](https://knowmadmood.teamtailor.com/jobs/8483639-software-developer-java-remoto/applications/new).
+Those improve access to already known opportunities rather than counting as new
+market discoveries. Whiteam's Java/API-security role publishes EUR30–32k but
+explicitly leaves work mode unspecified; it remains geographically uncertain.
+Its Java/Python banking role publishes EUR30–33k and requires Python/banking.
 
-one of those three is a direct Java/backend opportunity; the others are adjacent
+**The target of five to ten new useful opportunities per month is not established
+by one day of observations.** No quota, salary estimate or interview probability
+has been invented. [Sanitized production comparison](../reviews/jobradar-production-comparison-2026-10-22.json)
+records the exact counts, limits and preservation checks.
 
-platform/SRE roles. The previous evening's 688/72/one figures are historical.
+## Ranking review and demonstrated corrections
 
-There were no exact URL duplicates or current source errors.
+The [independent original top twenty](../reviews/jobradar-top20-before-2026-10-22.json)
+had ten conditionally relevant, four incompatible/removed and six unknown:
+**10/14 = 71.4% conditional relevance precision**. Twelve application paths and
+eleven actual forms were independently established, including incompatible roles.
 
-The unchanged half-hour cron had completed real 08:30 ingestion: 19 fetched,
+The [final twenty-case re-review](../reviews/jobradar-top20-after-2026-10-22.json)
+has twelve conditionally relevant, zero demonstrated incompatible/removed and
+eight unknown: **12/12 = 100% among assessable cases**, with **40% unresolved**.
+Fourteen paths and twelve actual candidate forms are confirmed. Neither sample
+proves a EUR24k salary floor in its top twenty. The final re-review was performed
+by the implementing agent; the initial review was independent. The cohorts differ
+because ranking changed. This is occupational/geographic plausibility including
+authorized experience stretches, not complete qualification or hiring probability.
 
-zero created, five updated, no errors. Its SmartRecruiters portion fetched six
+Corrections backed by live examples and regression tests:
 
-and updated three. This is refresh evidence, not discovery of six new jobs.
+- Exact knowmad Java/travel 410 and PandaDoc official-API 404 are closed despite
+  stale mirrors or a generic 200 board. A blocked page stays unknown.
+- Expert/technical-lead roles move to strategic references; an independent
+  two-year frontend requirement is not satisfied by general Java backend tenure.
+- Galicia residence remains incompatible even when a city within Galicia is only
+  preferred. Spanish three-to-five ranges retain the three-year minimum.
+- Explicit remote alternatives outside Spanish hybrid-office cities are retained.
+  Employer text leaving work mode unspecified stays uncertain despite metadata.
+- OfferUp's remote-in-Colombia vacancy and Zup's internal-only process are excluded.
+  Portal registration gates no longer establish a verified application route.
+- Employer-linked Teamtailor forms are checked using their actual CV upload widget,
+  enabled email and submission controls. No forms or CVs were submitted.
+- SBA pay ranges are recognized; annual salary is not multiplied because a nearby
+  project duration is in months. Up-to/Max pay remains a ceiling with no known floor.
 
-Private runtime source settings, account/status fingerprints and full snapshots
+The general ranking still contains unresolved roles, including MDOTM DevOps at score 88,
+Liferay and mandatory frontend/specialty gaps. The verified filter improves access
+but does not resolve every qualification. Talan's similar SSR postings and knowmad
+Java/Kotlin title variants remain possible job families, not proven distinct jobs.
+They are not blindly merged or counted as new relevant families.
 
-remain outside Git. No unrelated VPS services are changed.
+## Sources and actual contribution
 
-## Independent review of the original top 20
-
-[The individual 20-row evidence](../reviews/jobradar-top20-before-2026-10-22.json)
-
-records duties, years, geography, mandatory skills, salary, dates and application
-
-availability for every selected offer, including primary URLs when identified.
-
-- Ten conditionally relevant, four incompatible or removed, six unknown.
-
-- Conditional relevance precision: **10 / 14 = 71.4%**. Unknowns are outside the
-
-  denominator. This measures occupational/geographic plausibility including the
-
-  authorized two-to-three-year stretch, not complete qualification or hiring odds.
-
-- Twelve open application controls, including eleven retrieved candidate forms.
-
-  Availability and suitability are separate: open incompatible roles are included
-
-  in this availability coverage of 12/20, not in the relevance numerator.
-
-- Eleven explicitly Spain-remote. No offer proves a published EUR 24,000 floor.
-
-  Missing salaries remain unknown and ceilings are not treated as guarantees.
-
-- The exact knowmad Java/English/travel page returns 410; the PandaDoc AppSec
-
-  posting is absent with official API 404 despite redirecting to a 200 job board.
-
-- Demonstrated scoring defects include independent two-year frontend requirements,
-
-  explicit expert/technical-lead seniority, Galicia residence with a preferred city,
-
-  and a Spanish "between three and five" range misread as a five-year minimum.
-
-## Sources investigated and selection
-
-| Source / employer | Observed contribution | Decision |
-
-| --- | --- | --- |
-
-| knowmad mood / Teamtailor | Documented full-description RSS, employer dates, locations, remote status and verified candidate forms. Many portal mirrors and location variants. | Integrate one bounded 200-record feed, filter locally and group exact variants only. |
-
-| IRIUM / JazzHR | Current board and real Java/Angular form; up to three years, Spain remote, salary ceiling EUR 33k. Bounded probe returns four Java-related records, including senior and QA noise. | Integrate one board, at most ten title-filtered details every twelve hours; score each, do not claim four current opportunities. |
-
-| Scalian / SmartRecruiters | Two public postings: remote Java/Angular with substantial frontend duties; remote backend with four years/senior evidence. | Reuse existing adapter; retain skill uncertainty and strategic separation. |
-
-| Talan / SmartRecruiters | Six Java/Spain postings; an exact current SSR Java/Spring role explicitly permits 100% remote. | Reuse existing adapter and employer evidence; no new ATS architecture. |
-
-| Sopra Steria, Inetum, Devoteam, Métrica | Reviewed examples require French, other-office attendance, leadership or operations work. | No expansion justified by this sample. |
-
-| Affirm | Three real entry/intermediate Spain-remote backend forms, but explicit proficiency in Python/Kotlin and no stated Java substitute. | Do not relax the Java filter to count them. |
-
-| Trading212, New Relic, Eclipse, Revolut, Alan, Flywire | Senior-only Java, removed exact postings, distant mandatory stack or actual non-Sevilla office requirements. | No useful direct-Java expansion proved. |
-
-| Sportradar, lastminute, Teya | Fresh public feeds supply no suitable Java/Spain role in this bounded sample. | No additional integration. |
-
-| SlashMobility / TalentClue | Junior Java page/form accessible, but stale company metadata and no current employer job board independently established. Another junior role is Barcelona hybrid. | Keep uncertain; do not add a general connector or label the job closed from metadata alone. |
-
-| Accenture / Workday | Official Java Sevilla role R00328303 requires three years, degree and unspecified salary; public Workday JSON-LD and application link agree. | Useful manual stretch lead. One confirmed role and no documented public discovery interface do not justify a general Workday connector. |
-
-| CloudPay, Babel, Guidewire / Workday | Two indexed leads cannot be verified from current HTML; Guidewire's actual role requires Ireland. | Unknown or incompatible, not counted as available opportunities. |
+| Source | Observed contribution and bounded decision |
+| --- | --- |
+| knowmad / official Teamtailor RSS | Existing adapter; max200, twelve hours. After affinity correction: 56 filtered records, sixteen new, 27 updated, thirteen score-rejected. Many are mirrors, variants or future roles. |
+| IRIUM / JazzHR | One new bounded adapter: public board, at most ten title-filtered details, twelve hours and paced requests. Four fetched, two updated, two rejected; no new record. |
+| Talan and Scalian / SmartRecruiters | Existing adapter expanded from T-Systems. Eleven fetched, four new, three updated, four rejected on the first pass. Skill/seniority limits remain visible. |
+| Whiteam / official RSS | Existing adapter; max200/twelve hours. Thirteen fetched: nine new, three outside search scope and one score-rejected. Pay and work-mode conflicts are retained. |
+| Talent Connect / official RSS | Existing adapter; max200/twelve hours. Twelve fetched. Correct remote interpretation admits four records: three current with different stretches and one senior strategic; seven outside scope and one score-rejected. |
 
 The [Teamtailor RSS guide](https://support.teamtailor.com/en/articles/11171756-rss-feed-how-to-guide)
+documents the chosen interface. Employer robots permit the selected public paths.
+RSS is filtered locally. JazzHR reads fixed employer-host pages, excludes protected
+paths and external redirects, and does not store applicant field values. Repeated
+controlled passes create **zero** additional rows. Exact variants retain alternate
+identities; promotions from portals preserve the existing offer and user state.
+Fourteen reviewed existing employer URLs were reconciled once; those are not new
+market discoveries. Geography and numeric requirements guard against false merges.
 
-documents descriptions, dates, locations, remote status and the `per_page` parameter.
+Bounded research also covered Affirm, Trading212, New Relic, Eclipse, Revolut,
+Alan, Flywire, Sportradar, lastminute, Teya, Sopra Steria, Inetum, Devoteam,
+Metrica, SlashMobility, Accenture/Workday, CloudPay, Babel, Guidewire, INNOCV,
+Clarity AI, Marfeel, Semrush, SNGULAR, Azertium and Kapres. Observed rejection
+reasons were mandatory distant stacks/languages/offices, seniority, removed exact
+postings, unverifiable current identity or disproportionate adapter cost. Accenture's
+Java Sevilla R00328303 is a manual three-year lead; one posting and no documented
+public discovery interface do not justify a general Workday connector. No blocked
+interface was bypassed or source added solely to increase volume.
 
-The employer RSS and JazzHR robots files permit the selected public paths. JazzHR
+## Delivery and operation
 
-reads only fixed employer-board links and excludes `/cb`, external hosts, applicant
+| Deployed release | Revision | Validation |
+| --- | --- | --- |
+| 0.1.42 | 75f964e | CI 39754428508, 230 tests; official-source coverage and identity fixes |
+| 0.1.43 | e2023d9 | CI 39790307079, 234 tests; real Teamtailor forms and explicit source affinity |
+| 0.1.44 | 45c95ee | CI 39792946567, 244 tests; eligibility, account gates and salary context |
+| 0.1.45 | c7c0b75 | [CI 39794443083](https://github.com/Gabrielvcg/JobRadar/actions/runs/39794443083), 245 tests; abbreviated salary ceilings |
 
-forms and hidden values from stored job data. No protection mechanism is bypassed.
+Final local validation: 242 passed and three PostgreSQL tests skipped locally;
+CI ran all 245, plus lint, typing and Docker build. Dependency audit passed.
+Public health returns the exact final revision; app and existing database are
+healthy. Login303, dashboard200, verified filter200, anonymous redirect303 and
+cleanup of the isolated validation account passed after deployment. Assertions
+confirm the corrected EUR35k ceiling, no verified registration gates and the
+known country/internal exclusions. No schema migration was introduced.
 
-All raw research snapshots are ignored local evidence; source counts are dated
+All 715 original offer IDs and statuses, both profiles, existing accounts/passwords/
+roles and user-specific states were preserved. Unrelated local work remains
+uncommitted. Only the work branch was pushed; no merge was performed. Each rollout
+retains prior images, environment/compose rollback copies and gzip-validated SQL
+backups, including `jobradar_20261022T141908Z.sql.gz` for the final release. A restore
+was not claimed. Other VPS applications/services were not changed.
 
-observations, never market coverage or an uptime promise.
+The existing half-hour scheduled ingestion was checked across the morning and
+14:00 cycle; successful runs distinguish zero/new/updated and interval skips.
+Twelve-hour official-feed intervals bound employer traffic. Active verification
+expires and is rechecked by the existing verification process. Final releases
+also passed controlled real ingestions before the last scoring-only patch.
 
-## First delivery candidate — 0.1.42
+## Next work, ordered by benefit and effort
 
-The candidate reuses RSS and SmartRecruiters, adds only the bounded JazzHR adapter,
-
-and preserves official dates/locations. Exact RSS variants retain alternate URLs.
-
-Matching portal mirrors can be promoted only with consistent geography/mode,
-
-matching company/title, equivalent descriptions and identical requirement numbers.
-
-Original source identities remain aliases; existing user/application state remains
-
-on the same offer. Later stale portal fetches cannot overwrite employer evidence.
-
-Verification distinguishes `active`, `listing_only`, `unverified` and `closed`.
-
-Teamtailor paths require a retrieved candidate form; a listing-only 200 or blocked
-
-form does not become verified active. Greenhouse board redirects require independent
-
-official API removal evidence before closure. Existing JSON columns are reused;
-
-there is no schema migration. The original scoring policy remains for the other
-
-private profile.
-
-Independent review reproduced and corrected two identity risks before deployment:
-
-office/remote roles must not share state merely because descriptions match, and
-
-RSS grouping must not erase different numeric requirements. PostgreSQL integration
-
-coverage includes original and alternate source aliases.
-
-Deployment and measured after-results are recorded only after their checks finish.
-
-## Measured 0.1.42 production cycle
-
-Released revision `75f964e`, CI run 39754428508 passed 230 tests including PostgreSQL.
-
-Production health, authenticated dashboard, verified filter and anonymous redirect
-
-passed. All 715 preexisting offer IDs/statuses, accounts, password/role fingerprints
-
-and user-specific states were preserved. Backup gzip validation passed.
-
-SmartRecruiters fetched eleven records, created four and updated three; the first
-
-Knowmad pass created one and updated four. Total offers rose from 715 to 720;
-
-current candidates from 77 to 78; verified current controls from three to eight.
-
-These five new database rows are not five proven distinct suitable vacancies:
-
-Talan has similar SSR postings and some Scalian roles require frontend/seniority.
-
-Repeating the three curated sources created zero rows. No exact URL duplicates or
-
-source errors were found. Two reviewed removed postings are now closed.
-
-Production exposed two limits before completion: private profile queries restricted
-
-new feeds lacking explicit affinity, and Teamtailor's actual JavaScript CV upload
-
-widget differs from a plain file input. Both are addressed in 0.1.43. Fourteen
-
-reviewed existing offers had their exact employer URLs reconciled once, retaining
-
-old identities and user state; these are verification improvements, not discoveries.
-
-## Follow-up delivery — 0.1.43
-
-Explicit Java/Spring feed affinity prevents private search-query fallback from
-
-hiding relevant official offers. Whiteam and TalentConnect reuse the bounded RSS
-
-adapter after public feed, robots and actual candidate forms were checked. Whiteam
-
-Java/API security advertises EUR 30–32k and three years, but its description leaves
-
-mode unspecified despite remote metadata; the uncertainty must remain visible.
-
-TalentConnect Java/Spring/AWS is Spain remote with three years and unknown salary.
-
-Whiteam Java/Python banking additionally requires Python/banking experience.
-
-Teamtailor verification follows the employer page's explicit controller URL for the
-
-same job, then checks its public POST form, enabled email/submit and real CV upload
-
-component. The initially disabled resume URL field is a JavaScript template, not
-
-a closed application. A disabled floating button alone still proves nothing.
-
-Only GET requests are used. Real saved employer HTML reproduces the corrected case.
-
-Further product research found no justified new connector: INNOCV currently requires
-
-Go, Clarity AI's exact junior Java role and board return 404, Marfeel moved ATS,
-
-Semrush Java requires Android/C++ and SNGULAR's current Java role is advanced with
-
-no reusable feed established. These leads do not count as suitable discoveries.
-
-## Measured 0.1.43 cycle and final demonstrated corrections
-
-Revision `e2023d9`, CI 39790307079: 234 tests including PostgreSQL. Production
-health, login, dashboard and verified filter passed. Knowmad fetched 56 filtered
-records, created sixteen and updated 27; IRIUM fetched four, updated two, created
-none; Whiteam fetched thirteen, created nine; TalentConnect fetched twelve and
-created none. A repeated pass created zero across all four feeds. Total rose to
-746, current score>=35 to 91, and verified current paths to 45, with zero exact
-URL duplicates or source errors. These are rows and controls, not distinct proven
-suitable market openings. A portal registration gate was included in the latter
-count and is corrected below.
-
-A targeted rejection probe explains TalentConnect's zero: the exact Java/Spring/AWS
-role allows remote from other Spanish locations, but its hybrid Madrid metadata
-caused exclusion (score 34). The final correction recognizes the explicit remote
-alternative while retaining mandatory attendance/residence restrictions. The same
-review found OfferUp's `Remote @ Colombia` title/body contradicted worldwide portal
-metadata, and Zup's selection was expressly internal. These become exclusions.
-Registration-only apply links remain listing-only. Each correction has functional
-regression coverage; no mandatory experience or salary criteria are relaxed.
-
-The new Whiteam descriptions also expose two concrete pay parsing cases: `30-32K
-SBA` was missed, and an explicit annual EUR40-43k salary was multiplied by twelve
-because a nearby project duration said seven months. The final correction reads
-SBA and binds the nearest pay-period marker to the amount. It adds no salary
-estimate or currency conversion. New-source refresh repairs affected stored rows.
+1. Measure a rolling thirty-day cohort of newly discovered, distinct, relevant
+   families with checked paths: high benefit, low implementation effort, requires
+   elapsed observation. Do not extrapolate today's 35 rows to a monthly yield.
+2. Resolve employer title variants with conflicting identity/state carefully:
+   medium benefit and effort; explicit ambiguity must survive until enough
+   evidence supports a merge.
+3. Refine professional frontend/Kotlin/Python/sector requirements when the candidate
+   supplies demonstrable experience: medium benefit, low effort, depends on factual
+   profile information. Certifications and projects remain separate from employment.
