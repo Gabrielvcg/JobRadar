@@ -226,3 +226,9 @@ def test_teamtailor_controller_checks_real_upload_form(variant: str, expected: s
     if expected == "active":
         assert proof["application_url"] == listing + "/applications/new"
         assert proof["evidence_level"] == "application_form"
+
+
+def test_portal_registration_gate_is_not_an_application_path() -> None:
+    proof = check(200, '<h1>Java Backend Developer</h1>'
+                  '<a href="/job-seekers/account/register?alert=details">Apply now</a>')
+    assert proof["state"] == "listing_only"

@@ -350,3 +350,31 @@ def test_canonical_urls_remove_tracking_and_preserve_job_identity() -> None:
     assert canonical_url("https://example.test/job?id=43") != canonical_url(
         "https://example.test/job?id=42"
     )
+
+
+@pytest.mark.parametrize("description,compatible", [
+    ("Hybrid Madrid. Remote from other locations within Spain.", True),
+    ("Hybrid Madrid. Remoto desde el resto de Espana.", True),
+    ("Remote from other locations within Spain. Must attend the office weekly.", False),
+    ("Hybrid Madrid. Two remote days per week.", False),
+])
+def test_explicit_remote_alternative_for_other_spanish_locations(
+    description: str, compatible: bool
+) -> None:
+    offer = job(location="Madrid, Spain", remote_type=RemoteType.HYBRID,
+                description="Build Java Spring Boot APIs. " + description)
+    result = score(offer)
+    assert (result.assessment["location_status"] == "compatible") is compatible
+
+
+def test_country_in_remote_job_title_overrides_worldwide_portal_metadata() -> None:
+    result = score(job(title="Java Engineer (Remote @ Colombia)",
+                       location="Worldwide", country="Worldwide"))
+    assert result.assessment["location_status"] == "incompatible"
+    assert result.assessment["radar"] == "excluded"
+
+
+def test_internal_selection_is_not_an_external_opportunity() -> None:
+    result = score(job(description="Build Java Spring APIs. Processo Seletivo Interno."))
+    assert "internal_only" in result.assessment["blockers"]
+    assert result.assessment["radar"] == "excluded"

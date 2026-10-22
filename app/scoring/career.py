@@ -38,6 +38,13 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
     uncertain: list[str] = []
     blockers: list[str] = []
     text = f"{job.description}\n{job.requirements or ''}"
+    if re.search(
+        r"\b(?:processo seletivo interno|vaga interna|vagas internas|"
+        r"internal (?:applicants|candidates|employees) only|only open to current employees)\b",
+        fold(text),
+    ):
+        blockers.append("internal_only")
+        negative.append("Proceso reservado a empleados actuales; no es candidatura externa")
     evidence_text = "\n".join(active_clauses(f"{job.title}\n{text}"))
     technologies = detect_technologies(evidence_text, engine.scoring_config)
     # Do not feed normalized tags back into matching: they can include negated stack.
@@ -197,7 +204,7 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         job.location,
         job.country,
         job.remote_type,
-        text,
+        f"{job.title}\n{text}",
         list(profile.get("location", {}).get("preferred_locations", ["Sevilla"])),
     )
     (
