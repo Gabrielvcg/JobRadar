@@ -5,6 +5,7 @@ from __future__ import annotations
 from urllib.parse import urlsplit
 
 ORIGINS_KEY = "_jobradar_origins"
+TEAMTAILOR_HOSTS = {"careers.twtspain.com", "jobs.talentconnect.ai"}
 EMPLOYER_HOSTS = {
     "jobs.smartrecruiters.com",
     "jobs.lever.co",
@@ -13,7 +14,7 @@ EMPLOYER_HOSTS = {
     "job-boards.greenhouse.io",
     "apply.workable.com",
     "jobs.ashbyhq.com",
-}
+} | TEAMTAILOR_HOSTS
 EMPLOYER_SUFFIXES = (
     ".teamtailor.com",
     ".applytojob.com",

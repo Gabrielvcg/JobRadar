@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 
 from app.core.availability import VERIFICATION_KEY, current_verification
-from app.core.offer_identity import EMPLOYER_SUFFIXES
+from app.core.offer_identity import EMPLOYER_SUFFIXES, TEAMTAILOR_HOSTS
 from app.core.profiles import load_profiles, uses_career_radar
 from app.repositories.jobs import JobFilters, JobRepository
 from app.scoring.engine import ScoringEngine
@@ -39,7 +39,7 @@ PUBLIC_HOSTS = {
     "job-boards.greenhouse.io",
     "apply.workable.com",
     "jobs.ashbyhq.com",
-}
+} | TEAMTAILOR_HOSTS
 ATS_SUFFIXES = EMPLOYER_SUFFIXES
 CLOSED = re.compile(
     r"\b(?:this (?:job|position|vacancy) (?:is no longer available|has been filled|is closed)|"
@@ -147,6 +147,35 @@ async def verify_listing(
                         }
                 result["reason"] = "Page does not confirm the expected vacancy title"
                 return result
+        teamtailor = (urlsplit(target).hostname or "").endswith(".teamtailor.com") or (
+            urlsplit(target).hostname in TEAMTAILOR_HOSTS
+        )
+        if teamtailor:
+            # Teamtailor explicitly binds its public form URL to the page controller.
+            # Floating buttons are disabled templates until JavaScript initializes.
+            attribute = "data-careersite--jobs--form-overlay-job-application-url-value"
+            controller = soup.select_one(f"[{attribute}]")
+            if controller:
+                destination = urljoin(target, str(controller.get(attribute)))
+                parsed = urlsplit(destination)
+                listing = urlsplit(target)
+                if (
+                    supported_url(destination)
+                    and parsed.netloc == listing.netloc
+                    and parsed.path == listing.path.rstrip("/") + "/applications/new"
+                    and not parsed.query
+                ):
+                    form_page = await client.get(destination, follow_redirects=False)
+                    if form_page.status_code == 200 and _teamtailor_form(
+                        form_page.text, destination
+                    ):
+                        return {
+                            **result,
+                            "state": "active",
+                            "application_url": destination,
+                            "evidence_level": "application_form",
+                            "reason": "Public vacancy links to an accessible candidate upload form",
+                        }
         controls = list(soup.select("a[href], button, input[type=submit]"))
         # SmartRecruiters binds its observed public application links with JavaScript.
         # Keep the user on the verified listing rather than guessing a form URL.
@@ -174,7 +203,7 @@ async def verify_listing(
                 continue
             # An accessible application control is evidence of a path, not proof of a response.
             level = "application_control"
-            if (urlsplit(target).hostname or "").endswith(".teamtailor.com"):
+            if teamtailor:
                 if (
                     not supported_url(destination)
                     or "/applications/new" not in urlsplit(destination).path
@@ -286,4 +315,25 @@ def _candidate_form(html: str) -> bool:
         is not None
         and form.select_one('input[type="file"]:not([disabled])') is not None
         for form in soup.select("form")
+    )
+
+
+def _teamtailor_form(html: str, url: str) -> bool:
+    soup = BeautifulSoup(html, "html.parser")
+    form = soup.select_one('form#job-application-form[method="post"]')
+    if form is None:
+        return False
+    action = urlsplit(urljoin(url, str(form.get("action", ""))))
+    return (
+        action.netloc == urlsplit(url).netloc
+        and action.scheme == "https"
+        and action.path == "/applications"
+        and form.select_one('input[type="email"]:not([disabled])') is not None
+        and form.select_one('[data-controller~="forms--inputs--upload"]') is not None
+        and form.select_one('input[name="candidate[resume_remote_url]"]')
+        is not None
+        and form.select_one(
+            'input[type="submit"]:not([disabled]), button[type="submit"]:not([disabled])'
+        )
+        is not None
     )

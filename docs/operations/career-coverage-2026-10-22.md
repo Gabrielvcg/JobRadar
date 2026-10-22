@@ -87,3 +87,45 @@ RSS grouping must not erase different numeric requirements. PostgreSQL integrati
 coverage includes original and alternate source aliases.
 
 Deployment and measured after-results are recorded only after their checks finish.
+
+## Measured 0.1.42 production cycle
+
+Released revision `75f964e`, CI run 39754428508 passed 230 tests including PostgreSQL.
+Production health, authenticated dashboard, verified filter and anonymous redirect
+passed. All 715 preexisting offer IDs/statuses, accounts, password/role fingerprints
+and user-specific states were preserved. Backup gzip validation passed.
+
+SmartRecruiters fetched eleven records, created four and updated three; the first
+Knowmad pass created one and updated four. Total offers rose from 715 to 720;
+current candidates from 77 to 78; verified current controls from three to eight.
+These five new database rows are not five proven distinct suitable vacancies:
+Talan has similar SSR postings and some Scalian roles require frontend/seniority.
+Repeating the three curated sources created zero rows. No exact URL duplicates or
+source errors were found. Two reviewed removed postings are now closed.
+
+Production exposed two limits before completion: private profile queries restricted
+new feeds lacking explicit affinity, and Teamtailor's actual JavaScript CV upload
+widget differs from a plain file input. Both are addressed in 0.1.43. Fourteen
+reviewed existing offers had their exact employer URLs reconciled once, retaining
+old identities and user state; these are verification improvements, not discoveries.
+
+## Follow-up delivery — 0.1.43
+
+Explicit Java/Spring feed affinity prevents private search-query fallback from
+hiding relevant official offers. Whiteam and TalentConnect reuse the bounded RSS
+adapter after public feed, robots and actual candidate forms were checked. Whiteam
+Java/API security advertises EUR 30–32k and three years, but its description leaves
+mode unspecified despite remote metadata; the uncertainty must remain visible.
+TalentConnect Java/Spring/AWS is Spain remote with three years and unknown salary.
+Whiteam Java/Python banking additionally requires Python/banking experience.
+
+Teamtailor verification follows the employer page's explicit controller URL for the
+same job, then checks its public POST form, enabled email/submit and real CV upload
+component. The initially disabled resume URL field is a JavaScript template, not
+a closed application. A disabled floating button alone still proves nothing.
+Only GET requests are used. Real saved employer HTML reproduces the corrected case.
+
+Further product research found no justified new connector: INNOCV currently requires
+Go, Clarity AI's exact junior Java role and board return 404, Marfeel moved ATS,
+Semrush Java requires Android/C++ and SNGULAR's current Java role is advanced with
+no reusable feed established. These leads do not count as suitable discoveries.

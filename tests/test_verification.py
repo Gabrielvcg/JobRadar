@@ -186,3 +186,43 @@ def test_confirmed_closed_offer_is_excluded_without_changing_employment_state() 
     assert result.assessment is not None
     assert result.assessment["radar"] == "excluded"
     assert "listing_closed" in result.assessment["blockers"]
+
+
+@pytest.mark.parametrize(
+    "variant,expected",
+    [("open", "active"), ("disabled", "listing_only"),
+     ("no_upload", "listing_only"), ("different_job", "listing_only")],
+)
+def test_teamtailor_controller_checks_real_upload_form(variant: str, expected: str) -> None:
+    listing = "https://careers.twtspain.com/jobs/123-java-backend"
+    calls: list[str] = []
+
+    async def run() -> dict[str, Any]:
+        def handle(request: httpx.Request) -> httpx.Response:
+            assert request.method == "GET"
+            calls.append(str(request.url))
+            if request.url.path.endswith("/applications/new"):
+                upload = 'data-controller="forms--inputs--upload"' if variant != "no_upload" else ""
+                disabled = "disabled" if variant == "disabled" else ""
+                return httpx.Response(200, text=(
+                    '<form id="job-application-form" method="post" action="/applications">'
+                    '<input type="email" name="candidate[email]">'
+                    f'<div {upload}><input name="candidate[resume_remote_url]" disabled></div>'
+                    f'<input type="submit" value="Enviar solicitud" {disabled}></form>'
+                ))
+            path = listing if variant != "different_job" else listing.replace("123", "456")
+            return httpx.Response(200, text=(
+                '<h1>Java Backend Developer</h1>'
+                '<main data-careersite--jobs--form-overlay-job-application-url-value="'
+                + path + '/applications/new"><button disabled>Enviar solicitud</button></main>'
+            ))
+
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+            return await verify_listing(client, listing, "Java Backend Developer")
+
+    proof = asyncio.run(run())
+    assert proof["state"] == expected
+    assert len(calls) == (1 if variant == "different_job" else 2)
+    if expected == "active":
+        assert proof["application_url"] == listing + "/applications/new"
+        assert proof["evidence_level"] == "application_form"
