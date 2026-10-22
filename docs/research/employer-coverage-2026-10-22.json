@@ -1,5 +1,21 @@
 [
   {
+    "employer": "eXperience IT Solutions",
+    "official_careers_url": "https://jobs.experienceis.com/jobs?subcategory=programming",
+    "interface": "Bizneo public HTML, existing adapter",
+    "vacancy_and_eligibility_evidence": "Three current Spain-remote Java roles, minimum 3/4/3 years; two annual salary ranges EUR 30-50k and 32-35k.",
+    "decision_and_viability": "Integrated: bounded programming index, opted-in structured metadata, public job-bound candidate forms; robots allows public jobs.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "SNGULAR",
+    "official_careers_url": "https://www.sngular.com/es/talento-y-cultura/jobs",
+    "interface": "Public HTML and JobPosting; configurable employer_html adapter",
+    "vacancy_and_eligibility_evidence": "One Java role, Spain 100% remote label; advanced Kafka/Spring/Java; numeric years and salary unknown.",
+    "decision_and_viability": "Integrated: same-origin index links and full visible duties; public vacancy-bound CV form requires human consent/CAPTCHA; robots allows Spanish jobs.",
+    "checked_on": "2026-10-22"
+  },
+  {
     "employer": "Devoteam",
     "official_careers_url": "https://jobs.smartrecruiters.com/Devoteam/744000154404420-desarrollador-java-",
     "interface": "SmartRecruiters public postings",
