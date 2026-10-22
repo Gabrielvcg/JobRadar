@@ -81,5 +81,13 @@
     "local_postgres_skipped": 3,
     "ci_passed": 245,
     "ci_run": 39794443083
+  },
+  "scheduled_final_run": {
+    "timestamp": "2026-10-22T14:30:15Z",
+    "release": "0.1.45",
+    "fetched": 7,
+    "created": 0,
+    "updated": 2,
+    "errors": 0
   }
 }
