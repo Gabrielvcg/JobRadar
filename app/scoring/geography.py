@@ -27,6 +27,11 @@ def assess_location(
     # Specific location wins over a broad country label inferred by a portal.
     place = fold(location or country or "")
     text = fold(description)
+    if re.search(r"\bremote\s*@\s*colombia\b", text):
+        return LocationAssessment(
+            "incompatible", "country_restricted", 0,
+            "El puesto especifica remoto en Colombia; no confirma residencia en Espana",
+        )
     if re.search(
         r"\b(?:not (?:available|open) (?:in|to)|except|excluding|no disponible en)\s+spain\b", text
     ):
@@ -60,6 +65,21 @@ def assess_location(
             "regional_residence",
             0,
             f"Exige residencia fuera de Sevilla: {regional.group(1)}",
+        )
+    other_spain = re.search(
+        r"\bremote from other locations within spain\b|"
+        r"\bremoto desde (?:el )?resto de espana\b",
+        text,
+    )
+    conflicting_office = re.search(
+        r"\b(?:no remote|not remote|sin teletrabajo|no teletrabajo)\b|"
+        r"\b(?:must|required to) (?:work|attend|be)\b[^.!?]{0,60}\boffice\b",
+        text,
+    )
+    if other_spain and not conflicting_office:
+        return LocationAssessment(
+            "compatible", "spain", 100,
+            "Permite remoto desde otras ubicaciones de Espana; hibrido segun residencia",
         )
     local = any(re.search(rf"(?<!\w){re.escape(fold(term))}(?!\w)", place) for term in local_terms)
     remote_spain = re.search(

@@ -201,6 +201,9 @@ async def verify_listing(
                 or parsed.password
             ):
                 continue
+            if re.search(r"/(?:account/)?(?:register|login|sign[-_]?up)(?:/|$)", parsed.path):
+                # A portal account gate does not establish an employer application path.
+                continue
             # An accessible application control is evidence of a path, not proof of a response.
             level = "application_control"
             if teamtailor:

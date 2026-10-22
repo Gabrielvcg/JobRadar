@@ -55,7 +55,7 @@ class ScoringEngine:
         self.as_of = as_of
         self.career_enabled = bool(self.profile_config.get("profile", {}).get("career"))
         self.policy_version = (
-            "career-v3-"
+            "career-v4-"
             + hashlib.sha256(
                 json.dumps(
                     [self.profile_config, self.scoring_config],
