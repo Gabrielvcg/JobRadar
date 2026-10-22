@@ -86,7 +86,11 @@ def extract_salary(text: str) -> SalaryExtraction:
             continue
         salary = _build_salary(amount, amount, period, original, currency)
         prefix = normalized[max(0, match.start() - 30) : match.start()]
-        ceiling = re.search(r"\b(?:hasta|up to|at most|maximum(?: of)?)\s*$", prefix, re.I)
+        ceiling = re.search(
+            r"\b(?:hasta|up to|at most|max(?:imum)?(?: of)?|m[aá]ximo|tope(?: de)?)\s*[:.]?\s*$",
+            prefix,
+            re.I,
+        )
         if ceiling:
             return replace(
                 salary,

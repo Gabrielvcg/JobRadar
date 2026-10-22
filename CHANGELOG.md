@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.45 - 2026-10-22
+
+- Treat abbreviated Max and Spanish maximum salary text as a ceiling, preserving an unknown minimum during ingestion and rescoring.
+
 ## 0.1.44 - 2026-10-22
 
 - Respect explicit remote alternatives outside hybrid office cities in Spain, retaining mandatory attendance/residence restrictions and conflicting work-mode uncertainty.

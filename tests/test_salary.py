@@ -192,3 +192,9 @@ def test_project_duration_does_not_turn_annual_salary_into_monthly() -> None:
     salary = extract_salary("Estimated project duration: 7 months. "
                             "Salary: \u20ac40,000 - \u20ac43,000 gross annual salary.")
     assert (salary.salary_min, salary.salary_max, salary.period) == (40000, 43000, "annual")
+
+
+def test_abbreviated_maximum_is_a_ceiling_not_a_published_floor() -> None:
+    salary = extract_salary("Salario: Max 35k.")
+    assert salary.salary_min is None and salary.salary_max == 35000
+    assert salary.period == "annual"
