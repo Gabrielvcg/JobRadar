@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.48 - 2026-10-22
+
+- Discover official Java vacancies at eXperience IT Solutions and SNGULAR using bounded, attributed public sources every twelve hours.
+- Read Bizneo icon metadata, annual salary and complete requirement sections with opt-in settings; preserve country and prioritize explicit office requirements over contradictory board headers.
+- Keep generic Software Engineer titles before bounded detail retrieval without treating JavaScript as Java.
+- Exclude explicit company-tenure boilerplate from candidate experience extraction without changing career scoring weights or thresholds.
+- Verify observed vacancy-specific Bizneo CV forms and SNGULAR's embedded candidate form; preserve human consent and CAPTCHA requirements and never submit applications.
+- Document the employer research inventory, rejected/stale/blocked sources and before/after production evidence.
+
 ## 0.1.47 - 2026-10-22
 
 - Require an authenticated user for CSV exports after a live anonymous check found that the expanded stored-history download was publicly accessible.

@@ -7,6 +7,8 @@ from urllib.parse import urlsplit
 ORIGINS_KEY = "_jobradar_origins"
 TEAMTAILOR_HOSTS = {"careers.twtspain.com", "jobs.talentconnect.ai"}
 EMPLOYER_HOSTS = {
+    "jobs.experienceis.com",
+    "www.sngular.com",
     "jobs.smartrecruiters.com",
     "jobs.lever.co",
     "jobs.eu.lever.co",

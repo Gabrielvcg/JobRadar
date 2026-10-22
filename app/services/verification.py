@@ -6,7 +6,7 @@ import asyncio
 import re
 from datetime import UTC, datetime
 from typing import Any
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import parse_qs, urljoin, urlsplit
 
 import httpx
 from bs4 import BeautifulSoup
@@ -21,6 +21,8 @@ from app.scoring.evidence import fold
 from app.scoring.text import canonical_url
 
 PUBLIC_HOSTS = {
+    "jobs.experienceis.com",
+    "www.sngular.com",
     "himalayas.app",
     "remotive.com",
     "remoteok.com",
@@ -147,6 +149,50 @@ async def verify_listing(
                         }
                 result["reason"] = "Page does not confirm the expected vacancy title"
                 return result
+        if urlsplit(target).hostname == "jobs.experienceis.com":
+            controller = soup.select_one("#job-inscription[hx-get]")
+            if controller:
+                destination = urljoin(target, str(controller.get("hx-get")))
+                parsed, listing = urlsplit(destination), urlsplit(target)
+                job_id = listing.path.rstrip("/").rsplit("/", 1)[-1]
+                if (
+                    supported_url(destination)
+                    and parsed.netloc == listing.netloc
+                    and parsed.path == "/registration/new"
+                    and parse_qs(parsed.query) == {"job_id": [job_id]}
+                ):
+                    form_page = await client.get(destination, follow_redirects=False)
+                    if form_page.status_code == 200 and _bizneo_form(form_page.text, destination):
+                        return {
+                            **result,
+                            "state": "active",
+                            "application_url": destination,
+                            "evidence_level": "application_form",
+                            "reason": "Vacancy-specific candidate and CV upload form accessible",
+                        }
+        if urlsplit(target).hostname == "www.sngular.com":
+            form = soup.select_one('form[action="/es/talent-form"]')
+            bound_title = form.select_one('input[name="talent[title]"]') if form else None
+            heading = soup.select_one("h1")
+            if (
+                form is not None
+                and bound_title is not None
+                and heading is not None
+                and fold(str(bound_title.get("value"))) == fold(heading.get_text(" ", strip=True))
+                and _candidate_form(str(form))
+                and form.select_one('button[type="submit"][data-talent-target="btnSubmit"]')
+                is not None
+            ):
+                return {
+                    **result,
+                    "state": "active",
+                    "application_url": target + "#talent",
+                    "evidence_level": "application_form",
+                    "reason": (
+                        "Vacancy-bound CV form accessible; "
+                        "applicant must complete consent and CAPTCHA"
+                    ),
+                }
         teamtailor = (urlsplit(target).hostname or "").endswith(".teamtailor.com") or (
             urlsplit(target).hostname in TEAMTAILOR_HOSTS
         )
@@ -321,6 +367,24 @@ def _candidate_form(html: str) -> bool:
     )
 
 
+def _bizneo_form(html: str, url: str) -> bool:
+    soup = BeautifulSoup(html, "html.parser")
+    for form in soup.select('form[method="post"]'):
+        action = urlsplit(urljoin(url, str(form.get("action", ""))))
+        if (
+            action.netloc == urlsplit(url).netloc
+            and action.scheme == "https"
+            and action.path == "/registration"
+            and parse_qs(action.query) == parse_qs(urlsplit(url).query)
+            and form.select_one('input[type="email"]:not([disabled])') is not None
+            and form.select_one('[data-component-filepicker="box"][name*="[file]"][required]')
+            is not None
+            and form.select_one('button[type="submit"]:not([disabled])') is not None
+        ):
+            return True
+    return False
+
+
 def _teamtailor_form(html: str, url: str) -> bool:
     soup = BeautifulSoup(html, "html.parser")
     form = soup.select_one('form#job-application-form[method="post"]')
@@ -333,8 +397,7 @@ def _teamtailor_form(html: str, url: str) -> bool:
         and action.path == "/applications"
         and form.select_one('input[type="email"]:not([disabled])') is not None
         and form.select_one('[data-controller~="forms--inputs--upload"]') is not None
-        and form.select_one('input[name="candidate[resume_remote_url]"]')
-        is not None
+        and form.select_one('input[name="candidate[resume_remote_url]"]') is not None
         and form.select_one(
             'input[type="submit"]:not([disabled]), button[type="submit"]:not([disabled])'
         )
