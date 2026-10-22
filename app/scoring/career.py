@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 
 from app.core.availability import current_verification
 from app.core.experience import professional_months
+from app.scoring.alignment import analyze_work, recommendation, requirement_clauses
 from app.scoring.engine import ScoreResult
 from app.scoring.evidence import (
     active_clauses,
@@ -74,7 +75,12 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         negative.append(
             "No hay encaje suficiente con backend Java/Spring o desarrollo AppSec/cloud"
         )
-        blockers.append("role_mismatch")
+        explicit_other_stack = bool(re.search(
+            r"\b(?:javascript|node\.js|ruby|golang|rust|product owner)\b",
+            fold(f"{job.title}\n{evidence_text}"),
+        ))
+        if len(text.split()) >= 20 or explicit_other_stack:
+            blockers.append("role_mismatch")
     if operations_only(job.title, text):
         negative.append(
             "Puesto principalmente de soporte, helpdesk u operaciones sin desarrollo demostrado"
@@ -98,6 +104,9 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         )
 
     experience = experience_requirements(text)
+    contexts = {clause[:400]: kind for clause, kind in requirement_clauses(text)}
+    experience = [replace(item, kind=contexts.get(item.evidence, item.kind))
+                  for item in experience]
     binding = binding_experience(experience)
     # Structured fields are a fallback, never override classified desirable requirements.
     if not experience and job.experience_min_years is not None:
@@ -181,6 +190,8 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         negative.append("Idioma obligatorio fuera del perfil espanol/ingles certificado")
         blockers.append("unsupported_language")
 
+    work = analyze_work(job.title, text, professional, experience)
+    development = work.software
     responsibility_points = 10 if development else 3
     if not development:
         uncertain.append("Descripcion sin responsabilidades concretas de desarrollo verificables")
@@ -198,7 +209,19 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
             "Exige experiencia profesional independiente en frontend; "
             "no queda acreditada por Java backend"
         )
-    growth, growth_reasons = _growth(text)
+    if work.focus in {"operations", "quality_assurance", "frontend", "management", "ai_evaluation"}:
+        blockers.append("career_direction_mismatch")
+        negative.append("Las tareas principales no siguen la trayectoria de ingenieria backend")
+    if work.independent_experience:
+        fit = max(0, fit - 15)
+        uncertain.append(
+            "La antiguedad backend no acredita anos profesionales en otra especialidad"
+        )
+    if work.specialist_gaps:
+        uncertain.append("Competencias profesionales por confirmar: " + ", ".join(
+            dict.fromkeys(gap.split(":", 1)[0] for gap in work.specialist_gaps)
+        ))
+    growth, growth_reasons = _growth(text, work.software)
     positive.extend(growth_reasons)
     location = assess_location(
         job.location,
@@ -277,11 +300,16 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         fold(text),
     )
     expert_level = bool(re.search(r"\badvanced\s*\(expert\)|\bnivel experto\b", fold(text)))
+    senior_body = bool(re.search(
+        r"\b(?:buscamos|we are seeking|we.re looking for|asumiendo un rol de)"
+        r"[^.!?\n]{0,90}\b(?:senior|staff|principal|arquitect[oa])\b", fold(text),
+    ))
     future = bool(
         advanced_title
         or advanced_duties
         or expert_level
-        or (binding and binding.minimum > max(5, years + 2))
+        or senior_body
+        or (binding and binding.minimum >= 5 and binding.minimum > years + 2)
     )
     category = (
         "C" if future else "A" if primary and backend else "B" if transition else "unclassified"
@@ -317,10 +345,27 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         score = min(score, 19)
     if operations_only(job.title, text):
         score = min(score, 19)
+    if work.focus == "operations":
+        score = min(score, 19)
+    elif work.focus == "software_platform":
+        score = min(score, 69)
+    elif work.focus == "application_security":
+        score = min(score, 64)
+    elif work.focus == "unknown":
+        score = min(score, 49)
+    if work.independent_experience or work.specialist_gaps:
+        score = min(score, 59 if work.independent_experience else 64)
+    if (location.status == "uncertain" or availability["state"] != "active"
+            or english == "above_certified_b2"):
+        score = min(score, 64)
     radar = "excluded" if blockers else "strategic" if future else "current"
     if not development and len(text.split()) < 20:
         score = min(score, 69)
     score = max(0, min(100, score))
+    advice, advice_reason = recommendation(
+        blockers=blockers, future=future, work=work, location=location.status,
+        availability=availability["state"], experience_gap=gap, english=english,
+    )
     assessment: dict[str, Any] = {
         "version": engine.policy_version,
         "evaluated_on": today.isoformat(),
@@ -328,6 +373,14 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         "category": category,
         "radar": radar,
         "professional_fit": fit,
+        "career_alignment": work.points,
+        "work_focus": work.focus,
+        "software_work_evidence": work.software[:5],
+        "operations_work_evidence": work.operations[:5],
+        "recommendation": advice,
+        "recommendation_reason": advice_reason,
+        "specialist_requirements_to_confirm": work.specialist_gaps,
+        "independent_professional_experience": work.independent_experience,
         "growth": growth,
         "viability": viability,
         "experience_requirements": [asdict(item) for item in experience],
@@ -354,8 +407,8 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
     return ScoreResult(score, engine._level(score), positive, negative, assessment)
 
 
-def _growth(text: str) -> tuple[int, list[str]]:
-    evidence = " ".join(development_evidence(text))
+def _growth(text: str, software: list[str]) -> tuple[int, list[str]]:
+    evidence = " ".join(software)
     rules = (
         (
             r"\b(?:design|disen\w*|architecture|arquitectura)\b",

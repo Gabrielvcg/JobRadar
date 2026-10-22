@@ -8,7 +8,7 @@ from datetime import UTC, datetime
 from difflib import SequenceMatcher
 from typing import Any
 
-from sqlalchemy import Select, and_, func, or_, select
+from sqlalchemy import Select, and_, case, func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.offer_identity import ORIGINS_KEY, is_employer_listing, is_portal_listing
@@ -499,6 +499,12 @@ class JobRepository:
         sort_column = JobOffer.publication_date if filters.sort == "date" else JobOffer.match_score
         if filters.order.lower() == "asc":
             return statement.order_by(sort_column.asc().nullslast(), JobOffer.created_at.desc())
+        if filters.sort == "score":
+            advice = JobOffer.match_reasons["assessment"]["recommendation"].as_string()
+            priority = case({"A": 0, "B": 1, "U": 2, "C": 3, "D": 4}, value=advice, else_=5)
+            return statement.order_by(
+                sort_column.desc().nullslast(), priority, JobOffer.created_at.desc(),
+            )
         return statement.order_by(sort_column.desc().nullslast(), JobOffer.created_at.desc())
 
 

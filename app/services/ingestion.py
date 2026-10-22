@@ -140,24 +140,20 @@ class IngestionService:
                     continue
                 normalized = normalized_from_offer(offer, rehydrate=engine.career_enabled)
                 if engine.career_enabled:
-                    evidence = f"{normalized.description}\n{normalized.requirements or ''}"
+                    evidence = (
+                        f"{normalized.description}\n{normalized.requirements or ''}\n"
+                        f"{offer.salary_original_text or ''} {offer.salary_period or ''}"
+                    )
                     salary = extract_salary(evidence)
-                    if not salary.unknown and salary.salary_min is None and salary.salary_max:
-                        normalized = replace(
-                            normalized,
-                            salary_min=None,
-                            salary_max=salary.salary_max,
-                            salary_currency=salary.currency,
-                            salary_period=salary.period,
-                            salary_original_text=salary.original_text,
-                            salary_unknown=False,
-                        )
-                        offer.salary_min = normalized.salary_min
-                        offer.salary_max = normalized.salary_max
-                        offer.salary_currency = normalized.salary_currency
-                        offer.salary_period = normalized.salary_period
-                        offer.salary_original_text = normalized.salary_original_text
-                        offer.salary_unknown = normalized.salary_unknown
+                    normalized = replace(
+                        normalized, salary_min=salary.salary_min, salary_max=salary.salary_max,
+                        salary_currency=salary.currency, salary_period=salary.period,
+                        salary_original_text=salary.original_text, salary_unknown=salary.unknown,
+                    )
+                    offer.salary_min, offer.salary_max = salary.salary_min, salary.salary_max
+                    offer.salary_currency, offer.salary_period = salary.currency, salary.period
+                    offer.salary_original_text = salary.original_text
+                    offer.salary_unknown = salary.unknown
                     minimum, maximum = extract_experience_years(evidence)
                     normalized = replace(
                         normalized,

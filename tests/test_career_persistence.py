@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import csv
+import io
 from collections.abc import Iterator
 from dataclasses import replace
 from datetime import UTC, date, datetime
@@ -72,6 +74,33 @@ def persist(session: Session, title: str, identity: str) -> JobOffer:
     return offer
 
 
+def test_complete_csv_includes_disabled_history_and_full_review_evidence(
+    session: Session, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    offer = persist(session, "Java Backend", "export-active")
+    offer.description = "Backend description, with commas\nand multiple lines."
+    offer.source.enabled = False
+    session.commit()
+    app.dependency_overrides[get_session] = lambda: session
+    monkeypatch.setattr(routes, "get_current_user", lambda request, session: None)
+    try:
+        with TestClient(app) as client:
+            normal = client.get("/jobs/export?profile=engineering&radar=all")
+            complete = client.get(
+                "/jobs/export?profile=engineering&radar=all&include_disabled_sources=true"
+            )
+        assert not list(csv.DictReader(io.StringIO(normal.text.lstrip("\ufeff"))))
+        rows = list(csv.DictReader(io.StringIO(complete.text.lstrip("\ufeff"))))
+        assert len(rows) == 1
+        assert rows[0]["description"] == offer.description
+        assert rows[0]["requirements"] == "2 years of experience"
+        assert rows[0]["source_enabled"] == "False"
+        assert rows[0]["recommendation"] == "U"
+        assert rows[0]["availability_state"] == "unverified"
+    finally:
+        app.dependency_overrides.clear()
+
+
 def test_assessment_roundtrip_and_radar_filter_before_pagination(session: Session) -> None:
     current = persist(session, "Java Backend Developer", "current")
     strategic = persist(session, "Senior Java Developer", "future")
@@ -94,6 +123,17 @@ def test_daily_refresh_recalculates_once_and_preserves_user_status(session: Sess
     assert service.score_all_jobs(session, only_stale=True) == 0
     assert offer.status == JobStatus.INTERESTED
     assert _all_jobs_filter().sort == "id"
+
+
+def test_equal_scores_prefer_actionable_advice_over_missing_information(session: Session) -> None:
+    ambitious = persist(session, "Java Backend Services", "ambitious")
+    uncertain = persist(session, "Java Backend Integrations", "uncertain")
+    for offer, advice in ((ambitious, "B"), (uncertain, "U")):
+        offer.match_score = 64
+        assessment = dict(offer.match_reasons["assessment"], recommendation=advice)
+        offer.match_reasons = {**offer.match_reasons, "assessment": assessment}
+    session.commit()
+    assert JobRepository().list_jobs(session, JobFilters(limit=2)) == [ambitious, uncertain]
 
 
 def test_duplicate_across_sources_with_tracking_url_keeps_status(session: Session) -> None:

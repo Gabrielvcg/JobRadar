@@ -35,13 +35,12 @@ profile:
     - Alcala de Guadaira
   salary:
     minimum_annual_eur: 24000
-    target_min_annual_eur: 26000
+    target_min_annual_eur: 28000
     target_max_annual_eur: 35000
   priorities:
+  - Java Backend Engineer
+  - Spring Boot Developer
   - Backend Engineer with AWS
-  - Junior Cloud Engineer
-  - Junior DevOps Engineer
-  - Junior Platform Engineer
-  - Junior DevSecOps Engineer
-  - Junior Application Security Engineer
-  - Junior Cloud Security Engineer
+  - Distributed Systems Engineer
+  - Software Platform Engineer
+  - Application Security Engineer

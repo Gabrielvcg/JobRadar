@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.46 - 2026-10-22
+
+- Separate demonstrated backend/software duties from infrastructure operations; prevent technology overlap and developer-platform wording from promoting operations above backend engineering.
+- Add independent A/B/C/D/U application advice and career alignment evidence while preserving the existing technical category and radar contracts; prefer actionable advice when scores tie.
+- Recognize requirement list headings, explicit language alternatives, specialist professional gaps, five-year requirements and senior duties without treating mirror tags or desirable experience as mandatory.
+- Cap uncertain application, specialist and English requirements; preserve meaningful software platform and application security paths.
+- Recalculate salary evidence without converting community counts, ISO numbers, working hours or annual leave into compensation; separate employee ranges from freelance day rates.
+- Respect explicit Latin America titles and eligible-country lists over broad portal metadata; update the preferred salary floor to EUR 28,000 and backend-led career priorities.
+- Add a complete stored-offer CSV download with descriptions, requirements, career advice and application evidence, including explicitly selected disabled-source history.
+- Add regression coverage for observed ranking, requirement and salary failures; evaluate the complete 595-offer stored cohort before rollout.
+
 ## 0.1.45 - 2026-10-22
 
 - Treat abbreviated Max and Spanish maximum salary text as a ceiling, preserving an unknown minimum during ingestion and rescoring.

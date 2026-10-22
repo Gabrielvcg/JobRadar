@@ -304,7 +304,8 @@
         <input type="hidden" name="profile" value="{{ active_profile_key }}">
         <button type="submit">Run ingestion</button>
       </form>
-      <a class="button secondary" href="/jobs/export?profile={{ active_profile_key }}&radar={{ filters.radar or 'all' }}">Export CSV</a>
+      <a class="button secondary" href="/jobs/export?profile={{ active_profile_key }}&radar={{ filters.radar or 'all' }}">Export radar CSV</a>
+      <a class="button secondary" href="/jobs/export?profile={{ active_profile_key }}&radar=all&include_disabled_sources=true">Export all offers CSV</a>
       <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=all&min_score=0">Show all</a>
       {% if not career_profile %}
         <a class="button secondary" href="https://www.adzuna.es" target="_blank" rel="noopener">Adzuna</a>
@@ -458,6 +459,11 @@
             {% set proof = current_verification(job.raw_payload, job.url) %}
             <div class="muted">
               Category {{ assessment.category }} &middot; {{ assessment.radar }}
+              {% if assessment.get('recommendation') %}
+              &middot; Recommendation {{ assessment.recommendation }}
+              &middot; Alignment {{ assessment.career_alignment }}/100
+              <div>{{ assessment.recommendation_reason }}</div>
+              {% endif %}
               &middot; Fit {{ assessment.professional_fit }}/100
               &middot; Growth {{ assessment.growth }}/100
               &middot; Feasibility {{ assessment.viability }}/100
