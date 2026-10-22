@@ -1,6 +1,6 @@
 # Full-cohort career alignment audit — 2026-10-22
 
-Production is **0.1.46 / 9f72c6ae3e094b30b4095f4f707c6186ca165f44**.
+Production is **0.1.47 / 66ab5992a94da4965fc98b4306caea70f6ce4e94**.
 This follows the [coverage delivery](career-coverage-2026-10-22.md), whose
 0.1.45 ranking still contained unresolved career-direction errors. No previous
 source discovery or security work was repeated.
@@ -8,7 +8,9 @@ source discovery or security work was repeated.
 ## Scope and evidence
 
 The live database was captured at 15:23 UTC before the change and again at
-16:04 UTC after deployment, rescoring and a bounded ingestion check. All **595**
+16:04 UTC after the scoring deployment, rescoring and a bounded ingestion check.
+The final CSV-access patch and preservation fingerprints were checked again
+at 16:17 UTC after its deployment. All **595**
 candidate-profile records were evaluated, including **15 disabled synthetic
 fixtures**. Thus 580 records represent market postings, not 580 distinct live
 selection processes. Descriptions and requirements, rather than technology tags
@@ -46,7 +48,8 @@ explicitly marked, and current-profile isolation and user statuses are retained.
   intact. Existing fit/growth/viability weights are unchanged. Evidence-based
   exclusions and confidence caps prevent operations, unverified access and
   specialist gaps from outranking suitable backend work. Equal scores prefer
-  actionable advice over unknown information.
+  actionable advice over unknown information. The 64 cap deliberately remains
+  below the existing 65-point good-match threshold; it is not a hiring estimate.
 - The salary parser had accepted community sizes, ISO numbers, working hours
   and annual leave as pay. Salary evidence is recalculated during career rescoring.
   Employee salary ranges remain separate from freelance day rates, and ceilings
@@ -58,7 +61,7 @@ explicitly marked, and current-profile isolation and user statuses are retained.
 
 ## Measured result
 
-| Measure | Before, 0.1.45 | After, 0.1.46 |
+| Measure | Before, 0.1.45 | After, 0.1.46–47 |
 | --- | ---: | ---: |
 | Both profiles, stored records | 750 | 750 |
 | Candidate-profile records | 595 | 595 |
@@ -70,14 +73,14 @@ explicitly marked, and current-profile isolation and user statuses are retained.
 | Exact URL duplicates | 0 | 0 |
 | Current source errors | 0 | 0 |
 
-Final advice: **A6, B16, C100, D433, U40**. Excluding the 15 fixtures gives
-**A6, B16, C100, D418, U40** across 580 market records. The reduction in current
+Final advice: **A 6, B 16, C 100, D 433, U 40**. Excluding the 15 fixtures gives
+**A 6, B 16, C 100, D 418, U 40** across 580 market records. The reduction in current
 and verified-current counts reflects stricter career relevance, not deleted jobs
 or inaccessible forms. A is a sensible application, not proof of meeting every
 unpublished expectation or the salary minimum.
 
-Applying the final policy to the original top twenty yields A3/B8/U8/D1.
-The deployed top twenty is A6/B14/U0/D0: **11/20 to 20/20 A-or-B records**.
+Applying the final policy to the original top twenty yields A 3/B 8/U 8/D 1.
+The deployed top twenty is A 6/B 14/U 0/D 0: **11/20 to 20/20 A-or-B records**.
 This is a descriptive career-priority metric assessed by the implementing agent,
 not an independent accuracy benchmark or hiring probability. The cohorts differ
 because ranking changed. Related Talan advertisements and knowmad title/stack
@@ -107,22 +110,34 @@ Application proof expires after 24 hours and should be refreshed before use.
 
 - [Commit 9f72c6a](https://github.com/Gabrielvcg/JobRadar/commit/9f72c6ae3e094b30b4095f4f707c6186ca165f44),
   pushed to `codex/career-radar-release`; no merge.
+- A final live anonymous check found the expanded CSV accessible without a
+  session. The pre-existing export route had not required authentication.
+  [Commit 66ab599](https://github.com/Gabrielvcg/JobRadar/commit/66ab5992a94da4965fc98b4306caea70f6ce4e94),
+  release 0.1.47, requires a signed-in user and adds an HTTP rejection assertion.
 - [CI 39810047591](https://github.com/Gabrielvcg/JobRadar/actions/runs/39810047591):
   **269 tests passed**, including PostgreSQL; lint, typing (81 files) and Docker
   build passed. Local validation: 266 passed, three PostgreSQL checks skipped.
   Dependency security also passed.
+- [Final CI 39812216421](https://github.com/Gabrielvcg/JobRadar/actions/runs/39812216421)
+  passed for the exact 0.1.47 revision, with the same 269-test suite and build checks.
 - Pre-deploy backup `jobradar_20261022T160031Z.sql.gz` created and gzip integrity
   checked. This is not a claim of a new restore drill. Previous image, environment,
   Compose configuration and runtime configuration target retained for rollback.
+  The 0.1.47 rollout repeated backup/integrity checks with
+  `jobradar_20261022T161409Z.sql.gz` and retained 0.1.46 as its immediate rollback.
 - Git archive SHA256 checked; exact committed source built on the VPS; public and
   private configuration preflights passed. Deployment used the existing ingest
   lock and changed only the application container and its configuration.
-- Public health returned exact version/revision; actual user login returned303,
-  dashboard200 and the complete CSV contained595 distinct IDs and36 columns.
-- Post-deploy official SmartRecruiters ingestion fetched11, updated7, created0,
-  rejected4 by score and returned no error. Existing scheduled ingestion remains.
-- All750 IDs and stored statuses, account/password/role fingerprint and user-state
-  fingerprint match the fresh baseline. A separate fingerprint confirms all155
+- Public health returned exact version/revision; actual user login returned 303,
+  dashboard 200 and the complete CSV contained 595 distinct IDs and 36 columns.
+  The final 0.1.47 check repeated login/export successfully and confirmed
+  anonymous CSV requests return 401. The personal audit file adds four review
+  columns to the same 595 rows, including the previous score and planning group.
+- Post-deploy official SmartRecruiters ingestion fetched 11, updated 7, created 0,
+  rejected 4 by score and returned no error. A normal cycle after 0.1.47 had no
+  due sources or errors, respecting existing intervals. Scheduled ingestion remains.
+- All 750 IDs and stored statuses, account/password/role fingerprint and user-state
+  fingerprint match the fresh baseline. A separate fingerprint confirms all 155
   secondary-profile records, descriptions, scores, reasons and salary values are
   unchanged. No schema migration or other VPS service was changed.
 
