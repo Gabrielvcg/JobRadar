@@ -81,6 +81,14 @@ def assess_location(
             "compatible", "spain", 100,
             "Permite remoto desde otras ubicaciones de Espana; hibrido segun residencia",
         )
+    if remote_type == RemoteType.REMOTE and re.search(
+        r"\b(?:ubicacion|modalidad de trabajo)[^.!?\n]{0,100}\bno especificad[ao]s?\b",
+        text,
+    ):
+        return LocationAssessment(
+            "uncertain", "unknown", 45,
+            "La descripcion no confirma modalidad pese a la etiqueta remoto; consultar empresa",
+        )
     local = any(re.search(rf"(?<!\w){re.escape(fold(term))}(?!\w)", place) for term in local_terms)
     remote_spain = re.search(
         r"\b(?:remote (?:from|within|in)|remoto (?:desde|en)|teletrabajo (?:desde|en))"

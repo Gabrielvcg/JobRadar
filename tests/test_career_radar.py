@@ -378,3 +378,10 @@ def test_internal_selection_is_not_an_external_opportunity() -> None:
     result = score(job(description="Build Java Spring APIs. Processo Seletivo Interno."))
     assert "internal_only" in result.assessment["blockers"]
     assert result.assessment["radar"] == "excluded"
+
+
+def test_explicit_unspecified_work_mode_is_uncertain_despite_remote_metadata() -> None:
+    result = score(job(description="Build Java APIs. "
+                       "Ubicacion, modalidad de trabajo y duracion: No especificadas."))
+    assert result.assessment["location_status"] == "uncertain"
+    assert result.assessment["radar"] == "current"
