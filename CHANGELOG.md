@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.47 - 2026-10-22
+
+- Require an authenticated user for CSV exports after a live anonymous check found that the expanded stored-history download was publicly accessible.
+- Verify both authenticated full-history export and anonymous rejection in the repository HTTP regression check.
+
 ## 0.1.46 - 2026-10-22
 
 - Separate demonstrated backend/software duties from infrastructure operations; prevent technology overlap and developer-platform wording from promoting operations above backend engineering.

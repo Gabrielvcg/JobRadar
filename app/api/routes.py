@@ -340,7 +340,7 @@ def export_jobs(
     radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
     include_disabled_sources: bool = False,
 ) -> StreamingResponse:
-    current_user = get_current_user(request, session)
+    current_user = _require_user(request, session)
     active_profile_key = resolve_profile_key(profile)
     filters = JobFilters(
         profile_key=active_profile_key,
