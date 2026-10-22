@@ -21,7 +21,8 @@ def requirement_kind(text: str) -> str:
     text = fold(text)
     if re.search(
         r"\b(preferred|desirable|nice to have|bonus|valued|deseable|valorable|idealmente|"
-        r"is a (?:strong )?plus)\b", text
+        r"is a (?:strong )?plus)\b",
+        text,
     ):
         return "desirable"
     if re.search(
@@ -64,6 +65,7 @@ def experience_requirements(text: str) -> list[ExperienceRequirement]:
             if re.search(
                 r"\b(our company|company has|founded|empresa tiene|fundad\w*|"
                 r"entorno con|anos de trayectoria|years in business|"
+                r"(?:empresa|grupo tecnologico)[^.!?]{0,65}con mas de|"
                 r"public sector|sector publico)\b",
                 normalized,
             ) and not re.search(r"\b(you have|you bring|candidat\w*|tienes|tengas)\b", normalized):

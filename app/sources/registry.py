@@ -18,6 +18,7 @@ from app.sources.ats import (
 from app.sources.base import JobSourceAdapter, SearchConfig
 from app.sources.bizneo import BizneoJobSource
 from app.sources.domestiko import DomestikoJobSource
+from app.sources.employer_html import EmployerHtmlJobSource
 from app.sources.eurofirms import EurofirmsJobSource
 from app.sources.fixture import FixtureJobSource
 from app.sources.fundacion_adecco import FundacionAdeccoJobSource
@@ -114,6 +115,8 @@ def build_enabled_sources() -> list[JobSourceAdapter]:
             adapter = JobTodayJobSource(raw_settings)
         elif adapter_name == "bizneo":
             adapter = BizneoJobSource(raw_settings)
+        elif adapter_name == "employer_html":
+            adapter = EmployerHtmlJobSource(raw_settings)
         elif adapter_name == "talent":
             adapter = TalentJobSource(raw_settings)
         elif adapter_name == "manpower":

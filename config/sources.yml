@@ -1,4 +1,52 @@
 sources:
+  experience_official:
+    enabled: true
+    adapter: "bizneo"
+    base_url: "https://jobs.experienceis.com"
+    company_name: "eXperience IT Solutions"
+    min_interval_minutes: 720
+    retries: 1
+    rate_limit_seconds: 1
+    detail_rate_limit_seconds: 1
+    max_detail_pages: 35
+    max_jobs: 35
+    minimum_score: 35
+    strict_search_filter: true
+    prefilter_titles: true
+    structured_metadata: true
+    pages:
+      - url: "https://jobs.experienceis.com/jobs?subcategory=programming"
+        country: "Spain"
+      - url: "https://jobs.experienceis.com/jobs?subcategory=programming&page=2"
+        country: "Spain"
+      - url: "https://jobs.experienceis.com/jobs?subcategory=programming&page=3"
+        country: "Spain"
+      - url: "https://jobs.experienceis.com/jobs?subcategory=programming&page=4"
+        country: "Spain"
+      - url: "https://jobs.experienceis.com/jobs?subcategory=programming&page=5"
+        country: "Spain"
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software", "developer", "desarrollador", "programador"]
+    attribution_url: "https://jobs.experienceis.com"
+
+  sngular_official:
+    enabled: true
+    adapter: "employer_html"
+    base_url: "https://www.sngular.com"
+    company_name: "SNGULAR"
+    index_urls: ["https://www.sngular.com/es/talento-y-cultura/jobs"]
+    link_selector: 'a[href*="/es/talento-y-cultura/jobs/"]'
+    description_selector: ".m-hero__subtitle, main > .g-text-section, main > .g-features"
+    location_selector: ".m-hero .m-job-offer__item:first-child .a-heading-5"
+    mode_selector: ".m-hero .m-job-offer__details"
+    min_interval_minutes: 720
+    rate_limit_seconds: 1
+    max_detail_pages: 10
+    minimum_score: 35
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software", "developer", "desarrollador"]
+    attribution_url: "https://www.sngular.com/es/talento-y-cultura/jobs"
+
   smartrecruiters_curated:
     enabled: true
     adapter: "smartrecruiters"
