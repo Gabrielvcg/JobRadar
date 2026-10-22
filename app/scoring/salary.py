@@ -132,7 +132,10 @@ def _looks_like_salary(text: str, start: int, end: int, matched: str) -> bool:
             "brutos",
         )
     )
-    return has_currency or has_currency_context or has_salary_word
+    return (
+        has_currency or has_currency_context or has_salary_word
+        or bool(re.search(r"\bsba\b", context))
+    )
 
 
 def _looks_like_identifier_or_percentage_fragment(
@@ -252,13 +255,20 @@ def _amounts_are_plausible(
 
 def _period_from_context(text: str, start: int, end: int) -> str:
     context = _salary_context(text, start, end).lower()
-    if re.search(r"\bmonths?\b|\bmonthly\b|/mes\b|\bmes\b|\bmensual\b", context):
-        return "monthly"
-    if re.search(r"\bhours?\b|\bhourly\b|(?<![a-z0-9])/h(?:\b|$)|/hora\b|\bhora\b", context):
-        return "hourly"
-    if re.search(r"\bdays?\b|\bdaily\b|/dia\b|/day\b|\bdia\b", context):
-        return "daily"
-    return "annual"
+    offset = max(0, start - 80)
+    # Bind the nearest period to the amount, not an unrelated project duration.
+    patterns = {
+        "annual": r"\b(?:annual(?:ly)?|anual(?:es)?|yearly|per year|sba)\b",
+        "monthly": r"\bmonths?\b|\bmonthly\b|/mes\b|\bmes\b|\bmensual\b",
+        "hourly": r"\bhours?\b|\bhourly\b|(?<![a-z0-9])/h(?:\b|$)|/hora\b|\bhora\b",
+        "daily": r"\bdays?\b|\bdaily\b|/dia\b|/day\b|\bdia\b",
+    }
+    candidates = [
+        (max(start - (match.end() + offset), match.start() + offset - end, 0), period)
+        for period, pattern in patterns.items()
+        for match in re.finditer(pattern, context)
+    ]
+    return min(candidates)[1] if candidates else "annual"
 
 
 def _to_annual(amount: int, period: str) -> int:

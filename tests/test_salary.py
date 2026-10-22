@@ -181,3 +181,14 @@ def test_salary_ceiling_does_not_invent_a_lower_bound() -> None:
         salary_label(salary.salary_min, salary.salary_max, salary.currency, False)
         == "up to 33,000 EUR"
     )
+
+
+def test_spanish_gross_annual_abbreviation_establishes_salary_range() -> None:
+    salary = extract_salary("Tarifa de referencia: 30-32K SBA.")
+    assert (salary.salary_min, salary.salary_max, salary.period) == (30000, 32000, "annual")
+
+
+def test_project_duration_does_not_turn_annual_salary_into_monthly() -> None:
+    salary = extract_salary("Estimated project duration: 7 months. "
+                            "Salary: \u20ac40,000 - \u20ac43,000 gross annual salary.")
+    assert (salary.salary_min, salary.salary_max, salary.period) == (40000, 43000, "annual")
