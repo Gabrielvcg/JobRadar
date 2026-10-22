@@ -24,6 +24,7 @@ from app.sources.fundacion_adecco import FundacionAdeccoJobSource
 from app.sources.fundacion_randstad import FundacionRandstadJobSource
 from app.sources.himalayas import HimalayasJobSource
 from app.sources.infoempleo import InfoempleoJobSource
+from app.sources.jazzhr import JazzHrJobSource
 from app.sources.jobicy import JobicyJobSource
 from app.sources.jobtoday import JobTodayJobSource
 from app.sources.manpower import ManpowerJobSource
@@ -91,6 +92,8 @@ def build_enabled_sources() -> list[JobSourceAdapter]:
             adapter = GreenhouseJobSource(raw_settings)
         elif adapter_name == "smartrecruiters":
             adapter = SmartRecruitersJobSource(raw_settings)
+        elif adapter_name == "jazzhr":
+            adapter = JazzHrJobSource(raw_settings)
         elif adapter_name == "lever":
             adapter = LeverJobSource(raw_settings)
         elif adapter_name == "ashby":

@@ -4,6 +4,7 @@ import asyncio
 import logging
 import re
 import xml.etree.ElementTree as ET
+from dataclasses import replace
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from typing import Any
@@ -13,6 +14,7 @@ import httpx
 from app.core.career_paths import matches_career_transition
 from app.core.config import get_settings
 from app.models.enums import RemoteType
+from app.scoring.text import clean_job_text, normalize_whitespace
 from app.sources.base import RawJob, SearchConfig
 
 logger = logging.getLogger(__name__)
@@ -36,15 +38,14 @@ class RssJobSource:
             settings.get("title_required_any_keywords", [])
         )
         self.excluded_keywords = _string_list(settings.get("excluded_keywords", []))
-        self.allowed_location_keywords = _string_list(
-            settings.get("allowed_location_keywords", [])
-        )
+        self.allowed_location_keywords = _string_list(settings.get("allowed_location_keywords", []))
         self.max_jobs = int(settings.get("max_jobs", 50))
+        self.company_name = str(settings.get("company_name") or "")
 
     async def fetch_jobs(self, search_config: SearchConfig) -> list[RawJob]:
         payload = await self._fetch_payload()
         jobs = [self._to_raw_job(item) for item in _rss_items(payload)]
-        return [
+        filtered = [
             job
             for job in jobs[: self.max_jobs]
             if _matches_affinity(
@@ -58,6 +59,7 @@ class RssJobSource:
                 self.allow_career_transitions,
             )
         ]
+        return _exact_variants(filtered) if self.company_name else filtered
 
     async def _fetch_payload(self) -> str:
         headers = {
@@ -86,6 +88,8 @@ class RssJobSource:
     def _to_raw_job(self, item: ET.Element) -> RawJob:
         raw_title = _child_text(item, "title") or "Untitled job"
         company_name, title = _split_company_title(raw_title)
+        if self.company_name:
+            company_name, title = self.company_name, raw_title
         region = _child_text(item, "region")
         country = _child_text(item, "country")
         state = _child_text(item, "state")
@@ -94,6 +98,26 @@ class RssJobSource:
         description = _child_text(item, "description") or ""
         requirements = ", ".join(part for part in (category, skills, region, country) if part)
         location = ", ".join(part for part in (region, country or state) if part)
+        remote_type = RemoteType.REMOTE
+        # Teamtailor publishes these fields in its documented public RSS feed.
+        ns = "{https://teamtailor.com/locations}"
+        places = item.findall(f"{ns}locations/{ns}location")
+        if places:
+            cities = list(
+                dict.fromkeys(
+                    p.findtext(f"{ns}city") or p.findtext(f"{ns}name") or "" for p in places
+                )
+            )
+            countries = list(dict.fromkeys(p.findtext(f"{ns}country") or "" for p in places))
+            location = ", ".join(p for p in [*cities, *countries] if p)[:500]
+            country = countries[0] if len(countries) == 1 else None
+        status = _child_text(item, "remoteStatus")
+        if status:
+            remote_type = {
+                "fully": RemoteType.REMOTE,
+                "hybrid": RemoteType.HYBRID,
+                "none": RemoteType.ONSITE,
+            }.get(status, RemoteType.UNKNOWN)
         return RawJob(
             source_name=self.name,
             source_job_id=_child_text(item, "guid") or _child_text(item, "link"),
@@ -102,8 +126,10 @@ class RssJobSource:
             description=description,
             requirements=requirements or None,
             location=location or region,
-            country=_country_from_location(location or region),
-            remote_type=RemoteType.REMOTE,
+            country=(country or _country_from_location(location))
+            if places
+            else _country_from_location(location or region),
+            remote_type=remote_type,
             employment_type=None,
             url=_child_text(item, "link"),
             publication_date=_parse_rss_datetime(_child_text(item, "pubDate")),
@@ -123,6 +149,36 @@ def _rss_items(payload: str) -> list[ET.Element]:
     return list(root.findall("./channel/item"))
 
 
+def _exact_variants(jobs: list[RawJob]) -> list[RawJob]:
+    groups: dict[tuple[str, ...], RawJob] = {}
+    for job in jobs:
+        place = (
+            job.country if job.remote_type == RemoteType.REMOTE and job.country else job.location
+        )
+        key = (
+            job.company_name.casefold(),
+            job.title.casefold(),
+            (place or "").casefold(),
+            job.remote_type.value,
+            normalize_whitespace(clean_job_text(job.description)).casefold(),
+            job.requirements or "",
+        )
+        previous = groups.get(key)
+        variants = list(previous.raw_payload.get("alternate_postings", [])) if previous else []
+        variants.append(
+            {
+                "source_job_id": job.source_job_id,
+                "url": job.url,
+                "location": job.location,
+            }
+        )
+        chosen = previous or job
+        groups[key] = replace(
+            chosen, raw_payload={**chosen.raw_payload, "alternate_postings": variants}
+        )
+    return list(groups.values())
+
+
 def _matches_affinity(
     job: RawJob,
     queries: list[str],
@@ -136,8 +192,10 @@ def _matches_affinity(
     title = job.title.lower()
     location = (job.location or "").lower()
     haystack = f"{job.title} {job.description} {job.requirements or ''}".lower()
-    if allowed_location_keywords and location and not any(
-        keyword.lower() in location for keyword in allowed_location_keywords
+    if (
+        allowed_location_keywords
+        and location
+        and not any(keyword.lower() in location for keyword in allowed_location_keywords)
     ):
         return False
     if (

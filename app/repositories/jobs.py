@@ -1,16 +1,21 @@
 from __future__ import annotations
 
+import re
 import uuid
+from collections import Counter
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from difflib import SequenceMatcher
 from typing import Any
 
 from sqlalchemy import Select, and_, func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.offer_identity import ORIGINS_KEY, is_employer_listing, is_portal_listing
 from app.models.enums import JobStatus, RemoteType
 from app.models.job import Company, IngestionRun, JobOffer, JobSource, UserJobState
 from app.scoring.engine import ScoreResult
+from app.scoring.evidence import fold
 from app.services.normalizer import NormalizedJob
 
 
@@ -108,7 +113,41 @@ class JobRepository:
             offer = existing
             offer.last_seen_at = now
             created = False
+        origins = dict(offer.raw_payload.get(ORIGINS_KEY, {})) if existing else {}
+        if existing:
+            origins.setdefault(
+                offer.source.name,
+                {
+                    "source_job_id": offer.source_job_id,
+                    "url": offer.url,
+                },
+            )
+        aliases = dict(origins.get(source.name, {}).get("aliases", {}))
+        if job.source_job_id and job.url:
+            aliases[job.source_job_id] = job.url
+        for alternate in job.raw_payload.get("alternate_postings", []):
+            if alternate.get("source_job_id") and alternate.get("url"):
+                aliases[str(alternate["source_job_id"])] = alternate["url"]
+        origins[source.name] = {
+            "source_job_id": job.source_job_id,
+            "url": job.url,
+            "aliases": aliases,
+        }
+        if existing and is_employer_listing(offer.url) and is_portal_listing(job.url):
+            # A stale mirror cannot replace the employer's requirements, date or closure evidence.
+            offer.raw_payload = {**offer.raw_payload, ORIGINS_KEY: origins}
+            session.flush()
+            return offer, False
+        promote = (
+            existing
+            and is_employer_listing(job.url)
+            and (is_portal_listing(offer.url) or is_portal_listing(offer.source.base_url))
+        )
         self._apply_job_fields(offer, company, job, score)
+        offer.raw_payload = {**offer.raw_payload, ORIGINS_KEY: origins}
+        if promote:
+            offer.source = source
+            offer.source_job_id = job.source_job_id
         offer.profile_key = source.profile_key
         session.flush()
         return offer, created
@@ -246,6 +285,22 @@ class JobRepository:
             )
             if existing is not None:
                 return existing
+            alias = session.scalar(
+                select(JobOffer)
+                .options(joinedload(JobOffer.company), joinedload(JobOffer.source))
+                .where(
+                    JobOffer.profile_key == source.profile_key,
+                    or_(
+                        JobOffer.raw_payload[ORIGINS_KEY][source.name]["source_job_id"].as_string()
+                        == job.source_job_id,
+                        JobOffer.raw_payload[ORIGINS_KEY][source.name]["aliases"][job.source_job_id]
+                        .as_string()
+                        .is_not(None),
+                    ),
+                )
+            )
+            if alias is not None:
+                return alias
         if job.url:
             existing = session.scalar(
                 select(JobOffer)
@@ -254,7 +309,7 @@ class JobRepository:
             )
             if existing is not None:
                 return existing
-        return session.scalar(
+        exact = session.scalar(
             select(JobOffer)
             .options(joinedload(JobOffer.company), joinedload(JobOffer.source))
             .where(
@@ -262,6 +317,24 @@ class JobRepository:
                 JobOffer.content_hash == job.content_hash,
             )
         )
+        if exact is not None and exact.source_id != source.id and not _same_mirror(exact, job):
+            exact = None
+        if exact is not None or not is_employer_listing(job.url):
+            return exact
+        mirrors = list(
+            session.scalars(
+                select(JobOffer)
+                .join(JobOffer.company)
+                .options(joinedload(JobOffer.company), joinedload(JobOffer.source))
+                .where(
+                    JobOffer.profile_key == source.profile_key,
+                    func.lower(Company.name) == job.company_name.lower(),
+                    func.lower(JobOffer.title) == job.title.lower(),
+                )
+            ).unique()
+        )
+        matches = [m for m in mirrors if is_portal_listing(m.url) and _same_mirror(m, job)]
+        return matches[0] if len(matches) == 1 else None
 
     def _apply_job_fields(
         self,
@@ -427,3 +500,23 @@ class JobRepository:
         if filters.order.lower() == "asc":
             return statement.order_by(sort_column.asc().nullslast(), JobOffer.created_at.desc())
         return statement.order_by(sort_column.desc().nullslast(), JobOffer.created_at.desc())
+
+
+def _same_mirror(offer: JobOffer, job: NormalizedJob) -> bool:
+    if offer.remote_type != job.remote_type:
+        return False
+    if job.remote_type == RemoteType.REMOTE:
+        country = fold(job.country or "")
+        if country in {"", "worldwide", "europe"} or country != fold(offer.country or ""):
+            return False
+    elif fold(offer.location or "") != fold(job.location or ""):
+        return False
+    first = " ".join(re.findall(r"\w+", fold(offer.description)))
+    second = " ".join(re.findall(r"\w+", fold(job.description)))
+    if min(len(first), len(second)) < 100:
+        return False
+    # Different requirement numbers must never be merged just because boilerplate matches.
+    numbers = r"\b\d+(?:[.,]\d+)?\b"
+    if Counter(re.findall(numbers, first)) != Counter(re.findall(numbers, second)):
+        return False
+    return SequenceMatcher(None, first, second, autojunk=False).ratio() >= 0.98

@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 
 from app.core.availability import VERIFICATION_KEY, current_verification
+from app.core.offer_identity import EMPLOYER_SUFFIXES
 from app.core.profiles import load_profiles, uses_career_radar
 from app.repositories.jobs import JobFilters, JobRepository
 from app.scoring.engine import ScoringEngine
@@ -39,7 +40,7 @@ PUBLIC_HOSTS = {
     "apply.workable.com",
     "jobs.ashbyhq.com",
 }
-ATS_SUFFIXES = (".jobs.personio.de", ".jobs.personio.com", ".recruitee.com", ".pinpointhq.com")
+ATS_SUFFIXES = EMPLOYER_SUFFIXES
 CLOSED = re.compile(
     r"\b(?:this (?:job|position|vacancy) (?:is no longer available|has been filled|is closed)|"
     r"no longer accepting applications|job (?:has )?expired|position filled|"
@@ -49,7 +50,8 @@ CLOSED = re.compile(
 APPLY = re.compile(
     r"^(?:apply(?: now| for (?:this|the) (?:job|position)| on company site)?|"
     r"me interesa|i.m interested|solicitar(?: este puesto)?|inscrib\w*|postular\w*|"
-    r"enviar cv|submit application)$"
+    r"enviar cv|enviar solicitud|submit application|solicitar este empleo|"
+    r"apply for this job|inscrib\w* ahora)$"
 )
 
 
@@ -125,6 +127,24 @@ async def verify_listing(
                 for h in headings
             )
             if not expected or not matches:
+                greenhouse = re.fullmatch(r"/([\w-]+)/jobs/(\d+)", urlsplit(str(url)).path)
+                if greenhouse and urlsplit(str(url)).hostname in {
+                    "boards.greenhouse.io",
+                    "job-boards.greenhouse.io",
+                }:
+                    endpoint = (
+                        f"https://boards-api.greenhouse.io/v1/boards/{greenhouse[1]}"
+                        f"/jobs/{greenhouse[2]}"
+                    )
+                    official = await client.get(endpoint, follow_redirects=False)
+                    if official.status_code == 404:
+                        return {
+                            **result,
+                            "state": "closed",
+                            "reason": "Official posting API confirms removal",
+                            "evidence_url": endpoint,
+                            "evidence_http_status": 404,
+                        }
                 result["reason"] = "Page does not confirm the expected vacancy title"
                 return result
         controls = list(soup.select("a[href], button, input[type=submit]"))
@@ -132,6 +152,7 @@ async def verify_listing(
         # Keep the user on the verified listing rather than guessing a form URL.
         if urlsplit(target).hostname == "jobs.smartrecruiters.com":
             controls.extend(soup.select('a.js-oneclick[data-sr-track="apply"]'))
+        checked_forms: dict[str, bool] = {}
         for element in controls:
             label = fold(element.get_text(" ", strip=True) or str(element.get("value") or ""))
             label = label.strip(" \t›→!…")
@@ -152,13 +173,34 @@ async def verify_listing(
             ):
                 continue
             # An accessible application control is evidence of a path, not proof of a response.
+            level = "application_control"
+            if (urlsplit(target).hostname or "").endswith(".teamtailor.com"):
+                if (
+                    not supported_url(destination)
+                    or "/applications/new" not in urlsplit(destination).path
+                ):
+                    continue
+                if destination not in checked_forms:
+                    form_page = await client.get(destination, follow_redirects=False)
+                    checked_forms[destination] = form_page.status_code == 200 and _candidate_form(
+                        form_page.text
+                    )
+                if not checked_forms[destination]:
+                    continue
+                level = "application_form"
+            elif _candidate_form(response.text):
+                level = "application_form"
             return {
                 **result,
                 "state": "active",
                 "application_url": destination,
+                "evidence_level": level,
                 "reason": "Accessible listing with an enabled application control",
             }
-        result["reason"] = "Page accessible, but no application control could be verified"
+        result["state"] = "listing_only"
+        result["reason"] = (
+            "Vacancy page accessible; an open application path could not be confirmed"
+        )
     except (httpx.HTTPError, ValueError):
         result["reason"] = "Verification failed temporarily; vacancy status is uncertain"
     return result
@@ -176,7 +218,7 @@ class OfferVerificationService:
         from app.services.ingestion import normalized_from_offer
 
         repository = JobRepository()
-        counts = {"checked": 0, "active": 0, "closed": 0, "unverified": 0}
+        counts = {"checked": 0, "active": 0, "closed": 0, "unverified": 0, "listing_only": 0}
         keys = [profile_key] if profile_key else list(load_profiles())
         async with httpx.AsyncClient(
             timeout=15,
@@ -235,3 +277,13 @@ def _checked_recently(payload: dict[str, Any], url: str | None) -> bool:
         return False
     proof = current_verification(payload, url)
     return proof.get("reason") != "Previous verification has expired" and "checked_at" in proof
+
+
+def _candidate_form(html: str) -> bool:
+    soup = BeautifulSoup(html, "html.parser")
+    return any(
+        form.select_one('input[type="email"]:not([disabled]), input[name*="email"]:not([disabled])')
+        is not None
+        and form.select_one('input[type="file"]:not([disabled])') is not None
+        for form in soup.select("form")
+    )

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Iterator
+from dataclasses import replace
 from datetime import UTC, date, datetime
 from typing import Any
 
@@ -18,6 +19,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.api import routes
 from app.core.availability import VERIFICATION_KEY
+from app.core.offer_identity import ORIGINS_KEY
 from app.db.base import Base
 from app.db.session import get_session
 from app.main import app
@@ -113,6 +115,118 @@ def test_duplicate_across_sources_with_tracking_url_keeps_status(session: Sessio
     )
     assert not created and updated.id == offer.id
     assert updated.status == JobStatus.APPLIED
+
+
+def test_employer_promotes_mirror_keeps_alias_and_blocks_stale_portal_updates(
+    session: Session,
+) -> None:
+    repo = JobRepository()
+    portal = repo.get_or_create_source(session, "himalayas", True, None)
+    employer = repo.get_or_create_source(session, "knowmad_official", True, None)
+    raw = RawJob(
+        source_name="himalayas",
+        source_job_id="portal-id",
+        company_name="Example",
+        title="Java Backend Developer",
+        location="Spain",
+        country="Spain",
+        remote_type=RemoteType.REMOTE,
+        url="https://himalayas.app/companies/example/jobs/java",
+        description=(
+            "Build Java Spring Boot REST APIs with SQL and Docker. "
+            "Collaborate with QA and architecture teams on reliable services. "
+            "Required: 2 years of backend development experience."
+        ),
+    )
+    mirror = JobNormalizer().normalize(raw)
+    offer, _ = repo.upsert_job(session, portal, mirror, ScoringEngine().score(mirror))
+    offer.status = JobStatus.APPLIED
+    original_id = offer.id
+    official = JobNormalizer().normalize(
+        replace(
+            raw,
+            source_name="knowmad_official",
+            source_job_id="employer-id",
+            url="https://example.teamtailor.com/jobs/123-java",
+            location="Sevilla, Spain",
+        )
+    )
+    promoted, created = repo.upsert_job(
+        session, employer, official, ScoringEngine().score(official)
+    )
+    assert not created and promoted.id == original_id and promoted.status == JobStatus.APPLIED
+    assert promoted.source.name == "knowmad_official"
+    assert promoted.raw_payload[ORIGINS_KEY]["himalayas"]["source_job_id"] == "portal-id"
+    promoted.raw_payload = {**promoted.raw_payload, VERIFICATION_KEY: {"state": "closed"}}
+    session.commit()
+    assert repo.find_existing(session, portal, mirror) is promoted
+    seen, created = repo.upsert_job(session, portal, mirror, ScoringEngine().score(mirror))
+    assert not created and seen.url == official.url
+    assert seen.raw_payload[VERIFICATION_KEY]["state"] == "closed"
+    assert seen.status == JobStatus.APPLIED
+
+
+def test_mirror_matching_does_not_merge_different_requirement_numbers(session: Session) -> None:
+    repo = JobRepository()
+    portal = repo.get_or_create_source(session, "himalayas", True, None)
+    official = repo.get_or_create_source(session, "knowmad_official", True, None)
+    raw = RawJob(
+        source_name="himalayas",
+        source_job_id="mirror",
+        company_name="Example",
+        title="Java Backend Developer",
+        location="Spain",
+        url="https://himalayas.app/jobs/java",
+        description="Build Java Spring Boot REST APIs and services with SQL. " * 3
+        + "Required: 2 years of Java experience.",
+    )
+    normalized = JobNormalizer().normalize(raw)
+    repo.upsert_job(session, portal, normalized, ScoringEngine().score(normalized))
+    other = JobNormalizer().normalize(
+        replace(
+            raw,
+            source_name="knowmad_official",
+            source_job_id="other",
+            url="https://example.teamtailor.com/jobs/321-java",
+            description=raw.description.replace("2 years", "5 years"),
+        )
+    )
+    assert repo.find_existing(session, official, other) is None
+
+
+@pytest.mark.parametrize("office_location", ["Barcelona, Spain", "Spain"])
+def test_mirror_matching_does_not_transfer_state_to_an_office_role(
+    session: Session,
+    office_location: str,
+) -> None:
+    repo = JobRepository()
+    portal = repo.get_or_create_source(session, "himalayas", True, None)
+    employer = repo.get_or_create_source(session, "official", True, None)
+    raw = RawJob(
+        source_name="himalayas",
+        source_job_id="remote",
+        company_name="Example",
+        title="Java Backend Developer",
+        location="Spain",
+        country="Spain",
+        remote_type=RemoteType.REMOTE,
+        url="https://himalayas.app/jobs/java",
+        description="Build Java Spring Boot REST APIs and services with SQL. " * 3,
+    )
+    normalized = JobNormalizer().normalize(raw)
+    offer, _ = repo.upsert_job(session, portal, normalized, ScoringEngine().score(normalized))
+    offer.status = JobStatus.APPLIED
+    onsite = JobNormalizer().normalize(
+        replace(
+            raw,
+            source_name="official",
+            source_job_id="barcelona",
+            location=office_location,
+            remote_type=RemoteType.HYBRID,
+            url="https://example.teamtailor.com/jobs/office-java",
+        )
+    )
+    assert repo.find_existing(session, employer, onsite) is None
 
 
 def test_verification_roundtrip_caches_failures_and_preserves_application_state(

@@ -178,6 +178,19 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
     if not development:
         uncertain.append("Descripcion sin responsabilidades concretas de desarrollo verificables")
     fit = max(0, min(100, role + tech_points + exp_points + english_points + responsibility_points))
+    frontend_years = [
+        item
+        for item in experience
+        if item.minimum >= 2
+        and item.kind != "desirable"
+        and re.search(r"\b(frontend|front.end|react|angular)\b", fold(item.evidence))
+    ]
+    if frontend_years and not professional.intersection({"React", "Angular", "Frontend"}):
+        fit = max(0, fit - 20)
+        uncertain.append(
+            "Exige experiencia profesional independiente en frontend; "
+            "no queda acreditada por Java backend"
+        )
     growth, growth_reasons = _growth(text)
     positive.extend(growth_reasons)
     location = assess_location(
@@ -248,7 +261,7 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
     if english == "above_certified_b2":
         viability -= 15
     advanced_title = re.search(
-        r"\b(senior|sr|staff|principal|lead|architect|arquitect\w*|head of|manager)\b",
+        r"\b(senior|sr|staff|principal|lead|lider|architect|arquitect\w*|head of|manager)\b",
         fold(job.title),
     )
     advanced_duties = re.search(
@@ -256,8 +269,12 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         r"organization.wide|technical strategy|estrategia tecnica|arquitectura corporativa)\b",
         fold(text),
     )
+    expert_level = bool(re.search(r"\badvanced\s*\(expert\)|\bnivel experto\b", fold(text)))
     future = bool(
-        advanced_title or advanced_duties or (binding and binding.minimum > max(5, years + 2))
+        advanced_title
+        or advanced_duties
+        or expert_level
+        or (binding and binding.minimum > max(5, years + 2))
     )
     category = (
         "C" if future else "A" if primary and backend else "B" if transition else "unclassified"
@@ -281,7 +298,7 @@ def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> Scor
         + growth * weights["growth"]
         + viability * weights["viability"]
     )
-    if future:
+    if future or frontend_years:
         score = min(score, 59)
     elif gap > 3:
         score = min(score, 49)

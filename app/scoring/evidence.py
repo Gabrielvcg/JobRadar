@@ -42,7 +42,7 @@ class ExperienceRequirement:
 
 EXPERIENCE = re.compile(
     r"(?<![\d.])(?P<min>\d+(?:[.,]\d+)?)\s*(?:\+|or more)?\s*"
-    r"(?:(?:-|–|—|to|a)\s*(?P<max>\d+(?:[.,]\d+)?)\s*)?"
+    r"(?:(?:-|–|—|to|a|y)\s*(?P<max>\d+(?:[.,]\d+)?)\s*)?"
     r"(?:years?|anos?)\b",
     re.IGNORECASE,
 )
