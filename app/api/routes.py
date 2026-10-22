@@ -338,6 +338,7 @@ def export_jobs(
     min_score: int | None = Query(default=None, ge=0, le=100),
     profile: str | None = None,
     radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
+    include_disabled_sources: bool = False,
 ) -> StreamingResponse:
     current_user = get_current_user(request, session)
     active_profile_key = resolve_profile_key(profile)
@@ -346,6 +347,7 @@ def export_jobs(
         radar=radar if uses_career_radar(active_profile_key) else None,
         min_score=min_score,
         user_id=current_user.id if current_user else None,
+        include_disabled_sources=include_disabled_sources,
         limit=10_000,
     )
     jobs = repository.list_jobs(session, filters)
@@ -355,10 +357,19 @@ def export_jobs(
     stream = io.StringIO()
     writer = csv.writer(stream)
     writer.writerow(
-        ["id", "score", "level", "company", "title", "salary/rate", "location", "status", "url"]
+        ["id", "score", "level", "company", "title", "salary/rate", "location", "status", "url",
+         "description", "requirements", "source", "source_enabled", "remote_type",
+         "experience_min_years", "experience_max_years", "salary_original_text",
+         "salary_currency", "salary_period", "salary_unknown", "radar", "recommendation",
+         "recommendation_reason", "career_alignment", "professional_fit", "growth", "viability",
+         "specialist_requirements_to_confirm", "uncertainties", "blockers",
+         "availability_state", "availability_checked_at", "availability_evidence",
+         "application_url", "publication_date", "expiration_date"]
     )
     for job in jobs:
         effective_status = user_statuses.get(str(job.id), job.status)
+        assessment = job.match_reasons.get("assessment", {})
+        proof = current_verification(job.raw_payload, job.url)
         writer.writerow(
             [
                 str(job.id),
@@ -372,12 +383,28 @@ def export_jobs(
                 job.location or "",
                 effective_status.value,
                 job.url or "",
+                job.description, job.requirements or "", job.source.name, job.source.enabled,
+                job.remote_type.value, job.experience_min_years, job.experience_max_years,
+                job.salary_original_text or "", job.salary_currency or "", job.salary_period or "",
+                job.salary_unknown, assessment.get("radar", ""),
+                assessment.get("recommendation", ""), assessment.get("recommendation_reason", ""),
+                assessment.get("career_alignment", ""), assessment.get("professional_fit", ""),
+                assessment.get("growth", ""), assessment.get("viability", ""),
+                " | ".join(assessment.get("specialist_requirements_to_confirm", [])),
+                " | ".join(assessment.get("uncertainties", [])),
+                " | ".join(assessment.get("blockers", [])),
+                proof["state"], proof.get("checked_at", ""), proof.get("evidence_level", ""),
+                proof.get("application_url", ""),
+                job.publication_date.isoformat() if job.publication_date else "",
+                job.expiration_date.isoformat() if job.expiration_date else "",
             ]
         )
     stream.seek(0)
     filename = f"jobradar_{active_profile_key}_jobs.csv"
     headers = {"Content-Disposition": f"attachment; filename={filename}"}
-    return StreamingResponse(iter([stream.getvalue()]), media_type="text/csv", headers=headers)
+    return StreamingResponse(
+        iter(["\ufeff" + stream.getvalue()]), media_type="text/csv", headers=headers,
+    )
 
 
 @router.get("/jobs/{job_id}", response_model=JobOfferRead)

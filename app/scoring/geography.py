@@ -27,15 +27,24 @@ def assess_location(
     # Specific location wins over a broad country label inferred by a portal.
     place = fold(location or country or "")
     text = fold(description)
-    if re.search(r"\bremote\s*@\s*colombia\b", text):
+    if re.search(
+        r"\bremote\s*@\s*(?:colombia|brazil|mexico|argentina)\b|"
+        r"\b(?:latin america|latam)\b", text.split("\n", 1)[0],
+    ):
         return LocationAssessment(
             "incompatible", "country_restricted", 0,
-            "El puesto especifica remoto en Colombia; no confirma residencia en Espana",
+            "El titulo restringe el puesto a Latinoamerica; no incluye residencia en Espana",
         )
     if re.search(
         r"\b(?:not (?:available|open) (?:in|to)|except|excluding|no disponible en)\s+spain\b", text
     ):
         return LocationAssessment("incompatible", "restricted", 0, "Excluye residencia en Espana")
+    eligible = re.search(r"\bopen to applicants based in\s+([^.!?\n]{1,220})", text)
+    if eligible and not re.search(r"\b(?:spain|espana)\b", eligible.group(1)):
+        return LocationAssessment(
+            "incompatible", "restricted", 0,
+            "La lista explicita de paises de contratacion no incluye Espana",
+        )
     restricted = re.search(
         r"\b(?:must (?:be (?:based|located)|reside|live)|residen\w* obligatori\w*|"
         r"only (?:candidates|applicants|residents) (?:in|from))\s+(?:in\s+)?"

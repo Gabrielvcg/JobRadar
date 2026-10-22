@@ -7,7 +7,7 @@ from app.scoring.engine import ScoringEngine
 from app.services.normalizer import NormalizedJob
 
 
-def test_scores_strong_backend_cloud_offer_highly() -> None:
+def test_strong_backend_fit_does_not_verify_an_unchecked_application() -> None:
     job = _job(
         title="Backend Engineer Java AWS",
         description=(
@@ -23,8 +23,11 @@ def test_scores_strong_backend_cloud_offer_highly() -> None:
 
     result = ScoringEngine().score(job)
 
-    assert result.score >= 80
-    assert result.level == "excellent"
+    assert result.assessment is not None
+    assert result.assessment["professional_fit"] >= 80
+    assert result.assessment["recommendation"] == "U"
+    assert result.score <= 64
+    assert result.level != "excellent"
     assert result.positive
 
 
@@ -393,7 +396,9 @@ def test_engineering_profile_flags_disability_technical_offer() -> None:
 
     result = ScoringEngine("engineering").score(job)
 
-    assert result.score >= 65
+    assert result.assessment is not None
+    assert result.assessment["professional_fit"] >= 65
+    assert result.assessment["recommendation"] == "U"
     assert any("discapacidad" in reason.lower() for reason in result.positive)
 
 

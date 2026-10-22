@@ -20,7 +20,8 @@ def clauses(text: str) -> list[str]:
 def requirement_kind(text: str) -> str:
     text = fold(text)
     if re.search(
-        r"\b(preferred|desirable|nice to have|bonus|valued|deseable|valorable|idealmente)\b", text
+        r"\b(preferred|desirable|nice to have|bonus|valued|deseable|valorable|idealmente|"
+        r"is a (?:strong )?plus)\b", text
     ):
         return "desirable"
     if re.search(

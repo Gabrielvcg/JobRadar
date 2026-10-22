@@ -6,10 +6,13 @@ from typing import Any
 
 import pytest
 
+from app.core.availability import VERIFICATION_KEY
 from app.core.experience import professional_months
 from app.models.enums import RemoteType
+from app.scoring.alignment import analyze_work
 from app.scoring.engine import ScoringEngine
 from app.scoring.evidence import binding_experience, experience_requirements
+from app.scoring.salary import extract_salary
 from app.scoring.text import canonical_url, detect_remote_type, extract_experience_years
 from app.services.normalizer import JobNormalizer, NormalizedJob
 from app.sources.base import RawJob
@@ -261,7 +264,7 @@ def test_keywords_alone_do_not_grant_cloud_transition_or_growth() -> None:
             requirements=None,
         )
     )
-    assert result.assessment["radar"] == "excluded"
+    assert result.assessment["recommendation"] == "U"
     assert result.assessment["growth"] == 0
 
 
@@ -385,3 +388,142 @@ def test_explicit_unspecified_work_mode_is_uncertain_despite_remote_metadata() -
                        "Ubicacion, modalidad de trabajo y duracion: No especificadas."))
     assert result.assessment["location_status"] == "uncertain"
     assert result.assessment["radar"] == "current"
+
+
+def active_job(**changes: Any) -> NormalizedJob:
+    offer = job(**changes)
+    offer.raw_payload[VERIFICATION_KEY] = {
+        "state": "active", "listing_url": offer.url,
+        "checked_at": datetime.now(UTC).isoformat(),
+        "application_url": offer.url, "evidence_level": "application_form",
+        "reason": "Public application form accessible",
+    }
+    return offer
+
+
+def test_infrastructure_developer_platform_is_not_software_development() -> None:
+    operator = score(active_job(
+        title="DevOps Engineer",
+        description="Support and maintain foundational infrastructure and developer tools. "
+                    "Improve the developer platform for fast and secure software delivery. "
+                    "Manage AWS infrastructure, Linux servers and CI/CD pipelines.",
+        requirements="At least 2 years of DevOps experience."))
+    backend = score(active_job())
+    assert operator.assessment["recommendation"] == "D"
+    assert operator.assessment["work_focus"] == "operations"
+    assert not operator.assessment["software_work_evidence"]
+    assert backend.score > operator.score
+
+
+def test_platform_api_engineering_remains_an_eligible_secondary_path() -> None:
+    platform = score(active_job(title="Platform Engineer",
+        description="Develop platform APIs and design distributed software on AWS."))
+    backend = score(active_job())
+    assert platform.assessment["recommendation"] == "B"
+    assert platform.assessment["career_alignment"] < backend.assessment["career_alignment"]
+    assert platform.score < backend.score
+
+
+@pytest.mark.parametrize("requirements,gap", [
+    ("Buscamos experiencia en\nKotlin\nJava\nSpring Boot", "Kotlin"),
+    ("Requirements\nPython\nJava\nUnrelated office or remote policy", "Python"),
+    ("Must to have skills\nAngular\nNice to have skills\nGerman Language", "Angular"),
+    ("Experiencia con AWS Serverless y Terraform.", "AWS"),
+])
+def test_required_lists_preserve_specialist_gaps(requirements: str, gap: str) -> None:
+    result = score(active_job(requirements=requirements))
+    assert any(x.startswith(gap + ":") for x in
+               result.assessment["specialist_requirements_to_confirm"])
+    assert result.assessment["recommendation"] != "A"
+
+
+@pytest.mark.parametrize("requirements", [
+    "Buscamos\nExperiencia en Java y/o Kotlin",
+    "Requirements\nJava or Kotlin\nNice to have skills\nPython",
+    "Python preferred. 2 years of Java experience.",
+])
+def test_alternatives_and_desirable_requirements_do_not_create_false_gaps(
+    requirements: str,
+) -> None:
+    result = score(active_job(requirements=requirements))
+    assert not result.assessment["specialist_requirements_to_confirm"]
+    assert result.assessment["recommendation"] == "A"
+
+
+def test_backend_years_do_not_satisfy_independent_frontend_experience() -> None:
+    result = score(active_job(requirements="2 years of React experience required."))
+    assert result.assessment["recommendation"] == "U"
+    assert result.assessment["independent_professional_experience"]
+
+
+@pytest.mark.parametrize("requirements", [
+    "Required: 5 years of Java experience.", "Buscamos un perfil senior en Java.",
+])
+def test_five_year_and_body_senior_roles_are_strategic(requirements: str) -> None:
+    result = score(active_job(requirements=requirements))
+    assert result.assessment["recommendation"] == "C"
+    assert result.assessment["radar"] == "strategic"
+
+
+def test_unverified_form_is_insufficient_even_with_strong_technical_fit() -> None:
+    result = score(job())
+    assert result.assessment["recommendation"] == "U"
+    assert result.assessment["professional_fit"] >= 80
+
+
+def test_enterprise_integration_and_erp_are_not_negative_career_signals() -> None:
+    result = score(active_job(description="Develop Java Spring backend APIs and ERP "
+        "integrations. Design distributed services and messaging."))
+    assert result.assessment["recommendation"] == "A"
+
+
+def test_sparse_real_spanish_developer_duties_are_retained() -> None:
+    work = analyze_work("Software Developer Java",
+        "Participaras en desarrollos de proyectos asumiendo un rol de desarrollador Java.",
+        {"Java"}, [])
+    assert work.focus == "backend"
+
+
+def test_community_size_is_not_a_salary_even_near_funding_currency() -> None:
+    result = extract_salary("540000 community members. Raised $500M in funding.")
+    assert result.salary_min is None
+    assert result.unknown
+
+
+def test_hours_and_certification_numbers_are_not_pay_evidence() -> None:
+    result = extract_salary("Working hours 09:00 - 18:00. Salary: 40,000-43,000 EUR annual.")
+    assert (result.salary_min, result.salary_max) == (40000, 43000)
+    assert extract_salary("ISO/IEC 27001. Benefits: competitive compensation.").unknown
+    assert extract_salary("Competitive salary. 28 days paid annual leave.").unknown
+
+
+def test_employee_k_salary_range_is_separate_from_freelance_day_rate() -> None:
+    result = extract_salary("Freelance: 280 EUR per day. Contrato indefinido: 45k-47k.")
+    assert (result.salary_min, result.salary_max) == (45000, 47000)
+
+
+def test_remote_latam_title_overrides_worldwide_metadata() -> None:
+    result = score(active_job(title="Java Engineer - Latin America - Remote",
+                              location="Worldwide", country="Worldwide"))
+    assert result.assessment["recommendation"] == "D"
+    assert result.assessment["location_status"] == "incompatible"
+
+
+def test_preferred_years_heading_is_not_a_mandatory_five_year_requirement() -> None:
+    result = score(active_job(requirements="Nice to have\n5 years of AWS experience."))
+    assert result.assessment["recommendation"] == "A"
+    assert result.assessment["experience_requirements"][0]["kind"] == "desirable"
+
+
+def test_mirror_senior_tag_does_not_override_actual_job_requirements() -> None:
+    result = score(active_job(requirements="2 years of Java experience.\nJava-Developer, Senior"))
+    assert result.assessment["recommendation"] == "A"
+
+
+def test_explicit_hiring_country_list_is_stronger_than_worldwide_metadata() -> None:
+    result = score(active_job(location="Worldwide", country="Worldwide",
+        description="Develop and test new functionality in Java. "
+        "We are open to applicants based in the UK, Netherlands, Belgium, France and Germany."))
+    assert result.assessment["work_focus"] == "backend"
+    assert result.assessment["recommendation"] == "D"
+    assert "location_incompatible" in result.assessment["blockers"]

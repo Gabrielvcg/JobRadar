@@ -123,7 +123,6 @@ def _looks_like_salary(text: str, start: int, end: int, matched: str) -> bool:
     context = _salary_context(text, start, end).lower()
     matched_lower = matched.lower()
     has_currency = bool(re.search(CURRENCY_PATTERN, matched_lower, re.IGNORECASE))
-    has_currency_context = bool(re.search(CURRENCY_PATTERN, context, re.IGNORECASE))
     has_salary_word = any(
         word in context
         for word in (
@@ -137,8 +136,9 @@ def _looks_like_salary(text: str, start: int, end: int, matched: str) -> bool:
         )
     )
     return (
-        has_currency or has_currency_context or has_salary_word
+        has_currency or has_salary_word
         or bool(re.search(r"\bsba\b", context))
+        or bool(re.search(r"contrato indefinido", context) and re.search(r"\dk\b", matched_lower))
     )
 
 
@@ -149,6 +149,16 @@ def _looks_like_identifier_or_percentage_fragment(
     trimmed_end = start + len(matched.rstrip())
     previous_character = text[trimmed_start - 1] if trimmed_start > 0 else ""
     next_character = text[trimmed_end] if trimmed_end < len(text) else ""
+    if previous_character == ":" or next_character == ":":
+        return True
+    if re.search(r"\bISO(?:/IEC)?\s*$", text[max(0, trimmed_start - 15):trimmed_start], re.I):
+        return True
+    if re.match(
+        r"\+?\s*(?:community members|users|customers|team members|employees|downloads|"
+        r"days (?:paid )?annual leave)\b",
+        text[trimmed_end:], re.I,
+    ):
+        return True
     if next_character.lower() == "k":
         return False
     if previous_character.isalpha() or next_character.isalpha():
@@ -258,8 +268,11 @@ def _amounts_are_plausible(
 
 
 def _period_from_context(text: str, start: int, end: int) -> str:
-    context = _salary_context(text, start, end).lower()
-    offset = max(0, start - 80)
+    boundary = text.rfind(". ", 0, start)
+    offset = max(0, start - 80, boundary + 2 if boundary >= 0 else 0)
+    stop = text.find(". ", end)
+    stop = min(len(text), end + 80, stop if stop >= 0 else len(text))
+    context = text[offset:stop].lower()
     # Bind the nearest period to the amount, not an unrelated project duration.
     patterns = {
         "annual": r"\b(?:annual(?:ly)?|anual(?:es)?|yearly|per year|sba)\b",
