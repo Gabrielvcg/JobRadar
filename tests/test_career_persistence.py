@@ -82,7 +82,9 @@ def test_complete_csv_includes_disabled_history_and_full_review_evidence(
     offer.source.enabled = False
     session.commit()
     app.dependency_overrides[get_session] = lambda: session
-    monkeypatch.setattr(routes, "get_current_user", lambda request, session: None)
+    monkeypatch.setattr(routes, "get_current_user", lambda *args: User(
+        id=1, email="export@example.invalid", display_name="Export check", is_admin=False,
+    ))
     try:
         with TestClient(app) as client:
             normal = client.get("/jobs/export?profile=engineering&radar=all")
@@ -97,6 +99,11 @@ def test_complete_csv_includes_disabled_history_and_full_review_evidence(
         assert rows[0]["source_enabled"] == "False"
         assert rows[0]["recommendation"] == "U"
         assert rows[0]["availability_state"] == "unverified"
+        monkeypatch.setattr(routes, "get_current_user", lambda *args: None)
+        with TestClient(app) as client:
+            assert client.get(
+                "/jobs/export?profile=engineering&radar=all&include_disabled_sources=true"
+            ).status_code == 401
     finally:
         app.dependency_overrides.clear()
 
