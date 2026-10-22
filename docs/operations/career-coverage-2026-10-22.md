@@ -147,7 +147,9 @@ backups, including `jobradar_20261022T141908Z.sql.gz` for the final release. A r
 was not claimed. Other VPS applications/services were not changed.
 
 The existing half-hour scheduled ingestion was checked across the morning and
-14:00 cycle; successful runs distinguish zero/new/updated and interval skips.
+14:30 UTC cycle on 0.1.45; the final scheduled run fetched seven, created zero,
+updated two and reported zero errors. Successful runs distinguish discovery,
+updates and interval skips.
 Twelve-hour official-feed intervals bound employer traffic. Active verification
 expires and is rechecked by the existing verification process. Final releases
 also passed controlled real ingestions before the last scoring-only patch.
