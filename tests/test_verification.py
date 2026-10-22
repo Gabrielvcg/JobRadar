@@ -38,17 +38,75 @@ def test_active_requires_matching_title_and_application_control() -> None:
     assert proof["application_url"] == "https://jobs.smartrecruiters.com/example/123/apply"
 
 
+@pytest.mark.parametrize(("form_status", "expected"), [(200, "active"), (403, "listing_only")])
+def test_teamtailor_checks_candidate_form_without_submitting(
+    form_status: int, expected: str
+) -> None:
+    calls: list[str] = []
+
+    async def run() -> dict[str, Any]:
+        def handle(request: httpx.Request) -> httpx.Response:
+            assert request.method == "GET"
+            calls.append(str(request.url))
+            if request.url.path.endswith("/applications/new"):
+                return httpx.Response(
+                    form_status,
+                    text=(
+                        '<form><input type="email"><input type="file"><button>Apply</button></form>'
+                    ),
+                )
+            return httpx.Response(
+                200,
+                text=(
+                    "<h1>Java Backend Developer</h1>"
+                    '<a href="/jobs/123-java/applications/new">Inscríbete</a>' * 2
+                ),
+            )
+
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+            return await verify_listing(
+                client, "https://example.teamtailor.com/jobs/123-java", "Java Backend Developer"
+            )
+
+    proof = asyncio.run(run())
+    assert proof["state"] == expected
+    assert len(calls) == 2
+    if expected == "active":
+        assert proof["evidence_level"] == "application_form"
+
+
+def test_greenhouse_board_redirect_is_closed_only_with_official_removal_evidence() -> None:
+    async def run() -> dict[str, Any]:
+        def handle(request: httpx.Request) -> httpx.Response:
+            if request.url.host == "boards-api.greenhouse.io":
+                return httpx.Response(404, json={"error": "Job not found"})
+            return httpx.Response(200, text="<h1>All open positions</h1>")
+
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+            return await verify_listing(
+                client,
+                "https://job-boards.greenhouse.io/example/jobs/123",
+                "Java Backend Developer",
+            )
+
+    proof = asyncio.run(run())
+    assert proof["state"] == "closed" and proof["evidence_http_status"] == 404
+
+
 @pytest.mark.parametrize(
-    "body",
+    ("body", "expected"),
     [
-        "<h1>Java Backend Developer</h1><button>Apply filters</button>",
-        '<h1>All jobs</h1><a href="/apply">Apply now</a>',
-        "<h1>Java Backend Developer</h1><button disabled>Apply now</button>",
-        '<h1>Java Backend Developer</h1><button aria-disabled="true">Apply now</button>',
+        ("<h1>Java Backend Developer</h1><button>Apply filters</button>", "listing_only"),
+        ('<h1>All jobs</h1><a href="/apply">Apply now</a>', "unverified"),
+        ("<h1>Java Backend Developer</h1><button disabled>Apply now</button>", "listing_only"),
+        (
+            '<h1>Java Backend Developer</h1><button aria-disabled="true">Apply now</button>',
+            "listing_only",
+        ),
     ],
 )
-def test_generic_page_or_disabled_control_is_not_verified_active(body: str) -> None:
-    assert check(200, body)["state"] == "unverified"
+def test_generic_page_or_disabled_control_is_not_verified_active(body: str, expected: str) -> None:
+    assert check(200, body)["state"] == expected
 
 
 def test_smartrecruiters_javascript_control_and_empty_notification_heading() -> None:
@@ -62,8 +120,8 @@ def test_smartrecruiters_javascript_control_and_empty_notification_heading() -> 
 
 
 def test_unbound_anchor_does_not_establish_an_application_path() -> None:
-    proof = check(200, '<h1>Java Backend Developer</h1><a>Me interesa</a>')
-    assert proof["state"] == "unverified"
+    proof = check(200, "<h1>Java Backend Developer</h1><a>Me interesa</a>")
+    assert proof["state"] == "listing_only"
 
 
 @pytest.mark.parametrize("status", [403, 429, 500])

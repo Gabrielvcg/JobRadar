@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.42 - 2026-10-22
+
+- Discover jobs from knowmad mood's documented Teamtailor RSS feed and IRIUM's bounded public JazzHR board; extend the existing SmartRecruiters source to reviewed Scalian and Talan employers.
+- Preserve employer dates, locations and remote status; reuse existing variant grouping and retain portal identities when promoting matching mirrors to an employer listing, without allowing stale mirrors to overwrite official evidence or application states.
+- Check real Teamtailor application forms, distinguish accessible listings from unknown application status, and confirm removed Greenhouse postings through the official API when a stale URL redirects to the board.
+- Correct observed ranking errors involving independent frontend experience, Spanish technical-lead titles, expert-level duties, Galicia residence requirements, and Spanish between-three-and-five-year ranges.
+
 ## 0.1.41 - 2026-10-21
 
 - Preserve published salary ceilings as an upper bound with no invented lower bound, display them as up to that amount, and require confirmation of the minimum change salary.

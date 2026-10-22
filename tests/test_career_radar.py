@@ -144,6 +144,39 @@ def test_remote_spain_does_not_override_required_residence_in_galicia() -> None:
     assert "location_incompatible" in result.assessment["blockers"]
 
 
+def test_residence_region_requirement_survives_optional_city_preference() -> None:
+    result = score(
+        job(
+            location="Spain",
+            description=(
+                "Build Java Spring Boot APIs. Residencia en Galicia, preferiblemente en la zona de "
+                "A Coruna, con disponibilidad para acudir puntualmente a oficina."
+            ),
+        )
+    )
+    assert result.assessment["radar"] == "excluded"
+
+
+@pytest.mark.parametrize("title", ["Líder técnico Java", "Java Developer"])
+def test_explicit_lead_or_expert_level_is_a_future_reference(title: str) -> None:
+    result = score(
+        job(title=title, description="Build Java Spring Boot APIs. Level: Advanced (expert).")
+    )
+    assert result.assessment["radar"] == "strategic" and result.score <= 59
+
+
+def test_frontend_employment_years_are_not_implied_by_backend_experience() -> None:
+    result = score(
+        job(requirements="Minimum 2 years of frontend framework experience. Java Spring Boot.")
+    )
+    assert result.score <= 59
+
+
+def test_spanish_between_year_range_uses_its_lower_bound() -> None:
+    item = binding_experience(experience_requirements("Experiencia entre 3 y 5 anos en Java."))
+    assert item and item.minimum == 3 and item.maximum == 5
+
+
 @pytest.mark.parametrize("phrase", ["Experiencia de hasta 3 anos", "Up to 3 years of experience"])
 def test_experience_upper_limit_is_not_a_required_minimum(phrase: str) -> None:
     requirement = binding_experience(experience_requirements(phrase))

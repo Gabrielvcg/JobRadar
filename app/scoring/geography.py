@@ -45,11 +45,16 @@ def assess_location(
             f"Residencia obligatoria fuera de Espana: {restricted.group(1)}",
         )
     regional = re.search(
-        r"\b(?:resida[ns]?|residencia obligatoria|debes? residir)\s+en\s+"
-        r"(galicia|madrid|barcelona|cataluna|pais vasco|valencia|zaragoza|bilbao)\b",
+        r"\b(?:resida[ns]?|residencia(?: obligatoria)?|debes? residir)\s+en\s+"
+        r"(galicia|a coruna|madrid|barcelona|cataluna|pais vasco|"
+        r"valencia|zaragoza|bilbao|malaga)\b",
         text,
     )
-    if regional:
+    optional_residence = regional and re.search(
+        r"\b(?:valorable|deseable|preferible|preferentemente)\s*$",
+        text[max(0, regional.start() - 30) : regional.start()],
+    )
+    if regional and not optional_residence:
         return LocationAssessment(
             "incompatible",
             "regional_residence",

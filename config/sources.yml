@@ -16,11 +16,48 @@ sources:
     companies:
       - slug: "T-SystemsIberia"
         name: "T-Systems Iberia"
+      - slug: "scalian"
+        name: "Scalian"
+      - slug: "talan"
+        name: "Talan"
     must_have_any_keywords: ["java", "spring"]
     required_any_keywords: ["java", "spring"]
     title_required_any_keywords: ["java", "backend", "software", "developer", "desarrollador", "arquitecto"]
     excluded_keywords: ["recruiter", "sales", "product owner"]
     attribution_url: "https://careers.smartrecruiters.com/T-SystemsIberia"
+
+  knowmad_official:
+    enabled: true
+    adapter: "rss"
+    company_name: "knowmad mood"
+    base_url: "https://knowmadmood.teamtailor.com/jobs.rss?per_page=200"
+    min_interval_minutes: 720
+    timeout_seconds: 25
+    retries: 1
+    max_jobs: 200
+    minimum_score: 35
+    allow_career_transitions: true
+    must_have_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software", "cloud", "platform", "security"]
+    excluded_keywords: ["recruiter", "sales", "product owner"]
+    attribution_url: "https://knowmadmood.teamtailor.com"
+
+  irium_official:
+    enabled: true
+    adapter: "jazzhr"
+    base_url: "https://iriumspain.applytojob.com"
+    company_name: "IRIUM"
+    country: "Spain"
+    min_interval_minutes: 720
+    timeout_seconds: 20
+    retries: 1
+    max_details_per_company: 10
+    rate_limit_seconds: 1
+    minimum_score: 35
+    must_have_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software", "fullstack", "full stack"]
+    excluded_keywords: ["recruiter", "sales", "product owner"]
+    attribution_url: "https://iriumspain.applytojob.com"
 
   fixtures:
     enabled: true

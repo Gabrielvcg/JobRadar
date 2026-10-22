@@ -56,7 +56,7 @@ from app.sources.portalento import _matches_affinity as portalento_matches_affin
 from app.sources.remoteok import RemoteOkJobSource
 from app.sources.remoteok import _matches_affinity as remoteok_matches_affinity
 from app.sources.remotive import RemotiveJobSource, _matches_affinity
-from app.sources.rss import RssJobSource, _rss_items
+from app.sources.rss import RssJobSource, _exact_variants, _rss_items
 from app.sources.rss import _matches_affinity as rss_matches_affinity
 from app.sources.talent import TalentJobSource, TalentPage, _enriched_from_detail
 from app.sources.talent import _matches_affinity as talent_matches_affinity
@@ -67,6 +67,50 @@ from app.sources.tecnoempleo import (
 from app.sources.tecnoempleo import _matches_affinity as tecnoempleo_matches_affinity
 from app.sources.trabajos import TrabajosJobSource, TrabajosPage
 from app.sources.trabajos import _matches_affinity as trabajos_matches_affinity
+
+
+def test_teamtailor_rss_keeps_employer_location_mode_and_original_date() -> None:
+    source = RssJobSource("knowmad_official", {"company_name": "knowmad mood"})
+    item = _rss_items("""<rss xmlns:tt="https://teamtailor.com/locations"><channel><item>
+      <title>Java Backend Developer</title><guid>original-id</guid>
+      <description>Develop Java Spring APIs</description><remoteStatus>hybrid</remoteStatus>
+      <pubDate>Fri, 29 May 2026 11:49:55 +0200</pubDate>
+      <tt:locations><tt:location><tt:city>Sevilla</tt:city><tt:country>Spain</tt:country>
+      </tt:location></tt:locations></item></channel></rss>""")[0]
+    job = source._to_raw_job(item)
+    assert job.company_name == "knowmad mood"
+    assert job.location == "Sevilla, Spain" and job.country == "Spain"
+    assert job.remote_type == RemoteType.HYBRID
+    assert job.publication_date and job.publication_date.month == 5
+
+
+def test_official_rss_only_groups_exact_variants_and_preserves_alternate_links() -> None:
+    from dataclasses import replace
+
+    first = RawJob(
+        source_name="knowmad_official",
+        source_job_id="one",
+        company_name="Example",
+        title="Java Backend",
+        description="Required: 2 years of Java experience.",
+        location="Madrid",
+        country="Spain",
+        remote_type=RemoteType.REMOTE,
+        url="https://example.teamtailor.com/jobs/1-java",
+    )
+    duplicate = replace(
+        first,
+        source_job_id="two",
+        location="Sevilla",
+        url="https://example.teamtailor.com/jobs/2-java",
+    )
+    senior = replace(
+        first, source_job_id="senior", description="Required: 5 years of Java experience."
+    )
+    onsite = replace(first, source_job_id="onsite", remote_type=RemoteType.ONSITE)
+    jobs = _exact_variants([first, duplicate, senior, onsite])
+    assert len(jobs) == 3
+    assert len(jobs[0].raw_payload["alternate_postings"]) == 2
 
 
 def test_remotive_maps_remote_job_with_salary() -> None:
@@ -458,7 +502,10 @@ def test_himalayas_maps_junior_java_offer_with_salary() -> None:
     )
 
     assert raw.source_name == "himalayas"
-    assert raw.source_job_id == "https://himalayas.app/companies/irium/jobs/desarrollador-a-java-junior"
+    assert (
+        raw.source_job_id
+        == "https://himalayas.app/companies/irium/jobs/desarrollador-a-java-junior"
+    )
     assert raw.company_name == "IRIUM"
     assert raw.location == "Spain"
     assert raw.country == "Spain"
@@ -768,9 +815,7 @@ def test_ashby_maps_curated_company_job() -> None:
             "employmentType": "FullTime",
             "publishedAt": "2026-06-30T12:00:00+00:00",
             "jobUrl": "https://jobs.ashbyhq.com/flip/example",
-            "compensation": {
-                "scrapeableCompensationSalarySummary": "EUR 50000 - 70000"
-            },
+            "compensation": {"scrapeableCompensationSalarySummary": "EUR 50000 - 70000"},
         },
         CompanySetting("flip", "Flip"),
     )
@@ -863,9 +908,7 @@ def test_recruitee_maps_curated_company_job() -> None:
     assert raw.source_name == "recruitee_curated"
     assert raw.source_job_id == "procivisag:2553140"
     assert raw.company_name == "Procivis"
-    assert raw.location == (
-        "Remote within Europe, Switzerland, B2B Contract, Vienna, Austria"
-    )
+    assert raw.location == ("Remote within Europe, Switzerland, B2B Contract, Vienna, Austria")
     assert raw.country == "Europe"
     assert raw.remote_type == RemoteType.REMOTE
     assert raw.publication_date is not None
@@ -1069,8 +1112,7 @@ def test_infoempleo_maps_administrative_listing() -> None:
     assert raw.employment_type == "full_time"
     assert raw.salary_original_text is not None
     assert raw.url == (
-        "https://www.infoempleo.com/ofertasdetrabajo/"
-        "auxiliar-administrativoa/sevilla/3188283/"
+        "https://www.infoempleo.com/ofertasdetrabajo/auxiliar-administrativoa/sevilla/3188283/"
     )
 
 
@@ -1501,9 +1543,7 @@ def test_manpower_maps_listing_and_structured_job_detail() -> None:
         """
     )
 
-    assert urls == [
-        "https://www.manpower.es/es/empleos/agricultura/administrativo-h-m-x-/729114"
-    ]
+    assert urls == ["https://www.manpower.es/es/empleos/agricultura/administrativo-h-m-x-/729114"]
 
     raw = source._job_from_detail_html(
         """
@@ -1769,8 +1809,7 @@ def test_pagepersonnel_maps_search_result_and_skips_recommendations() -> None:
     assert raw.title == "Administrativo/a Contable"
     assert raw.location == "Sevilla provincia"
     assert raw.url == (
-        "https://www.pagepersonnel.es/job-detail/administrativoa-contable/"
-        "ref/jn-072026-7053201"
+        "https://www.pagepersonnel.es/job-detail/administrativoa-contable/ref/jn-072026-7053201"
     )
 
 
@@ -2597,8 +2636,7 @@ def test_fundacion_randstad_maps_api_job_with_experience_and_salary() -> None:
             "date": "2026-07-02T04:00:00",
             "description": "Diseñar y probar sistemas de control basados en PLC.",
             "requirements": (
-                "Certificado de discapacidad. "
-                "Experiencia en desarrollo de software para PLC."
+                "Certificado de discapacidad. Experiencia en desarrollo de software para PLC."
             ),
             "conditions": "Contrato indefinido.",
             "url": "https://www.randstad.es/candidatos/ofertas-empleo/oferta/plc-2990023",

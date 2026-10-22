@@ -78,6 +78,49 @@ def test_postgres_career_jsonb_filters_and_statuses(pg_session: Session) -> None
     assert repository.stats(pg_session, profile_key="engineering", radar="current")["total"] == 1
 
 
+def test_postgres_keeps_portal_alias_after_official_promotion(pg_session: Session) -> None:
+    repo = JobRepository()
+    portal = repo.get_or_create_source(pg_session, "himalayas", True, None)
+    employer = repo.get_or_create_source(pg_session, "official", True, None)
+    mirror = replace(
+        _job("portal-id"),
+        url="https://himalayas.app/companies/example/jobs/java",
+        description="Build Java Spring Boot REST APIs and services with PostgreSQL. " * 3,
+        content_hash="portal-hash",
+    )
+    offer, _ = repo.upsert_job(pg_session, portal, mirror, ScoringEngine().score(mirror))
+    offer.status = JobStatus.INTERESTED
+    official = replace(
+        mirror,
+        source_job_id="employer-id",
+        url="https://example.teamtailor.com/jobs/123-java",
+        location="Sevilla, Spain",
+        content_hash="employer-hash",
+        raw_payload={
+            "alternate_postings": [
+                {
+                    "source_job_id": "second-employer-id",
+                    "url": "https://example.teamtailor.com/jobs/456-java",
+                }
+            ]
+        },
+    )
+    promoted, created = repo.upsert_job(
+        pg_session, employer, official, ScoringEngine().score(official)
+    )
+    pg_session.commit()
+    assert not created and promoted.id == offer.id
+    aliased = repo.find_existing(pg_session, portal, mirror)
+    assert aliased is not None and aliased.id == offer.id
+    alternate = repo.find_existing(
+        pg_session, employer, replace(official, source_job_id="second-employer-id")
+    )
+    assert alternate is not None and alternate.id == offer.id
+    retained, created = repo.upsert_job(pg_session, portal, mirror, ScoringEngine().score(mirror))
+    assert not created and retained.url == official.url and retained.status == JobStatus.INTERESTED
+    assert pg_session.scalar(select(func.count(JobOffer.id))) == 1
+
+
 def _job(source_job_id: str) -> NormalizedJob:
     return NormalizedJob(
         source_job_id=source_job_id,
