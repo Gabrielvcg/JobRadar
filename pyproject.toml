@@ -1,6 +1,6 @@
 [project]
 name = "jobradar"
-version = "0.1.44"
+version = "0.1.45"
 description = "JobRadar collects, normalizes, scores, and tracks job offers for a backend/cloud career path."
 readme = "README.md"
 requires-python = ">=3.12"
