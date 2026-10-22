@@ -2,17 +2,10 @@
 
 ## 0.1.44 - 2026-10-22
 
-- Read published SBA salary ranges and associate pay periods with salary amounts instead of unrelated project duration.
-
-
-
-- Respect explicit remote alternatives for candidates outside hybrid office cities in Spain, while retaining mandatory attendance and residence restrictions.
-
-- Keep portal registration gates out of verified employer application paths.
-
+- Respect explicit remote alternatives outside hybrid office cities in Spain, retaining mandatory attendance/residence restrictions and conflicting work-mode uncertainty.
 - Exclude explicitly internal-only selection and remote-in-Colombia postings despite broad portal metadata.
-
-
+- Keep portal registration gates out of verified employer application paths.
+- Read published SBA salary ranges and associate pay periods with salary amounts instead of unrelated project duration.
 
 ## 0.1.43 - 2026-10-22
 

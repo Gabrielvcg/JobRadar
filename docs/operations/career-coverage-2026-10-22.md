@@ -1,10 +1,6 @@
 # Career opportunity coverage — 2026-10-22
 
-
-
 ## Authorized outcome and current-state baseline
-
-
 
 The user explicitly authorized continued public-source research, scoped development,
 
@@ -13,8 +9,6 @@ tests, commits, work-branch pushes, successive JobRadar VPS deployments and cont
 ingestion. Applications, uploads and employer messages remain out of scope.
 
 Existing unrelated local deployment/backup changes are preserved.
-
-
 
 At 08:49 UTC the public service was healthy on 0.1.41 / `d4ea420`.
 
@@ -28,8 +22,6 @@ platform/SRE roles. The previous evening's 688/72/one figures are historical.
 
 There were no exact URL duplicates or current source errors.
 
-
-
 The unchanged half-hour cron had completed real 08:30 ingestion: 19 fetched,
 
 zero created, five updated, no errors. Its SmartRecruiters portion fetched six
@@ -40,19 +32,13 @@ Private runtime source settings, account/status fingerprints and full snapshots
 
 remain outside Git. No unrelated VPS services are changed.
 
-
-
 ## Independent review of the original top 20
-
-
 
 [The individual 20-row evidence](../reviews/jobradar-top20-before-2026-10-22.json)
 
 records duties, years, geography, mandatory skills, salary, dates and application
 
 availability for every selected offer, including primary URLs when identified.
-
-
 
 - Ten conditionally relevant, four incompatible or removed, six unknown.
 
@@ -82,11 +68,7 @@ availability for every selected offer, including primary URLs when identified.
 
   and a Spanish "between three and five" range misread as a five-year minimum.
 
-
-
 ## Sources investigated and selection
-
-
 
 | Source / employer | Observed contribution | Decision |
 
@@ -114,8 +96,6 @@ availability for every selected offer, including primary URLs when identified.
 
 | CloudPay, Babel, Guidewire / Workday | Two indexed leads cannot be verified from current HTML; Guidewire's actual role requires Ireland. | Unknown or incompatible, not counted as available opportunities. |
 
-
-
 The [Teamtailor RSS guide](https://support.teamtailor.com/en/articles/11171756-rss-feed-how-to-guide)
 
 documents descriptions, dates, locations, remote status and the `per_page` parameter.
@@ -130,11 +110,7 @@ All raw research snapshots are ignored local evidence; source counts are dated
 
 observations, never market coverage or an uptime promise.
 
-
-
 ## First delivery candidate — 0.1.42
-
-
 
 The candidate reuses RSS and SmartRecruiters, adds only the bounded JazzHR adapter,
 
@@ -148,8 +124,6 @@ Original source identities remain aliases; existing user/application state remai
 
 on the same offer. Later stale portal fetches cannot overwrite employer evidence.
 
-
-
 Verification distinguishes `active`, `listing_only`, `unverified` and `closed`.
 
 Teamtailor paths require a retrieved candidate form; a listing-only 200 or blocked
@@ -162,8 +136,6 @@ there is no schema migration. The original scoring policy remains for the other
 
 private profile.
 
-
-
 Independent review reproduced and corrected two identity risks before deployment:
 
 office/remote roles must not share state merely because descriptions match, and
@@ -172,15 +144,9 @@ RSS grouping must not erase different numeric requirements. PostgreSQL integrati
 
 coverage includes original and alternate source aliases.
 
-
-
 Deployment and measured after-results are recorded only after their checks finish.
 
-
-
 ## Measured 0.1.42 production cycle
-
-
 
 Released revision `75f964e`, CI run 39754428508 passed 230 tests including PostgreSQL.
 
@@ -189,8 +155,6 @@ Production health, authenticated dashboard, verified filter and anonymous redire
 passed. All 715 preexisting offer IDs/statuses, accounts, password/role fingerprints
 
 and user-specific states were preserved. Backup gzip validation passed.
-
-
 
 SmartRecruiters fetched eleven records, created four and updated three; the first
 
@@ -206,8 +170,6 @@ Repeating the three curated sources created zero rows. No exact URL duplicates o
 
 source errors were found. Two reviewed removed postings are now closed.
 
-
-
 Production exposed two limits before completion: private profile queries restricted
 
 new feeds lacking explicit affinity, and Teamtailor's actual JavaScript CV upload
@@ -218,11 +180,7 @@ reviewed existing offers had their exact employer URLs reconciled once, retainin
 
 old identities and user state; these are verification improvements, not discoveries.
 
-
-
 ## Follow-up delivery — 0.1.43
-
-
 
 Explicit Java/Spring feed affinity prevents private search-query fallback from
 
@@ -238,8 +196,6 @@ TalentConnect Java/Spring/AWS is Spain remote with three years and unknown salar
 
 Whiteam Java/Python banking additionally requires Python/banking experience.
 
-
-
 Teamtailor verification follows the employer page's explicit controller URL for the
 
 same job, then checks its public POST form, enabled email/submit and real CV upload
@@ -250,8 +206,6 @@ a closed application. A disabled floating button alone still proves nothing.
 
 Only GET requests are used. Real saved employer HTML reproduces the corrected case.
 
-
-
 Further product research found no justified new connector: INNOCV currently requires
 
 Go, Clarity AI's exact junior Java role and board return 404, Marfeel moved ATS,
@@ -259,7 +213,6 @@ Go, Clarity AI's exact junior Java role and board return 404, Marfeel moved ATS,
 Semrush Java requires Android/C++ and SNGULAR's current Java role is advanced with
 
 no reusable feed established. These leads do not count as suitable discoveries.
-
 
 ## Measured 0.1.43 cycle and final demonstrated corrections
 
