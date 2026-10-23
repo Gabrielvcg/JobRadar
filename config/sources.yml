@@ -1388,6 +1388,26 @@ sources:
       - "sweden"
     attribution_url: "https://www.greenhouse.com"
 
+  ghcg_official:
+    enabled: true
+    profile_key: "engineering"
+    adapter: "zoho_rss"
+    base_url: "https://globalhumancapitalgroup.zohorecruit.com/jobs/Careers/rss"
+    company_name: "Global Human Capital Group"
+    min_interval_minutes: 720
+    timeout_seconds: 20
+    retries: 1
+    rate_limit_seconds: 1
+    max_jobs: 50
+    max_detail_pages: 5
+    minimum_score: 35
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "spring"]
+    allowed_location_keywords: ["spain", "españa"]
+    description_fields: ["Job_Description", "Funciones_Responsabilidades"]
+    requirement_fields: ["Requisitos"]
+    attribution_url: "https://globalhumancapitalgroup.com/en/careers/"
+
   lever_curated:
     enabled: true
     allow_career_transitions: true

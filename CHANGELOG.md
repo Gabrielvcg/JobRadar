@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.50 — 2026-10-23
+
+- Add GHCG's advertised Zoho RSS as a bounded employer source, reusing RSS discovery and reading complete public vacancy requirements and development duties.
+- Preserve structured/prose experience discrepancies, check vacancy identity and employer origin, and require actual text evidence for remote work.
+- Record the JavaScript-rendered application limitation explicitly; fresh browser verification uses the existing evidence lifetime and does not imply salary confirmation or active hiring guarantees.
+- Extend the employer research inventory with 14 companies; retain blocked, removed and geography-incompatible sources as evidence rather than importing them.
+
 ## 0.1.49 - 2026-10-23
 
 - Honor explicit Spanish statements that a vacancy primarily involves operations or support, even when it also includes corrective Java coding; preserve evidence of both kinds of work and the existing career weights and thresholds.
