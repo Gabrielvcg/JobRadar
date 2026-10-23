@@ -55,9 +55,21 @@ def analyze_work(
 ) -> WorkAlignment:
     name = fold(title)
     software, operations = [], []
+    dominant_operations = []
     section = "duties"
     for clause in clauses(text):
         value = fold(clause)
+        declared_operations = re.search(
+            r"\b(?:orientad\w*|enfocad\w*|centrad\w*)\s+"
+            r"(?:principalmente|mayoritariamente)\s+(?:a|en)\s+(?:(?:las?|el|los)\s+)?"
+            r"(?:operacion(?:es)?|soporte|monitorizacion|administracion de sistemas)\b",
+            value,
+        )
+        if declared_operations and not re.search(
+            r"\bno(?:\s+esta)?\s*$", value[:declared_operations.start()],
+        ):
+            dominant_operations.append(clause[:400])
+            operations.append(clause[:400])
         if len(value) < 100 and re.fullmatch(
             r"requirements?|qualifications?|skills required|requisitos(?: minimos)?|"
             r"buscamos(?: experiencia en)?|what we.re looking for|benefits|beneficios|"
@@ -107,7 +119,11 @@ def analyze_work(
             software.append(clause[:400])
         if section == "duties" and operation:
             operations.append(clause[:400])
-    if re.search(r"\b(?:soc|helpdesk|sysadmin|system administrator|pentester)\b", name):
+    if dominant_operations:
+        # Explicit primary duties outrank incidental corrective Java development.
+        # Keep software evidence: this is predominance, not absence of coding.
+        focus, points = "operations", 15
+    elif re.search(r"\b(?:soc|helpdesk|sysadmin|system administrator|pentester)\b", name):
         focus, points = "operations", 10
     elif re.search(r"\b(?:qa|sdet|test automation|software test)\b", name):
         focus, points = "quality_assurance", 30
