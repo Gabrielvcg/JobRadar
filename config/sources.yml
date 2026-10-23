@@ -1,4 +1,20 @@
 sources:
+  signicat_official:
+    enabled: true
+    profile_key: "engineering"
+    adapter: "rss"
+    company_name: "Signicat"
+    base_url: "https://signicat.teamtailor.com/jobs.rss?per_page=200"
+    min_interval_minutes: 720
+    timeout_seconds: 25
+    retries: 1
+    max_jobs: 200
+    minimum_score: 35
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software"]
+    allowed_location_keywords: ["spain", "españa", "sevilla", "seville"]
+    attribution_url: "https://signicat.teamtailor.com"
+
   experience_official:
     enabled: true
     adapter: "bizneo"

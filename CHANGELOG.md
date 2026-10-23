@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.51 - 2026-10-23
+
+### Added
+
+- Add Signicat's public Teamtailor RSS for Java/backend roles in Spain, reusing
+  the existing RSS collector and vacancy-specific application verifier every
+  twelve hours. The current Spain role asks three-plus years with Java/Spring
+  Boot, has a live CV form, and remains an ambitious application with unknown pay.
+
 ## 0.1.50 — 2026-10-23
 
 - Add GHCG's advertised Zoho RSS as a bounded employer source, reusing RSS discovery and reading complete public vacancy requirements and development duties.
