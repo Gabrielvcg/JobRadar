@@ -23,11 +23,15 @@ not two removed vacancies.
 | Krell | [Viterbit board](https://krell-consulting.viterbit.site/) | Indexed board advertises several remote Java roles, including senior backend. Direct board GET returns 403. The older two-and-a-half–four-year analyst role is marked closed by its employer publication. No unsupported scraper added. |
 | Coderland | [Manatal vacancy](https://www.careers-page.com/coderlandjob/job/4R4V59Y5) | Employer vacancy explicitly offers Spain remote but requires at least ten years of backend experience. Future-level reference, not a current A/B discovery. |
 | Bahía Software | [Official Java role](https://enjoybahia.es/portfolio/desarrolladores-java/) | Primary indexed role asks two–three years of Java/Spring MVC/Hibernate but names Galicia/Santander offices without establishing Spain remote or Sevilla eligibility. No automatic A/B claim. |
-| IOON | [Employer Java/Spring Boot publication](https://es.linkedin.com/jobs/view/desarrollador-java-springboot-at-ioon-4469303151) | Employer publication describes two–three years, remote, Java/Spring Boot/Oracle and EUR 28–30k. Promising manual lead. A reusable official vacancy feed was not established; LinkedIn is not scraped or integrated. |
+| IOON | [Employer Java/Spring Boot publication](https://es.linkedin.com/jobs/view/desarrollador-java-springboot-at-ioon-4469303151) | Employer publication describes two–three years, remote, Java/Spring Boot/Oracle and EUR 28–30k. Promising manual lead. Corporate careers links LinkedIn and InfoJobs; a reusable authorized vacancy feed was not established. Neither portal is scraped or integrated. |
 | Apiux Tech | [Employer Java/LRBA publication](https://es.linkedin.com/jobs/view/desarrollador-java-con-experiencia-y-certificaci%C3%B3n-en-lrba-at-apiux-tech-4479571295) | Spain remote, one–three years, but actual LRBA experience/certification is explicitly required. Other current indexed Java role is hybrid Madrid/four-plus years. No current A/B source established. |
 
-These are **14 additional named employers**, bringing the research inventory to
-78 named employers. This count is separate from employers represented in JobRadar
+| INNOCV Solutions | [Official Teamtailor index](https://jobs.innocv.com/jobs) | Direct current index has eleven postings, including junior Go and Python/AI backend, but no Java opening. Older Java Senior mirrors remain indexed. No Java source added solely for those mirrors. |
+| Babel | [Official Workday Java Health role](https://babelgroup.wd103.myworkdayjobs.com/es/REC_External_Career_Site/job/Java-Developer--Health-_JR107776) | Indexed official role names Sevilla and Full Remote. Direct HTTP response is an empty JavaScript shell, and no suitable authorized complete public feed was established. Manual lead with current requirements/application unconfirmed; no private Workday API guessed. |
+| Viewnext | [Corporate careers](https://www.viewnext.com/empleo/) links LinkedIn jobs and its ePreselec CV portal | Corporate page is accessible and advertises remote choices. Its ePreselec portal and robots both return a 405 bot/CAPTCHA challenge. No bypass or inference that generic remote benefits apply to a particular Java job. |
+
+These are **17 additional named employers**, bringing the research inventory to
+81 named employers. This count is separate from employers represented in JobRadar
 and from employers with verified A/B opportunities.
 
 ## GHCG integration and limitations
