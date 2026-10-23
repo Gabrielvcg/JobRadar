@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.49 - 2026-10-23
+
+- Honor explicit Spanish statements that a vacancy primarily involves operations or support, even when it also includes corrective Java coding; preserve evidence of both kinds of work and the existing career weights and thresholds.
+- Add a regression from the newly ingested official Java application-support vacancy, including controls for negated operations focus and backend development with incidental support.
+- Record the second employer research round, blind-application identity findings, manual leads, live production metrics and release validation.
+
 ## 0.1.48 - 2026-10-22
 
 - Discover official Java vacancies at eXperience IT Solutions and SNGULAR using bounded, attributed public sources every twelve hours.
