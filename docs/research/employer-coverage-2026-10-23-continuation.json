@@ -87,7 +87,7 @@
     "record_kind": "employer",
     "employer": "IOON",
     "official_source": "[Employer Java/Spring Boot publication](https://es.linkedin.com/jobs/view/desarrollador-java-springboot-at-ioon-4469303151)",
-    "evidence_and_decision": "Employer publication describes two–three years, remote, Java/Spring Boot/Oracle and EUR 28–30k. Promising manual lead. A reusable official vacancy feed was not established; LinkedIn is not scraped or integrated.",
+    "evidence_and_decision": "Employer publication describes two–three years, remote, Java/Spring Boot/Oracle and EUR 28–30k. Promising manual lead. Corporate careers links LinkedIn and InfoJobs; a reusable authorized vacancy feed was not established. Neither portal is scraped or integrated.",
     "reviewed_on": "2026-10-23"
   },
   {
@@ -95,6 +95,27 @@
     "employer": "Apiux Tech",
     "official_source": "[Employer Java/LRBA publication](https://es.linkedin.com/jobs/view/desarrollador-java-con-experiencia-y-certificaci%C3%B3n-en-lrba-at-apiux-tech-4479571295)",
     "evidence_and_decision": "Spain remote, one–three years, but actual LRBA experience/certification is explicitly required. Other current indexed Java role is hybrid Madrid/four-plus years. No current A/B source established.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "INNOCV Solutions",
+    "official_source": "[Official Teamtailor index](https://jobs.innocv.com/jobs)",
+    "evidence_and_decision": "Direct current index has eleven postings, including junior Go and Python/AI backend, but no Java opening. Older Java Senior mirrors remain indexed. No Java source added solely for those mirrors.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Babel",
+    "official_source": "[Official Workday Java Health role](https://babelgroup.wd103.myworkdayjobs.com/es/REC_External_Career_Site/job/Java-Developer--Health-_JR107776)",
+    "evidence_and_decision": "Indexed official role names Sevilla and Full Remote. Direct HTTP response is an empty JavaScript shell, and no suitable authorized complete public feed was established. Manual lead with current requirements/application unconfirmed; no private Workday API guessed.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Viewnext",
+    "official_source": "[Corporate careers](https://www.viewnext.com/empleo/) links LinkedIn jobs and its ePreselec CV portal",
+    "evidence_and_decision": "Corporate page is accessible and advertises remote choices. Its ePreselec portal and robots both return a 405 bot/CAPTCHA challenge. No bypass or inference that generic remote benefits apply to a particular Java job.",
     "reviewed_on": "2026-10-23"
   }
 ]
