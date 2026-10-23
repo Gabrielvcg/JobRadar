@@ -38,6 +38,7 @@ from app.sources.smartrecruiters import SmartRecruitersJobSource
 from app.sources.talent import TalentJobSource
 from app.sources.tecnoempleo import TecnoempleoJobSource
 from app.sources.trabajos import TrabajosJobSource
+from app.sources.zoho import ZohoRssJobSource
 
 
 def load_search_config(profile_key: str | None = None) -> SearchConfig:
@@ -85,6 +86,8 @@ def build_enabled_sources() -> list[JobSourceAdapter]:
             adapter = RemoteOkJobSource(raw_settings)
         elif adapter_name == "rss":
             adapter = RssJobSource(name, raw_settings)
+        elif adapter_name == "zoho_rss":
+            adapter = ZohoRssJobSource(name, raw_settings)
         elif adapter_name == "jobicy":
             adapter = JobicyJobSource(raw_settings)
         elif adapter_name == "himalayas":
