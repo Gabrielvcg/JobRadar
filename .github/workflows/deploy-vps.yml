@@ -29,7 +29,7 @@ jobs:
           python - <<'PY'
           import json
           checks = json.load(open('/tmp/checks.json'))['check_runs']
-          for name in ('quality', 'Audit Python dependencies'):
+          for name in ('quality', 'Audit Python dependencies', 'SonarCloud Code Analysis'):
               matching = [c for c in checks if c['name'] == name]
               assert matching and max(matching, key=lambda c: c['id'])['conclusion'] == 'success', name
           PY

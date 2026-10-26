@@ -18,7 +18,7 @@ tables. No production DB restore/test workload is authorized by these fixtures.
 ## Existing installation only
 
 The manual Deploy VPS workflow is main-only and checks exact-head quality/security
-results before publishing. Image tag is the full source SHA, APP_REVISION is passed
+results, including the external SonarCloud quality gate, before publishing. Image tag is the full source SHA, APP_REVISION is passed
 to the build and its OCI revision label is set. Promotion uses the build digest.
 An old successful check is insufficient for a different commit.
 
