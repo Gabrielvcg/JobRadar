@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import csv
-import io
 import uuid
 from collections import Counter
 from datetime import datetime
@@ -9,11 +7,12 @@ from importlib.metadata import version
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
-from fastapi.responses import HTMLResponse, RedirectResponse, Response, StreamingResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import text
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
+from app.api.streaming import ClosingStreamingResponse as StreamingResponse
 from app.core.availability import current_verification
 from app.core.config import get_settings
 from app.core.profiles import get_profile, load_profiles, resolve_profile_key, uses_career_radar
@@ -40,6 +39,7 @@ from app.security.auth import (
     validate_password_strength,
 )
 from app.services.ingestion import IngestionService
+from app.services.job_export import iter_csv_chunks
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -348,63 +348,13 @@ def export_jobs(
         min_score=min_score,
         user_id=current_user.id if current_user else None,
         include_disabled_sources=include_disabled_sources,
-        limit=10_000,
     )
-    jobs = repository.list_jobs(session, filters)
-    user_statuses = (
-        repository.get_user_statuses(session, current_user.id, jobs) if current_user else {}
-    )
-    stream = io.StringIO()
-    writer = csv.writer(stream)
-    writer.writerow(
-        ["id", "score", "level", "company", "title", "salary/rate", "location", "status", "url",
-         "description", "requirements", "source", "source_enabled", "remote_type",
-         "experience_min_years", "experience_max_years", "salary_original_text",
-         "salary_currency", "salary_period", "salary_unknown", "radar", "recommendation",
-         "recommendation_reason", "career_alignment", "professional_fit", "growth", "viability",
-         "specialist_requirements_to_confirm", "uncertainties", "blockers",
-         "availability_state", "availability_checked_at", "availability_evidence",
-         "application_url", "publication_date", "expiration_date"]
-    )
-    for job in jobs:
-        effective_status = user_statuses.get(str(job.id), job.status)
-        assessment = job.match_reasons.get("assessment", {})
-        proof = current_verification(job.raw_payload, job.url)
-        writer.writerow(
-            [
-                str(job.id),
-                job.match_score,
-                job.match_level,
-                job.company.name,
-                job.title,
-                _salary_label(
-                    job.salary_min, job.salary_max, job.salary_currency, job.salary_unknown
-                ),
-                job.location or "",
-                effective_status.value,
-                job.url or "",
-                job.description, job.requirements or "", job.source.name, job.source.enabled,
-                job.remote_type.value, job.experience_min_years, job.experience_max_years,
-                job.salary_original_text or "", job.salary_currency or "", job.salary_period or "",
-                job.salary_unknown, assessment.get("radar", ""),
-                assessment.get("recommendation", ""), assessment.get("recommendation_reason", ""),
-                assessment.get("career_alignment", ""), assessment.get("professional_fit", ""),
-                assessment.get("growth", ""), assessment.get("viability", ""),
-                " | ".join(assessment.get("specialist_requirements_to_confirm", [])),
-                " | ".join(assessment.get("uncertainties", [])),
-                " | ".join(assessment.get("blockers", [])),
-                proof["state"], proof.get("checked_at", ""), proof.get("evidence_level", ""),
-                proof.get("application_url", ""),
-                job.publication_date.isoformat() if job.publication_date else "",
-                job.expiration_date.isoformat() if job.expiration_date else "",
-            ]
-        )
-    stream.seek(0)
+    # Retain only the engine and user ID; the request dependency owns a different session.
+    factory = sessionmaker(bind=session.get_bind().engine, class_=Session, autoflush=False)
+    chunks = iter_csv_chunks(factory, filters, current_user.id)
     filename = f"jobradar_{active_profile_key}_jobs.csv"
     headers = {"Content-Disposition": f"attachment; filename={filename}"}
-    return StreamingResponse(
-        iter(["\ufeff" + stream.getvalue()]), media_type="text/csv", headers=headers,
-    )
+    return StreamingResponse(chunks, media_type="text/csv", headers=headers)
 
 
 @router.get("/jobs/{job_id}", response_model=JobOfferRead)

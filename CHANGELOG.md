@@ -1,5 +1,39 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Repair test-only typing to run the full app and test Mypy gate without relaxing it.
+- Validate all PostgreSQL release gates in CI and carry the exact source revision
+  into immutable images. Update only the existing app with health-checked rollback,
+  preserving configuration and schedules without implicit rescoring or ingestion.
+
+- Select verification work across bounded eligible batches while preserving global
+  per-profile priority and budget; tolerate non-object proof during scheduling.
+
+- Include published maximum-only salaries in salary-known filters and keep unknown
+  filtering complementary, without treating a ceiling as a guaranteed minimum.
+
+- Treat malformed raw availability state/URL metadata as unverified before list,
+  detail or CSV consumption, retaining compatible textual states and optional fields.
+
+- Keep an explicit full-remote/hybrid/office choice from being treated as mandatory
+  hybrid attendance, based on Marfeel's live Java vacancy. Preserve explicit office
+  requirements, client conditions and independent country-eligibility checks.
+
+- Use an offer ID tie breaker for list ordering so static offset pages remain
+  consistent across query plans. Reuse that order in exports without a duplicate ID key.
+
+- Stream complete CSV exports in batches with stable ordering and owned session/cursor
+  cleanup, including downloads above 10,000 offers. Preserve personal statuses and all fields.
+- Join active CSV worker reads before closing the generator, preserving the original
+  cancellation even when downloads are cancelled repeatedly during a read or cleanup.
+
+- Default offers without a signed-in user's personal status to new across API
+  list/detail, CSV export, and dashboard status data. Preserve shared legacy
+  statuses for reads without a user and retain other users' saved statuses.
+
 ## 0.1.51 - 2026-10-23
 
 ### Added

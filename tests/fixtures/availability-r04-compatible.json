@@ -1,0 +1,1158 @@
+[
+  {
+    "case": "fractional:now",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:past_1s",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T11:59:59.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:future_1s",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:01.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:ttl_exact",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:00.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:ttl_inside_1s",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:01.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:ttl_outside_1s",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T11:59:59.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:future_1us",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123457+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:ttl_inside_1us",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:00.123457+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:ttl_outside_1us",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:00.123455+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:fraction_0",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:fraction_1",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.1+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:fraction_3",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:fraction_6",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:fraction_7",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.1234567+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:utc_Z_now",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123456Z"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:utc_Z_ttl",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:00.123456Z"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:offset_plus2_now",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T14:00:00.123456+02:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:offset_plus2_ttl",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T14:00:00.123456+02:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:offset_plus2_expired",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T13:59:59.123456+02:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:offset_minus5_now",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T07:00:00.123456-05:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:offset_minus5_ttl",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T07:00:00.123456-05:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:naive_now",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123456"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:naive_ttl",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:00.123456"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:space_separator",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24 12:00:00.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:malformed_in_range",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T11:99:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:malformed_word",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "bad"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:missing",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:null",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": null
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:empty",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": ""
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:wrong_type",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": {
+          "bad": "value"
+        }
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:source_raw_missing",
+    "payload": {},
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:source_assessment_missing",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:source_raw_closed",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "closed",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "closed"
+  },
+  {
+    "case": "fractional:source_assessment_closed",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:source_raw_expired",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T11:59:59.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:source_raw_future",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:01.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:source_assessment_future",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "fractional:source_raw_url_mismatch",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java-other",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "fractional:source_tracking_url_equivalent",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java?utm_source=test",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.123456+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00.123456+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:now",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:past_1s",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T11:59:59+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:future_1s",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:01+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:ttl_exact",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:ttl_inside_1s",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:01+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:ttl_outside_1s",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T11:59:59+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:future_1us",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.000001+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:ttl_inside_1us",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:00.000001+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:ttl_outside_1us",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T11:59:59.999999+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:fraction_0",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:fraction_1",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.1+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:fraction_3",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.000+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:fraction_6",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:fraction_7",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00.0000007+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:utc_Z_now",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00Z"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:utc_Z_ttl",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:00Z"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:offset_plus2_now",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T14:00:00+02:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:offset_plus2_ttl",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T14:00:00+02:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:offset_plus2_expired",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T13:59:59+02:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:offset_minus5_now",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T07:00:00-05:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:offset_minus5_ttl",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T07:00:00-05:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:naive_now",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:naive_ttl",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T12:00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:space_separator",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24 12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:malformed_in_range",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T11:99:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:malformed_word",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "bad"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:missing",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:null",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": null
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:empty",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": ""
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:wrong_type",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": {
+          "bad": "value"
+        }
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:source_raw_missing",
+    "payload": {},
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:source_assessment_missing",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:source_raw_closed",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "closed",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "closed"
+  },
+  {
+    "case": "whole_second:source_assessment_closed",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:source_raw_expired",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-23T11:59:59+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:source_raw_future",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:01+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:source_assessment_future",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  },
+  {
+    "case": "whole_second:source_raw_url_mismatch",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java-other",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "unverified"
+  },
+  {
+    "case": "whole_second:source_tracking_url_equivalent",
+    "payload": {
+      "_jobradar_verification": {
+        "state": "active",
+        "listing_url": "https://example.invalid/jobs/java?utm_source=test",
+        "application_url": "https://example.invalid/jobs/java/apply",
+        "evidence_level": "application_form",
+        "checked_at": "2026-10-24T12:00:00+00:00"
+      }
+    },
+    "url": "https://example.invalid/jobs/java",
+    "now": "2026-10-24T12:00:00+00:00",
+    "expected_state": "active"
+  }
+]

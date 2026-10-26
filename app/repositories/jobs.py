@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import uuid
 from collections import Counter
+from collections.abc import Generator
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from difflib import SequenceMatcher
@@ -158,6 +159,25 @@ class JobRepository:
         statement = statement.offset(filters.offset).limit(filters.limit)
         return list(session.scalars(statement).unique())
 
+    def iter_job_batches(
+        self, session: Session, filters: JobFilters, *, batch_size: int = 500,
+    ) -> Generator[list[JobOffer], None, None]:
+        """Stream one ordered query; export ignores list pagination limits."""
+        if batch_size < 1:
+            raise ValueError("batch_size must be positive")
+        statement = self._apply_sort(self._filtered_statement(filters), filters)
+        statement = statement.execution_options(yield_per=batch_size)
+        result = session.scalars(statement)
+        try:
+            while True:
+                batch = list(result.fetchmany(batch_size))
+                if not batch:
+                    break
+                yield batch
+                del batch
+        finally:
+            result.close()
+
     def get_job(self, session: Session, job_id: uuid.UUID) -> JobOffer | None:
         return session.scalar(
             select(JobOffer)
@@ -203,6 +223,7 @@ class JobRepository:
     def get_user_statuses(
         self, session: Session, user_id: int, jobs: list[JobOffer]
     ) -> dict[str, JobStatus]:
+        """Resolve every requested offer in the user's personal status namespace."""
         job_ids = [job.id for job in jobs]
         if not job_ids:
             return {}
@@ -212,7 +233,9 @@ class JobRepository:
                 UserJobState.job_offer_id.in_(job_ids),
             )
         ).all()
-        return {str(job_id): status for job_id, status in rows}
+        statuses = {str(job_id): JobStatus.NEW for job_id in job_ids}
+        statuses.update({str(job_id): status for job_id, status in rows})
+        return statuses
 
     def stats(
         self,
@@ -412,11 +435,15 @@ class JobRepository:
             statement = statement.where(JobOffer.salary_min >= filters.salary_min)
         if filters.salary_known is True:
             statement = statement.where(
-                JobOffer.salary_unknown.is_(False), JobOffer.salary_min.is_not(None)
+                JobOffer.salary_unknown.is_(False),
+                or_(JobOffer.salary_min.is_not(None), JobOffer.salary_max.is_not(None)),
             )
         elif filters.salary_known is False:
             statement = statement.where(
-                or_(JobOffer.salary_unknown.is_(True), JobOffer.salary_min.is_(None))
+                or_(
+                    JobOffer.salary_unknown.is_(True),
+                    and_(JobOffer.salary_min.is_(None), JobOffer.salary_max.is_(None)),
+                )
             )
         if filters.remote_type is not None:
             statement = statement.where(JobOffer.remote_type == filters.remote_type)
@@ -498,14 +525,18 @@ class JobRepository:
             return statement.order_by(JobOffer.id)
         sort_column = JobOffer.publication_date if filters.sort == "date" else JobOffer.match_score
         if filters.order.lower() == "asc":
-            return statement.order_by(sort_column.asc().nullslast(), JobOffer.created_at.desc())
+            return statement.order_by(
+                sort_column.asc().nullslast(), JobOffer.created_at.desc(), JobOffer.id,
+            )
         if filters.sort == "score":
             advice = JobOffer.match_reasons["assessment"]["recommendation"].as_string()
             priority = case({"A": 0, "B": 1, "U": 2, "C": 3, "D": 4}, value=advice, else_=5)
             return statement.order_by(
-                sort_column.desc().nullslast(), priority, JobOffer.created_at.desc(),
+                sort_column.desc().nullslast(), priority, JobOffer.created_at.desc(), JobOffer.id,
             )
-        return statement.order_by(sort_column.desc().nullslast(), JobOffer.created_at.desc())
+        return statement.order_by(
+            sort_column.desc().nullslast(), JobOffer.created_at.desc(), JobOffer.id,
+        )
 
 
 def _same_mirror(offer: JobOffer, job: NormalizedJob) -> bool:
