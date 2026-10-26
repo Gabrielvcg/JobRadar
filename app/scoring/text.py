@@ -77,6 +77,31 @@ def detect_remote_type(
         return RemoteType.ONSITE
     if re.search(r"\b(no remote|not remote|sin teletrabajo|no teletrabajo)\b", text_lower):
         return RemoteType.ONSITE
+    # An explicit choice of full remote is not a hybrid attendance requirement.
+    # Match a complete option clause only; client approval/conditions stay intact.
+    client_office_required = re.search(
+        r"\b(?:client|customer)\s+requires\b[^.!?\n]{0,100}\b(?:office|onsite|on-site)\b",
+        text_lower,
+    )
+    remote_choice_restricted = re.search(
+        r"\b(?:full|fully|100\s*%)[ -]?remote\b[^.!?\n]{0,150}"
+        r"\b(?:only|subject to|depending on)\b",
+        text_lower,
+    )
+    approval_required = re.search(
+        r"\b(?:remote(?: work(?:ing)?)?|this choice)\s+(?:requires|is subject to)\s+"
+        r"(?:client|customer)\s+approval\b",
+        text_lower,
+    )
+    if not client_office_required and not remote_choice_restricted and not approval_required:
+        text_lower = re.sub(
+            r"\boption to work (?:full|fully|100\s*%)[ -]?remote\s*,\s*"
+            r"hybrid\s+or\s+office[ -]based"
+            r"(?:\s*\(if in [^()\n]{1,60} area\)|(?=\s*(?:[.!?](?:\s|$)|\n|$)))"
+            r"(?![ \t]*(?:[,;:]|but\b|subject\b|only\b|depending\b|for\b))",
+            "full remote",
+            text_lower,
+        )
     # Hybrid/onsite requirements outrank incidental remote benefits.
     if any(token in text_lower for token in ("hybrid", "hibrido", "híbrido")):
         return RemoteType.HYBRID

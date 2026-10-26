@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import asyncio
 import re
+from collections.abc import Generator
 from datetime import UTC, datetime
+from heapq import nsmallest
 from typing import Any
 from urllib.parse import parse_qs, urljoin, urlsplit
 
@@ -15,6 +17,7 @@ from sqlalchemy.orm import Session
 from app.core.availability import VERIFICATION_KEY, current_verification
 from app.core.offer_identity import EMPLOYER_SUFFIXES, TEAMTAILOR_HOSTS
 from app.core.profiles import load_profiles, uses_career_radar
+from app.models.job import JobOffer
 from app.repositories.jobs import JobFilters, JobRepository
 from app.scoring.engine import ScoringEngine
 from app.scoring.evidence import fold
@@ -297,45 +300,31 @@ class OfferVerificationService:
 
         repository = JobRepository()
         counts = {"checked": 0, "active": 0, "closed": 0, "unverified": 0, "listing_only": 0}
+        if limit <= 0:
+            return counts
         keys = [profile_key] if profile_key else list(load_profiles())
         async with httpx.AsyncClient(
             timeout=15,
             headers={"User-Agent": "JobRadar/0.1 (personal vacancy verification)"},
         ) as client:
             for key in keys:
+                remaining = limit - counts["checked"]
+                if remaining <= 0:
+                    break
                 if not uses_career_radar(key):
                     continue
-                candidates = repository.list_jobs(
-                    session,
-                    JobFilters(
-                        profile_key=key,
-                        radar="current",
-                        min_score=35,
-                        limit=500,
-                    ),
-                )
-                pending = [
-                    offer
-                    for offer in candidates
-                    if force
-                    or current_verification(offer.raw_payload, offer.url)["state"] == "unverified"
-                ]
-                # Access failures are cached too; avoid repeatedly hitting a blocked portal.
-                pending = [
-                    offer
-                    for offer in pending
-                    if force or not _checked_recently(offer.raw_payload, offer.url)
-                ]
-                pending.sort(
-                    key=lambda offer: (
-                        urlsplit(offer.url or "").hostname
-                        in {"himalayas.app", "remotive.com", "weworkremotely.com"},
-                        str(offer.raw_payload.get(VERIFICATION_KEY, {}).get("checked_at", "")),
-                        -offer.match_score,
-                    )
-                )
+                pending = _pending_offers(repository, session, key, force=force)
+                try:
+                    # Stable top-k keeps the complete existing priority order, including
+                    # repository tie order, without retaining all eligible ORM objects.
+                    selected = nsmallest(remaining, pending, key=_verification_priority)
+                finally:
+                    pending.close()
+                if not selected:
+                    continue
                 engine = ScoringEngine(key)
-                for offer in pending[: max(0, limit - counts["checked"])]:
+                # The read cursor is closed before checks commit rescored offer changes.
+                for offer in selected:
                     result = await verify_listing(client, offer.url, offer.title)
                     offer.raw_payload = {**offer.raw_payload, VERIFICATION_KEY: result}
                     score = engine.score(normalized_from_offer(offer, rehydrate=True))
@@ -347,6 +336,37 @@ class OfferVerificationService:
                     session.commit()
                     await asyncio.sleep(1)
         return counts
+
+
+def _pending_offers(
+    repository: JobRepository, session: Session, profile_key: str, *, force: bool,
+) -> Generator[JobOffer, None, None]:
+    batches = repository.iter_job_batches(
+        session,
+        JobFilters(profile_key=profile_key, radar="current", min_score=35),
+        batch_size=500,
+    )
+    try:
+        for batch in batches:
+            for offer in batch:
+                if force or (
+                    current_verification(offer.raw_payload, offer.url)["state"] == "unverified"
+                    and not _checked_recently(offer.raw_payload, offer.url)
+                ):
+                    yield offer
+    finally:
+        batches.close()
+
+
+def _verification_priority(offer: JobOffer) -> tuple[bool, str, int]:
+    proof = offer.raw_payload.get(VERIFICATION_KEY)
+    checked_at = proof.get("checked_at", "") if isinstance(proof, dict) else ""
+    return (
+        urlsplit(offer.url or "").hostname
+        in {"himalayas.app", "remotive.com", "weworkremotely.com"},
+        str(checked_at),
+        -offer.match_score,
+    )
 
 
 def _checked_recently(payload: dict[str, Any], url: str | None) -> bool:

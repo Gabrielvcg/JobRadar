@@ -24,6 +24,8 @@ jobs:
     env:
       DATABASE_URL: postgresql+psycopg://jobradar:jobradar@localhost:5432/jobradar_test
       POSTGRES_TEST_URL: postgresql+psycopg://jobradar:jobradar@localhost:5432/jobradar_test
+      JOBRADAR_EXPORT_TEST_POSTGRES_URL: postgresql+psycopg://jobradar:jobradar@localhost:5432/jobradar_test
+      JOBRADAR_SCHEDULER_TEST_POSTGRES_URL: postgresql+psycopg://jobradar:jobradar@localhost:5432/jobradar_test
       CONFIG_DIR: config
     steps:
       - uses: actions/checkout@v4
@@ -36,8 +38,16 @@ jobs:
         run: ruff check .
       - name: Mypy
         run: mypy app tests
-      - name: Pytest
-        run: pytest
+      - name: App-only update and rollback procedure (synthetic)
+        run: bash scripts/test-app-update.sh
+      - name: Migration compatibility on disposable database
+        run: |
+          alembic upgrade head
+          alembic downgrade 0002_add_user_accounts
+          alembic upgrade head
+      - name: Pytest (all PostgreSQL gates enabled)
+        run: |
+          pytest --junitxml=test-results.xml
+          python -c "import xml.etree.ElementTree as E; r=E.parse('test-results.xml'); assert not list(r.iter('skipped')), 'Unexpected skipped release gate'"
       - name: Docker build
-        run: docker build -t jobradar:ci .
-
+        run: docker build --build-arg APP_REVISION=${{ github.sha }} -t jobradar:ci .
