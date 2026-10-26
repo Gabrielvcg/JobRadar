@@ -5,6 +5,7 @@
 ### Fixed
 
 - Repair test-only typing to run the full app and test Mypy gate without relaxing it.
+- Require the external SonarCloud quality gate before any manual production promotion.
 - Validate all PostgreSQL release gates in CI and carry the exact source revision
   into immutable images. Update only the existing app with health-checked rollback,
   preserving configuration and schedules without implicit rescoring or ingestion.
