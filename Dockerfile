@@ -15,8 +15,8 @@ RUN apt-get update \
 
 COPY . .
 
-RUN python -m pip install --upgrade pip \
-    && python -m pip install -e .
+RUN python -m pip install --only-binary=:all: --upgrade pip \
+    && python -m pip install --only-binary=:all: -e .
 
 EXPOSE 8000
 
