@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Lock CI and image Python dependencies to the previously validated versions and
+  published wheel hashes; build the local package without remote dependency resolution.
 - Require binary distributions for downloaded Python dependencies in CI and app
   images while retaining the reviewed local editable package build.
 - Repair test-only typing to run the full app and test Mypy gate without relaxing it.
