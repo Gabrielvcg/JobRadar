@@ -15,8 +15,9 @@ RUN apt-get update \
 
 COPY . .
 
-RUN python -m pip install --only-binary=:all: --upgrade pip \
-    && python -m pip install --only-binary=:all: -e .
+RUN python -m pip install --only-binary=:all: --require-hashes -r requirements/build.txt \
+    && python -m pip install --only-binary=:all: --require-hashes -r requirements/runtime.txt \
+    && python -m pip install --no-index --no-deps --no-build-isolation -e .
 
 EXPOSE 8000
 
