@@ -18,12 +18,14 @@ from app.sources.ats import (
 from app.sources.base import JobSourceAdapter, SearchConfig
 from app.sources.bizneo import BizneoJobSource
 from app.sources.domestiko import DomestikoJobSource
+from app.sources.employer_html import EmployerHtmlJobSource
 from app.sources.eurofirms import EurofirmsJobSource
 from app.sources.fixture import FixtureJobSource
 from app.sources.fundacion_adecco import FundacionAdeccoJobSource
 from app.sources.fundacion_randstad import FundacionRandstadJobSource
 from app.sources.himalayas import HimalayasJobSource
 from app.sources.infoempleo import InfoempleoJobSource
+from app.sources.jazzhr import JazzHrJobSource
 from app.sources.jobicy import JobicyJobSource
 from app.sources.jobtoday import JobTodayJobSource
 from app.sources.manpower import ManpowerJobSource
@@ -32,9 +34,11 @@ from app.sources.portalento import PortalentoJobSource
 from app.sources.remoteok import RemoteOkJobSource
 from app.sources.remotive import RemotiveJobSource
 from app.sources.rss import RssJobSource
+from app.sources.smartrecruiters import SmartRecruitersJobSource
 from app.sources.talent import TalentJobSource
 from app.sources.tecnoempleo import TecnoempleoJobSource
 from app.sources.trabajos import TrabajosJobSource
+from app.sources.zoho import ZohoRssJobSource
 
 
 def load_search_config(profile_key: str | None = None) -> SearchConfig:
@@ -82,12 +86,18 @@ def build_enabled_sources() -> list[JobSourceAdapter]:
             adapter = RemoteOkJobSource(raw_settings)
         elif adapter_name == "rss":
             adapter = RssJobSource(name, raw_settings)
+        elif adapter_name == "zoho_rss":
+            adapter = ZohoRssJobSource(name, raw_settings)
         elif adapter_name == "jobicy":
             adapter = JobicyJobSource(raw_settings)
         elif adapter_name == "himalayas":
             adapter = HimalayasJobSource(raw_settings)
         elif adapter_name == "greenhouse":
             adapter = GreenhouseJobSource(raw_settings)
+        elif adapter_name == "smartrecruiters":
+            adapter = SmartRecruitersJobSource(raw_settings)
+        elif adapter_name == "jazzhr":
+            adapter = JazzHrJobSource(raw_settings)
         elif adapter_name == "lever":
             adapter = LeverJobSource(raw_settings)
         elif adapter_name == "ashby":
@@ -108,6 +118,8 @@ def build_enabled_sources() -> list[JobSourceAdapter]:
             adapter = JobTodayJobSource(raw_settings)
         elif adapter_name == "bizneo":
             adapter = BizneoJobSource(raw_settings)
+        elif adapter_name == "employer_html":
+            adapter = EmployerHtmlJobSource(raw_settings)
         elif adapter_name == "talent":
             adapter = TalentJobSource(raw_settings)
         elif adapter_name == "manpower":

@@ -1,0 +1,38 @@
+{
+  "version": "0.1.47",
+  "revision": "66ab5992a94da4965fc98b4306caea70f6ce4e94",
+  "counts": {
+    "A": 6,
+    "B": 16,
+    "U": 40,
+    "C": 100,
+    "D": 433
+  },
+  "stored": 595,
+  "market_records": 580,
+  "current_before": 92,
+  "current_after": 62,
+  "verified_current_before": 47,
+  "verified_current_after": 35,
+  "top20_before": {
+    "A": 3,
+    "B": 8,
+    "U": 8,
+    "D": 1
+  },
+  "top20_after": {
+    "A": 6,
+    "B": 14,
+    "U": 0,
+    "D": 0
+  },
+  "official_checks": 22,
+  "application_forms": 19,
+  "application_controls": 3,
+  "personal_groups": 13,
+  "data_preserved": true,
+  "secondary_profile_155_unchanged": true,
+  "new_records": 0,
+  "exact_url_duplicates": 0,
+  "export_sha256": "345ca90b6b4e9737cc3704bf4c40c8fd34bdd7470919f45a9d09bc8ba6e6cddc"
+}

@@ -1,0 +1,121 @@
+[
+  {
+    "record_kind": "employer",
+    "employer": "Wallapop",
+    "official_source": "[Greenhouse board](https://job-boards.greenhouse.io/wallapop), public posting API",
+    "evidence_and_decision": "Five current jobs; engineering manager, MLOps, data science and nonengineering. No Java backend individual-contributor opening in the observed feed. No integration added.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "BlaBlaCar",
+    "official_source": "[Lever board](https://jobs.lever.co/blablacar), public posting API",
+    "evidence_and_decision": "Eight live postings, including three backend roles. Locations are Paris/France; generic remote benefits do not establish employment from Spain. No integration added.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "rindus",
+    "official_source": "[Personio board](https://rindus.jobs.personio.de/), public XML",
+    "evidence_and_decision": "Eleven live vacancies. The attractive non-senior backend listing 2745945 returns 404 and is absent from the XML. Current Java/SAP Commerce role requires senior experience; other engineering role is hybrid Málaga. No current A/B contribution proved.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Xolo",
+    "official_source": "[Corporate careers](https://www.xolo.io/zz-en/careers), linked Workable embed account 714240",
+    "evidence_and_decision": "Fourteen location entries, representing eight distinct shortcodes, currently contain no engineering vacancy. Indexed Product Engineer pages offering Spain remote and EUR 60–69k are absent from the live feed. The guessed company-name slug returned 404; the numeric account was subsequently obtained from the employer's own public embed configuration. No stale source added.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Veeva Systems",
+    "official_source": "[Technical Consultant – Integrations](https://jobs.lever.co/veeva/dd1d2834-b9d2-400b-987e-d9b102c3996b), Lever",
+    "evidence_and_decision": "HTML and CV form return 200 and describe Spain remote, three years of Java, and EUR 50–85k **total compensation**, not guaranteed base salary. However, the 916-posting public feed omits it and its documented individual API URL returns 404. Conflicting availability stays manual/unconfirmed. Current entry-level consulting role requires Barcelona commuting.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Global Human Capital Group",
+    "official_source": "[Corporate careers](https://globalhumancapitalgroup.com/en/careers/) links [Zoho portal](https://globalhumancapitalgroup.zohorecruit.com/jobs/Careers); portal advertises public RSS",
+    "evidence_and_decision": "Live portal contains 21 roles; RSS supplies two Java/Spring vacancies. Junior role has one–two years in actual requirements, B2 minimum/C1 desired, Spain remote, concrete API development duties, and unknown salary. The vacancy-bound rendered CV/email form was checked without entering personal data or solving CAPTCHA. Integrate the advertised RSS with bounded public-detail enrichment.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "EUROPEAN DYNAMICS",
+    "official_source": "[Workable board](https://apply.workable.com/european-dynamics/), public widget",
+    "evidence_and_decision": "189 location entries; Spain entries are Python/React fullstack and senior Databricks administration/architecture. No eligible Java contribution proved.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Plexus Tech",
+    "official_source": "[Official corporate careers](https://www.plexus.es/unete-al-equipo/), WordPress",
+    "evidence_and_decision": "Primary web index shows a two-year Java/Microservices opening. Direct corporate index/robots GET returns Cloudflare 403. No bypass. The employer-unconfirmed Bizneo tenant from the preceding report remains excluded and is not used as Plexus identity evidence.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "AD4 Octógono",
+    "official_source": "[Official Viterbit vacancy](https://ad4octogono.viterbit.site/desarrollador-java-remoto-mdxR9fHTYWZy/)",
+    "evidence_and_decision": "Indexed Java/Spring Boot role asks around two years and advertises EUR 25–35k, remote. Direct GET returns a 403 challenge; robots alone allows access. Strong manual lead; no blocked source integrated.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Krell",
+    "official_source": "[Viterbit board](https://krell-consulting.viterbit.site/)",
+    "evidence_and_decision": "Indexed board advertises several remote Java roles, including senior backend. Direct board GET returns 403. The older two-and-a-half–four-year analyst role is marked closed by its employer publication. No unsupported scraper added.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Coderland",
+    "official_source": "[Manatal vacancy](https://www.careers-page.com/coderlandjob/job/4R4V59Y5)",
+    "evidence_and_decision": "Employer vacancy explicitly offers Spain remote but requires at least ten years of backend experience. Future-level reference, not a current A/B discovery.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Bahía Software",
+    "official_source": "[Official Java role](https://enjoybahia.es/portfolio/desarrolladores-java/)",
+    "evidence_and_decision": "Primary indexed role asks two–three years of Java/Spring MVC/Hibernate but names Galicia/Santander offices without establishing Spain remote or Sevilla eligibility. No automatic A/B claim.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "IOON",
+    "official_source": "[Employer Java/Spring Boot publication](https://es.linkedin.com/jobs/view/desarrollador-java-springboot-at-ioon-4469303151)",
+    "evidence_and_decision": "Employer publication describes two–three years, remote, Java/Spring Boot/Oracle and EUR 28–30k. Promising manual lead. Corporate careers links LinkedIn and InfoJobs; a reusable authorized vacancy feed was not established. Neither portal is scraped or integrated.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Apiux Tech",
+    "official_source": "[Employer Java/LRBA publication](https://es.linkedin.com/jobs/view/desarrollador-java-con-experiencia-y-certificaci%C3%B3n-en-lrba-at-apiux-tech-4479571295)",
+    "evidence_and_decision": "Spain remote, one–three years, but actual LRBA experience/certification is explicitly required. Other current indexed Java role is hybrid Madrid/four-plus years. No current A/B source established.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "INNOCV Solutions",
+    "official_source": "[Official Teamtailor index](https://jobs.innocv.com/jobs)",
+    "evidence_and_decision": "Direct current index has eleven postings, including junior Go and Python/AI backend, but no Java opening. Older Java Senior mirrors remain indexed. No Java source added solely for those mirrors.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Babel",
+    "official_source": "[Official Workday Java Health role](https://babelgroup.wd103.myworkdayjobs.com/es/REC_External_Career_Site/job/Java-Developer--Health-_JR107776)",
+    "evidence_and_decision": "Indexed official role names Sevilla and Full Remote. Direct HTTP response is an empty JavaScript shell, and no suitable authorized complete public feed was established. Manual lead with current requirements/application unconfirmed; no private Workday API guessed.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer": "Viewnext",
+    "official_source": "[Corporate careers](https://www.viewnext.com/empleo/) links LinkedIn jobs and its ePreselec CV portal",
+    "evidence_and_decision": "Corporate page is accessible and advertises remote choices. Its ePreselec portal and robots both return a 405 bot/CAPTCHA challenge. No bypass or inference that generic remote benefits apply to a particular Java job.",
+    "reviewed_on": "2026-10-23"
+  }
+]

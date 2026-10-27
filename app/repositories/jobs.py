@@ -1,16 +1,22 @@
 from __future__ import annotations
 
+import re
 import uuid
+from collections import Counter
+from collections.abc import Generator
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from difflib import SequenceMatcher
 from typing import Any
 
-from sqlalchemy import Select, and_, func, or_, select
+from sqlalchemy import Select, and_, case, func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.offer_identity import ORIGINS_KEY, is_employer_listing, is_portal_listing
 from app.models.enums import JobStatus, RemoteType
 from app.models.job import Company, IngestionRun, JobOffer, JobSource, UserJobState
 from app.scoring.engine import ScoreResult
+from app.scoring.evidence import fold
 from app.services.normalizer import NormalizedJob
 
 
@@ -19,6 +25,9 @@ class JobFilters:
     profile_key: str | None = None
     min_score: int | None = None
     match_level: str | None = None
+    radar: str | None = None
+    category: str | None = None
+    verified_only: bool = False
     technology: str | None = None
     source: str | None = None
     company: str | None = None
@@ -87,7 +96,7 @@ class JobRepository:
         score: ScoreResult,
     ) -> tuple[JobOffer, bool]:
         company = self.get_or_create_company(session, job.company_name, job.company_website)
-        existing = self._find_existing(session, source, job)
+        existing = self.find_existing(session, source, job)
         now = datetime.now(UTC)
         if existing is None:
             offer = JobOffer(
@@ -105,7 +114,41 @@ class JobRepository:
             offer = existing
             offer.last_seen_at = now
             created = False
+        origins = dict(offer.raw_payload.get(ORIGINS_KEY, {})) if existing else {}
+        if existing:
+            origins.setdefault(
+                offer.source.name,
+                {
+                    "source_job_id": offer.source_job_id,
+                    "url": offer.url,
+                },
+            )
+        aliases = dict(origins.get(source.name, {}).get("aliases", {}))
+        if job.source_job_id and job.url:
+            aliases[job.source_job_id] = job.url
+        for alternate in job.raw_payload.get("alternate_postings", []):
+            if alternate.get("source_job_id") and alternate.get("url"):
+                aliases[str(alternate["source_job_id"])] = alternate["url"]
+        origins[source.name] = {
+            "source_job_id": job.source_job_id,
+            "url": job.url,
+            "aliases": aliases,
+        }
+        if existing and is_employer_listing(offer.url) and is_portal_listing(job.url):
+            # A stale mirror cannot replace the employer's requirements, date or closure evidence.
+            offer.raw_payload = {**offer.raw_payload, ORIGINS_KEY: origins}
+            session.flush()
+            return offer, False
+        promote = (
+            existing
+            and is_employer_listing(job.url)
+            and (is_portal_listing(offer.url) or is_portal_listing(offer.source.base_url))
+        )
         self._apply_job_fields(offer, company, job, score)
+        offer.raw_payload = {**offer.raw_payload, ORIGINS_KEY: origins}
+        if promote:
+            offer.source = source
+            offer.source_job_id = job.source_job_id
         offer.profile_key = source.profile_key
         session.flush()
         return offer, created
@@ -115,6 +158,25 @@ class JobRepository:
         statement = self._apply_sort(statement, filters)
         statement = statement.offset(filters.offset).limit(filters.limit)
         return list(session.scalars(statement).unique())
+
+    def iter_job_batches(
+        self, session: Session, filters: JobFilters, *, batch_size: int = 500,
+    ) -> Generator[list[JobOffer], None, None]:
+        """Stream one ordered query; export ignores list pagination limits."""
+        if batch_size < 1:
+            raise ValueError("batch_size must be positive")
+        statement = self._apply_sort(self._filtered_statement(filters), filters)
+        statement = statement.execution_options(yield_per=batch_size)
+        result = session.scalars(statement)
+        try:
+            while True:
+                batch = list(result.fetchmany(batch_size))
+                if not batch:
+                    break
+                yield batch
+                del batch
+        finally:
+            result.close()
 
     def get_job(self, session: Session, job_id: uuid.UUID) -> JobOffer | None:
         return session.scalar(
@@ -161,6 +223,7 @@ class JobRepository:
     def get_user_statuses(
         self, session: Session, user_id: int, jobs: list[JobOffer]
     ) -> dict[str, JobStatus]:
+        """Resolve every requested offer in the user's personal status namespace."""
         job_ids = [job.id for job in jobs]
         if not job_ids:
             return {}
@@ -170,22 +233,25 @@ class JobRepository:
                 UserJobState.job_offer_id.in_(job_ids),
             )
         ).all()
-        return {str(job_id): status for job_id, status in rows}
+        statuses = {str(job_id): JobStatus.NEW for job_id in job_ids}
+        statuses.update({str(job_id): status for job_id, status in rows})
+        return statuses
 
     def stats(
         self,
         session: Session,
         user_id: int | None = None,
         profile_key: str | None = None,
+        radar: str | None = None,
     ) -> dict[str, Any]:
         enabled_filter = JobSource.enabled.is_(True)
         filters: list[Any] = [enabled_filter]
         if profile_key:
             filters.append(JobOffer.profile_key == profile_key)
+        if radar and radar != "all":
+            filters.append(JobOffer.match_reasons["assessment"]["radar"].as_string() == radar)
         total = (
-            session.scalar(
-                select(func.count(JobOffer.id)).join(JobOffer.source).where(*filters)
-            )
+            session.scalar(select(func.count(JobOffer.id)).join(JobOffer.source).where(*filters))
             or 0
         )
         average = (
@@ -199,7 +265,7 @@ class JobRepository:
         by_status = {
             str(status): count
             for status, count in self._status_counts(
-                session, user_id, int(total), profile_key
+                session, user_id, int(total), profile_key, radar
             ).items()
         }
         by_level = {
@@ -231,7 +297,7 @@ class JobRepository:
             )
         )
 
-    def _find_existing(
+    def find_existing(
         self, session: Session, source: JobSource, job: NormalizedJob
     ) -> JobOffer | None:
         if job.source_job_id:
@@ -242,6 +308,22 @@ class JobRepository:
             )
             if existing is not None:
                 return existing
+            alias = session.scalar(
+                select(JobOffer)
+                .options(joinedload(JobOffer.company), joinedload(JobOffer.source))
+                .where(
+                    JobOffer.profile_key == source.profile_key,
+                    or_(
+                        JobOffer.raw_payload[ORIGINS_KEY][source.name]["source_job_id"].as_string()
+                        == job.source_job_id,
+                        JobOffer.raw_payload[ORIGINS_KEY][source.name]["aliases"][job.source_job_id]
+                        .as_string()
+                        .is_not(None),
+                    ),
+                )
+            )
+            if alias is not None:
+                return alias
         if job.url:
             existing = session.scalar(
                 select(JobOffer)
@@ -250,7 +332,7 @@ class JobRepository:
             )
             if existing is not None:
                 return existing
-        return session.scalar(
+        exact = session.scalar(
             select(JobOffer)
             .options(joinedload(JobOffer.company), joinedload(JobOffer.source))
             .where(
@@ -258,6 +340,24 @@ class JobRepository:
                 JobOffer.content_hash == job.content_hash,
             )
         )
+        if exact is not None and exact.source_id != source.id and not _same_mirror(exact, job):
+            exact = None
+        if exact is not None or not is_employer_listing(job.url):
+            return exact
+        mirrors = list(
+            session.scalars(
+                select(JobOffer)
+                .join(JobOffer.company)
+                .options(joinedload(JobOffer.company), joinedload(JobOffer.source))
+                .where(
+                    JobOffer.profile_key == source.profile_key,
+                    func.lower(Company.name) == job.company_name.lower(),
+                    func.lower(JobOffer.title) == job.title.lower(),
+                )
+            ).unique()
+        )
+        matches = [m for m in mirrors if is_portal_listing(m.url) and _same_mirror(m, job)]
+        return matches[0] if len(matches) == 1 else None
 
     def _apply_job_fields(
         self,
@@ -291,7 +391,7 @@ class JobRepository:
         offer.content_hash = job.content_hash
         offer.match_score = score.score
         offer.match_level = score.level
-        offer.match_reasons = {"positive": score.positive}
+        offer.match_reasons = score.match_reasons()
         offer.negative_reasons = {"negative": score.negative}
         offer.language = job.language
 
@@ -308,6 +408,23 @@ class JobRepository:
             statement = statement.where(JobOffer.match_score >= filters.min_score)
         if filters.match_level:
             statement = statement.where(JobOffer.match_level == filters.match_level)
+        if filters.radar and filters.radar != "all":
+            statement = statement.where(
+                JobOffer.match_reasons["assessment"]["radar"].as_string() == filters.radar
+            )
+        if filters.category:
+            statement = statement.where(
+                JobOffer.match_reasons["assessment"]["category"].as_string() == filters.category
+            )
+        if filters.verified_only:
+            from app.core.availability import VERIFICATION_TTL
+
+            proof = JobOffer.match_reasons["assessment"]["availability"]
+            statement = statement.where(
+                proof["state"].as_string() == "active",
+                proof["checked_at"].as_string()
+                >= (datetime.now(UTC) - VERIFICATION_TTL).isoformat(),
+            )
         if filters.technology:
             statement = statement.where(JobOffer.technologies.contains([filters.technology]))
         if filters.source:
@@ -318,11 +435,15 @@ class JobRepository:
             statement = statement.where(JobOffer.salary_min >= filters.salary_min)
         if filters.salary_known is True:
             statement = statement.where(
-                JobOffer.salary_unknown.is_(False), JobOffer.salary_min.is_not(None)
+                JobOffer.salary_unknown.is_(False),
+                or_(JobOffer.salary_min.is_not(None), JobOffer.salary_max.is_not(None)),
             )
         elif filters.salary_known is False:
             statement = statement.where(
-                or_(JobOffer.salary_unknown.is_(True), JobOffer.salary_min.is_(None))
+                or_(
+                    JobOffer.salary_unknown.is_(True),
+                    and_(JobOffer.salary_min.is_(None), JobOffer.salary_max.is_(None)),
+                )
             )
         if filters.remote_type is not None:
             statement = statement.where(JobOffer.remote_type == filters.remote_type)
@@ -368,10 +489,13 @@ class JobRepository:
         user_id: int | None,
         total: int,
         profile_key: str | None,
+        radar: str | None = None,
     ) -> dict[JobStatus, int]:
         filters: list[Any] = [JobSource.enabled.is_(True)]
         if profile_key:
             filters.append(JobOffer.profile_key == profile_key)
+        if radar and radar != "all":
+            filters.append(JobOffer.match_reasons["assessment"]["radar"].as_string() == radar)
         if user_id is None:
             return {
                 status: count
@@ -397,7 +521,39 @@ class JobRepository:
     def _apply_sort(
         self, statement: Select[tuple[JobOffer]], filters: JobFilters
     ) -> Select[tuple[JobOffer]]:
+        if filters.sort == "id":
+            return statement.order_by(JobOffer.id)
         sort_column = JobOffer.publication_date if filters.sort == "date" else JobOffer.match_score
         if filters.order.lower() == "asc":
-            return statement.order_by(sort_column.asc().nullslast(), JobOffer.created_at.desc())
-        return statement.order_by(sort_column.desc().nullslast(), JobOffer.created_at.desc())
+            return statement.order_by(
+                sort_column.asc().nullslast(), JobOffer.created_at.desc(), JobOffer.id,
+            )
+        if filters.sort == "score":
+            advice = JobOffer.match_reasons["assessment"]["recommendation"].as_string()
+            priority = case({"A": 0, "B": 1, "U": 2, "C": 3, "D": 4}, value=advice, else_=5)
+            return statement.order_by(
+                sort_column.desc().nullslast(), priority, JobOffer.created_at.desc(), JobOffer.id,
+            )
+        return statement.order_by(
+            sort_column.desc().nullslast(), JobOffer.created_at.desc(), JobOffer.id,
+        )
+
+
+def _same_mirror(offer: JobOffer, job: NormalizedJob) -> bool:
+    if offer.remote_type != job.remote_type:
+        return False
+    if job.remote_type == RemoteType.REMOTE:
+        country = fold(job.country or "")
+        if country in {"", "worldwide", "europe"} or country != fold(offer.country or ""):
+            return False
+    elif fold(offer.location or "") != fold(job.location or ""):
+        return False
+    first = " ".join(re.findall(r"\w+", fold(offer.description)))
+    second = " ".join(re.findall(r"\w+", fold(job.description)))
+    if min(len(first), len(second)) < 100:
+        return False
+    # Different requirement numbers must never be merged just because boilerplate matches.
+    numbers = r"\b\d+(?:[.,]\d+)?\b"
+    if Counter(re.findall(numbers, first)) != Counter(re.findall(numbers, second)):
+        return False
+    return SequenceMatcher(None, first, second, autojunk=False).ratio() >= 0.98

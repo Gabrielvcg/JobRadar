@@ -1,4 +1,164 @@
 sources:
+  signicat_official:
+    enabled: true
+    profile_key: "engineering"
+    adapter: "rss"
+    company_name: "Signicat"
+    base_url: "https://signicat.teamtailor.com/jobs.rss?per_page=200"
+    min_interval_minutes: 720
+    timeout_seconds: 25
+    retries: 1
+    max_jobs: 200
+    minimum_score: 35
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software"]
+    allowed_location_keywords: ["spain", "españa", "sevilla", "seville"]
+    attribution_url: "https://signicat.teamtailor.com"
+
+  experience_official:
+    enabled: true
+    adapter: "bizneo"
+    base_url: "https://jobs.experienceis.com"
+    company_name: "eXperience IT Solutions"
+    min_interval_minutes: 720
+    retries: 1
+    rate_limit_seconds: 1
+    detail_rate_limit_seconds: 1
+    max_detail_pages: 35
+    max_jobs: 35
+    minimum_score: 35
+    strict_search_filter: true
+    prefilter_titles: true
+    structured_metadata: true
+    pages:
+      - url: "https://jobs.experienceis.com/jobs?subcategory=programming"
+        country: "Spain"
+      - url: "https://jobs.experienceis.com/jobs?subcategory=programming&page=2"
+        country: "Spain"
+      - url: "https://jobs.experienceis.com/jobs?subcategory=programming&page=3"
+        country: "Spain"
+      - url: "https://jobs.experienceis.com/jobs?subcategory=programming&page=4"
+        country: "Spain"
+      - url: "https://jobs.experienceis.com/jobs?subcategory=programming&page=5"
+        country: "Spain"
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software", "developer", "desarrollador", "programador"]
+    attribution_url: "https://jobs.experienceis.com"
+
+  sngular_official:
+    enabled: true
+    adapter: "employer_html"
+    base_url: "https://www.sngular.com"
+    company_name: "SNGULAR"
+    index_urls: ["https://www.sngular.com/es/talento-y-cultura/jobs"]
+    link_selector: 'a[href*="/es/talento-y-cultura/jobs/"]'
+    description_selector: ".m-hero__subtitle, main > .g-text-section, main > .g-features"
+    location_selector: ".m-hero .m-job-offer__item:first-child .a-heading-5"
+    mode_selector: ".m-hero .m-job-offer__details"
+    min_interval_minutes: 720
+    rate_limit_seconds: 1
+    max_detail_pages: 10
+    minimum_score: 35
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software", "developer", "desarrollador"]
+    attribution_url: "https://www.sngular.com/es/talento-y-cultura/jobs"
+
+  smartrecruiters_curated:
+    enabled: true
+    adapter: "smartrecruiters"
+    base_url: "https://api.smartrecruiters.com"
+    query: "Java"
+    country: "es"
+    min_interval_minutes: 720
+    timeout_seconds: 20
+    retries: 2
+    rate_limit_seconds: 1
+    max_pages: 1
+    page_size: 50
+    max_details_per_company: 20
+    minimum_score: 35
+    companies:
+      - slug: "T-SystemsIberia"
+        name: "T-Systems Iberia"
+      - slug: "scalian"
+        name: "Scalian"
+      - slug: "talan"
+        name: "Talan"
+    must_have_any_keywords: ["java", "spring"]
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software", "developer", "desarrollador", "arquitecto"]
+    excluded_keywords: ["recruiter", "sales", "product owner"]
+    attribution_url: "https://careers.smartrecruiters.com/T-SystemsIberia"
+
+  knowmad_official:
+    enabled: true
+    adapter: "rss"
+    company_name: "knowmad mood"
+    base_url: "https://knowmadmood.teamtailor.com/jobs.rss?per_page=200"
+    min_interval_minutes: 720
+    timeout_seconds: 25
+    retries: 1
+    max_jobs: 200
+    minimum_score: 35
+    allow_career_transitions: true
+    must_have_any_keywords: ["java", "spring"]
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software", "cloud", "platform", "security"]
+    excluded_keywords: ["recruiter", "sales", "product owner"]
+    attribution_url: "https://knowmadmood.teamtailor.com"
+
+  irium_official:
+    enabled: true
+    adapter: "jazzhr"
+    base_url: "https://iriumspain.applytojob.com"
+    company_name: "IRIUM"
+    country: "Spain"
+    min_interval_minutes: 720
+    timeout_seconds: 20
+    retries: 1
+    max_details_per_company: 10
+    rate_limit_seconds: 1
+    minimum_score: 35
+    must_have_any_keywords: ["java", "spring"]
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "software", "fullstack", "full stack"]
+    excluded_keywords: ["recruiter", "sales", "product owner"]
+    attribution_url: "https://iriumspain.applytojob.com"
+
+  whiteam_official:
+    enabled: true
+    adapter: "rss"
+    company_name: "The White Team"
+    base_url: "https://careers.twtspain.com/jobs.rss?per_page=200"
+    min_interval_minutes: 720
+    timeout_seconds: 25
+    retries: 1
+    max_jobs: 200
+    minimum_score: 35
+    allow_career_transitions: true
+    must_have_any_keywords: ["java", "spring"]
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "back-end", "software"]
+    excluded_keywords: ["recruiter", "sales", "product owner"]
+    attribution_url: "https://careers.twtspain.com"
+
+  talentconnect_official:
+    enabled: true
+    adapter: "rss"
+    company_name: "Talent Connect"
+    base_url: "https://jobs.talentconnect.ai/jobs.rss?per_page=200"
+    min_interval_minutes: 720
+    timeout_seconds: 25
+    retries: 1
+    max_jobs: 200
+    minimum_score: 35
+    allow_career_transitions: true
+    must_have_any_keywords: ["java", "spring"]
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "backend", "back-end", "software"]
+    excluded_keywords: ["recruiter", "sales", "product owner"]
+    attribution_url: "https://jobs.talentconnect.ai"
+
   fixtures:
     enabled: true
     production_enabled: false
@@ -9,6 +169,7 @@ sources:
 
   arbeitnow:
     enabled: true
+    allow_career_transitions: true
     adapter: "arbeitnow"
     base_url: "https://www.arbeitnow.com/api/job-board-api"
     max_pages: 5
@@ -52,9 +213,6 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "product owner"
       - "project manager"
@@ -79,6 +237,7 @@ sources:
 
   remotive:
     enabled: true
+    allow_career_transitions: true
     adapter: "remotive"
     base_url: "https://remotive.com/api/remote-jobs"
     min_interval_minutes: 360
@@ -122,9 +281,6 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "product manager"
       - "product owner"
       - "project manager"
@@ -140,6 +296,7 @@ sources:
 
   remoteok:
     enabled: true
+    allow_career_transitions: true
     adapter: "remoteok"
     base_url: "https://remoteok.com/api"
     min_interval_minutes: 360
@@ -187,12 +344,7 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
-      - "head of"
-      - "architect"
       - "product owner"
       - "project manager"
       - "sales"
@@ -278,12 +430,7 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
-      - "head of"
-      - "architect"
       - "business development"
       - "sales"
       - "finance"
@@ -362,12 +509,7 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
-      - "head of"
-      - "architect"
       - "business development"
       - "sales"
       - "finance"
@@ -435,12 +577,7 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
-      - "head of"
-      - "architect"
       - "business development"
       - "sales"
       - "finance"
@@ -468,6 +605,7 @@ sources:
 
   weworkremotely_devops:
     enabled: true
+    allow_career_transitions: true
     adapter: "rss"
     base_url: "https://weworkremotely.com/categories/remote-devops-sysadmin-jobs.rss"
     min_interval_minutes: 180
@@ -509,12 +647,7 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
-      - "head of"
-      - "architect"
       - "business development"
       - "sales"
       - "finance"
@@ -539,6 +672,7 @@ sources:
 
   jobicy:
     enabled: true
+    allow_career_transitions: true
     adapter: "jobicy"
     base_url: "https://jobicy.com/api/v2/remote-jobs"
     min_interval_minutes: 360
@@ -615,13 +749,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "sales"
       - "business development"
       - "marketing"
@@ -672,6 +801,7 @@ sources:
 
   himalayas:
     enabled: true
+    allow_career_transitions: true
     adapter: "himalayas"
     base_url: "https://himalayas.app/jobs/api/search"
     min_interval_minutes: 360
@@ -693,6 +823,12 @@ sources:
         worldwide: "true"
       - q: "kotlin"
         worldwide: "true"
+      - q: "devops"
+        country: "Spain"
+      - q: "cloud engineer"
+        country: "Spain"
+      - q: "application security"
+        country: "Spain"
     must_have_any_keywords:
       - "java"
       - "spring"
@@ -736,12 +872,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
       - "android"
       - "mobile"
       - "teacher"
@@ -1128,6 +1260,7 @@ sources:
 
   greenhouse_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "greenhouse"
     base_url: "https://boards-api.greenhouse.io"
     min_interval_minutes: 360
@@ -1223,13 +1356,8 @@ sources:
       - "sre"
       - "site reliability"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - "sales"
@@ -1276,8 +1404,29 @@ sources:
       - "sweden"
     attribution_url: "https://www.greenhouse.com"
 
+  ghcg_official:
+    enabled: true
+    profile_key: "engineering"
+    adapter: "zoho_rss"
+    base_url: "https://globalhumancapitalgroup.zohorecruit.com/jobs/Careers/rss"
+    company_name: "Global Human Capital Group"
+    min_interval_minutes: 720
+    timeout_seconds: 20
+    retries: 1
+    rate_limit_seconds: 1
+    max_jobs: 50
+    max_detail_pages: 5
+    minimum_score: 35
+    required_any_keywords: ["java", "spring"]
+    title_required_any_keywords: ["java", "spring"]
+    allowed_location_keywords: ["spain", "españa"]
+    description_fields: ["Job_Description", "Funciones_Responsabilidades"]
+    requirement_fields: ["Requisitos"]
+    attribution_url: "https://globalhumancapitalgroup.com/en/careers/"
+
   lever_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "lever"
     base_url: "https://api.lever.co"
     min_interval_minutes: 360
@@ -1369,13 +1518,8 @@ sources:
       - "sre"
       - "site reliability"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - "sales"
@@ -1423,6 +1567,7 @@ sources:
 
   ashby_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "ashby"
     base_url: "https://api.ashbyhq.com"
     min_interval_minutes: 360
@@ -1515,13 +1660,8 @@ sources:
       - "sre"
       - "site reliability"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - "sales"
@@ -1567,6 +1707,7 @@ sources:
 
   workable_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "workable"
     base_url: "https://apply.workable.com"
     min_interval_minutes: 360
@@ -1620,13 +1761,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - "sales"
@@ -1664,6 +1800,7 @@ sources:
 
   recruitee_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "recruitee"
     base_url: "https://{company}.recruitee.com"
     min_interval_minutes: 360
@@ -1717,13 +1854,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - ".net"
@@ -1773,6 +1905,7 @@ sources:
 
   pinpoint_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "pinpoint"
     base_url: "https://{company}.pinpointhq.com"
     min_interval_minutes: 360
@@ -1820,13 +1953,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "android"
       - "mobile"
       - "react native"
@@ -1867,6 +1995,7 @@ sources:
 
   personio_curated:
     enabled: true
+    allow_career_transitions: true
     adapter: "personio"
     base_url: "https://{company}.jobs.personio.de"
     language: "en"
@@ -1931,13 +2060,8 @@ sources:
       - "jvm"
       - "kotlin"
     excluded_keywords:
-      - "staff"
-      - "principal"
-      - "lead"
       - "manager"
       - "director"
-      - "head of"
-      - "architect"
       - "frontend"
       - "front-end"
       - "front end"

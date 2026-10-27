@@ -11,6 +11,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_env: str = Field(default="local", alias="APP_ENV")
+    app_revision: str = Field(default="unknown", alias="APP_REVISION")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
     app_secret_key: str = Field(default="change-me-in-production", alias="APP_SECRET_KEY")
     session_cookie_secure: bool = Field(default=False, alias="SESSION_COOKIE_SECURE")

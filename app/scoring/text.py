@@ -5,10 +5,12 @@ import re
 import unicodedata
 from html import unescape
 from typing import Any
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from bs4 import BeautifulSoup
 
 from app.models.enums import RemoteType
+from app.scoring.evidence import binding_experience, experience_requirements
 
 EXPERIENCE_RANGE_RE = re.compile(
     r"(?P<min>\d+(?:[.,]\d+)?)\s*(?:-|–|—|to|a)\s*(?P<max>\d+(?:[.,]\d+)?)\s*"
@@ -22,7 +24,7 @@ EXPERIENCE_SINGLE_RE = re.compile(
 
 
 def clean_html(value: str) -> str:
-    soup = BeautifulSoup(value or "", "html.parser")
+    soup = BeautifulSoup(unescape(value or ""), "html.parser")
     text = soup.get_text(" ")
     return normalize_whitespace(unescape(text))
 
@@ -55,25 +57,88 @@ def detect_technologies(text: str, scoring_config: dict[str, Any]) -> list[str]:
 
 
 def extract_experience_years(text: str) -> tuple[float | None, float | None]:
-    range_match = EXPERIENCE_RANGE_RE.search(text)
-    if range_match:
-        return _to_float(range_match.group("min")), _to_float(range_match.group("max"))
-    single_match = EXPERIENCE_SINGLE_RE.search(text)
-    if single_match:
-        years = _to_float(single_match.group("years"))
-        return years, years
+    requirement = binding_experience(experience_requirements(text))
+    if requirement:
+        return requirement.minimum, requirement.maximum
     return None, None
 
 
-def detect_remote_type(text: str, fallback: RemoteType = RemoteType.UNKNOWN) -> RemoteType:
+def detect_remote_type(
+    text: str,
+    fallback: RemoteType = RemoteType.UNKNOWN,
+    *,
+    location: str | None = None,
+) -> RemoteType:
     text_lower = text.lower()
-    if any(token in text_lower for token in ("remote", "remoto", "teletrabajo", "work from home")):
-        return RemoteType.REMOTE
+    place = (location or "").lower()
+    if re.search(r"\b(hybrid|hibrido|híbrido)\b", place):
+        return RemoteType.HYBRID
+    if re.search(r"\b(onsite|on-site|presencial)\b", place):
+        return RemoteType.ONSITE
+    if re.search(r"\b(no remote|not remote|sin teletrabajo|no teletrabajo)\b", text_lower):
+        return RemoteType.ONSITE
+    # An explicit choice of full remote is not a hybrid attendance requirement.
+    # Match a complete option clause only; client approval/conditions stay intact.
+    client_office_required = re.search(
+        r"\b(?:client|customer)\s+requires\b[^.!?\n]{0,100}\b(?:office|onsite|on-site)\b",
+        text_lower,
+    )
+    remote_choice_restricted = re.search(
+        r"\b(?:full|fully|100\s*%)[ -]?remote\b[^.!?\n]{0,150}"
+        r"\b(?:only|subject to|depending on)\b",
+        text_lower,
+    )
+    approval_required = re.search(
+        r"\b(?:remote(?: work(?:ing)?)?|this choice)\s+(?:requires|is subject to)\s+"
+        r"(?:client|customer)\s+approval\b",
+        text_lower,
+    )
+    if not client_office_required and not remote_choice_restricted and not approval_required:
+        text_lower = re.sub(
+            r"\boption to work (?:full|fully|100\s*%)[ -]?remote\s*,\s*"
+            r"hybrid\s+or\s+office[ -]based"
+            r"(?:\s*\(if in [^()\n]{1,60} area\)|(?=\s*(?:[.!?](?:\s|$)|\n|$)))"
+            r"(?![ \t]*(?:[,;:]|but\b|subject\b|only\b|depending\b|for\b))",
+            "full remote",
+            text_lower,
+        )
+    # Hybrid/onsite requirements outrank incidental remote benefits.
     if any(token in text_lower for token in ("hybrid", "hibrido", "híbrido")):
         return RemoteType.HYBRID
-    if any(token in text_lower for token in ("onsite", "on-site", "presencial")):
+    # Interviews and occasional gatherings do not establish mandatory office work.
+    mode_text = re.sub(
+        r"\b(?:onsite|on-site)\s+(?:interviews?|events?|gatherings?|meetings?)\b",
+        "",
+        text_lower,
+    )
+    office_required = re.search(
+        r"\b(?:must|required to|expected to)\s+(?:work|attend|be)\b[^.!?]{0,60}"
+        r"\b(?:office|onsite|on-site)\b|\b\d+\s+days? (?:a|per) week\b[^.!?]{0,40}\boffice\b",
+        mode_text,
+    )
+    if office_required:
+        return RemoteType.HYBRID if re.search(r"\d+\s+days?", mode_text) else RemoteType.ONSITE
+    if fallback == RemoteType.REMOTE:
+        return RemoteType.REMOTE
+    if any(token in mode_text for token in ("onsite", "on-site", "presencial")):
         return RemoteType.ONSITE
+    mode_text = re.sub(
+        r"\bremote (?:debugging|procedure calls?|access|clients?|systems?)\b", "", mode_text
+    )
+    if any(token in mode_text for token in ("remote", "remoto", "teletrabajo", "work from home")):
+        return RemoteType.REMOTE
     return fallback
+
+
+def clean_job_text(value: str) -> str:
+    """Preserve requirement/list boundaries for evidence classification."""
+    soup = BeautifulSoup(unescape(value or ""), "html.parser")
+    for element in soup.find_all(["p", "li", "br", "h2", "h3", "h4", "div"]):
+        element.insert_before("\n")
+        element.insert_after("\n")
+    return "\n".join(
+        normalize_whitespace(line) for line in soup.get_text(" ").splitlines() if line.strip()
+    )
 
 
 def detect_language(text: str) -> str | None:
@@ -150,7 +215,16 @@ def canonical_url(url: str | None) -> str | None:
     text = url.strip()
     if not text:
         return None
-    return text.split("#", 1)[0].rstrip("/")
+    parts = urlsplit(text)
+    tracking = {"gh_src", "lever-source"}
+    query = [
+        (key, value)
+        for key, value in parse_qsl(parts.query, keep_blank_values=True)
+        if not key.lower().startswith("utm_") and key.lower() not in tracking
+    ]
+    return urlunsplit(
+        (parts.scheme.lower(), parts.netloc.lower(), parts.path.rstrip("/"), urlencode(query), "")
+    )
 
 
 def _to_float(value: str) -> float | None:

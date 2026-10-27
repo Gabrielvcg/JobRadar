@@ -1,5 +1,8 @@
 FROM python:3.12-slim
 
+ARG APP_REVISION=unknown
+ENV APP_REVISION=${APP_REVISION}
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
@@ -12,8 +15,10 @@ RUN apt-get update \
 
 COPY . .
 
-RUN python -m pip install --upgrade pip \
-    && python -m pip install -e .
+RUN python -m pip install --only-binary=:all: --require-hashes -r requirements/build.txt \
+    && python -m pip install --only-binary=:all: --require-hashes -r requirements/runtime.txt \
+    && python -c 'from setuptools.build_meta import build_wheel; build_wheel("dist")' \
+    && python -m pip install --only-binary=:all: --no-index --no-deps --find-links=dist jobradar==0.1.51
 
 EXPOSE 8000
 

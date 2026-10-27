@@ -123,7 +123,7 @@ class JobOffer(TimestampMixin, Base):
     content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     match_score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     match_level: Mapped[str] = mapped_column(String(20), default="low", nullable=False)
-    match_reasons: Mapped[dict[str, list[str]]] = mapped_column(JSONB, default=dict, nullable=False)
+    match_reasons: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
     negative_reasons: Mapped[dict[str, list[str]]] = mapped_column(
         JSONB, default=dict, nullable=False
     )

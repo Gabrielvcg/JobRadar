@@ -46,14 +46,14 @@ class BizneoJobSource:
         self.max_jobs = int(settings.get("max_jobs", 40))
         self.max_detail_pages = int(settings.get("max_detail_pages", 40))
         self.strict_search_filter = bool(settings.get("strict_search_filter", True))
+        self.prefilter_titles = bool(settings.get("prefilter_titles", False))
+        self.structured_metadata = bool(settings.get("structured_metadata", False))
         self.required_any_keywords = _string_list(settings.get("required_any_keywords", []))
         self.title_required_any_keywords = _string_list(
             settings.get("title_required_any_keywords", [])
         )
         self.excluded_keywords = _string_list(settings.get("excluded_keywords", []))
-        self.allowed_location_keywords = _string_list(
-            settings.get("allowed_location_keywords", [])
-        )
+        self.allowed_location_keywords = _string_list(settings.get("allowed_location_keywords", []))
 
     async def fetch_jobs(self, search_config: SearchConfig) -> list[RawJob]:
         headers = {
@@ -126,6 +126,15 @@ class BizneoJobSource:
         for link in soup.select('a.job-card[href*="/jobs/"]'):
             if not isinstance(link, Tag):
                 continue
+            title = _text(link.select_one(".title")) or link.get_text(" ", strip=True)
+            if (
+                self.prefilter_titles
+                and self.title_required_any_keywords
+                and not any(
+                    _contains_keyword(title, word) for word in self.title_required_any_keywords
+                )
+            ):
+                continue
             href = _optional_str(link.get("href"))
             if href is None:
                 continue
@@ -139,11 +148,44 @@ class BizneoJobSource:
             return None
         lines = _text_lines(soup)
         metadata = _metadata(lines)
+        if self.structured_metadata:
+            for element in soup.select("[title]"):
+                label = _fold_text(str(element.get("title", "")))
+                if label in {
+                    "ubicacion",
+                    "categoria",
+                    "subcategoria",
+                    "sector",
+                    "salario",
+                    "jornada laboral",
+                    "modalidad de trabajo",
+                    "nivel profesional",
+                    "departamento",
+                }:
+                    metadata[label] = element.get_text(" ", strip=True)
         description = _description_after_title(lines, title)
         requirements = _requirements_after_heading(lines, "Requisitos minimos")
+        if self.structured_metadata:
+            blocks = soup.select(".general-content")
+            if blocks:
+                description = str(blocks[0])
+            if len(blocks) > 1:
+                requirements = str(blocks[1])
         if not description:
             description = title
         location = metadata.get("ubicacion") or page.location_hint
+        if self.structured_metadata:
+            # A concrete office requirement in the vacancy outranks a mislabeled
+            # board header (observed: header Sevilla, duties "Híbrido Madrid").
+            office = re.search(
+                r"(?:modalidad|ubicaci[oó]n|lugar de trabajo)\s*:\s*"
+                r"(?:h[ií]brido|presencial)\s+(?:en\s+)?([^\n.<]{1,80})",
+                BeautifulSoup(description, "html.parser").get_text("\n", strip=True),
+                re.IGNORECASE,
+            )
+            if office:
+                location = office.group(1).strip()
+                metadata["explicit_office_location"] = location
         combined = " ".join(
             part
             for part in (
@@ -162,11 +204,15 @@ class BizneoJobSource:
             title=title.rstrip("."),
             description=description,
             requirements=requirements or _requirements_from_metadata(metadata),
-            location=_with_location_hint(location, page.location_hint),
+            location=_with_location_hint(
+                location, page.country if self.structured_metadata else page.location_hint
+            ),
             country=page.country,
             remote_type=_remote_type(metadata.get("modalidad de trabajo") or combined),
             employment_type=_employment_type(metadata.get("jornada laboral")),
-            salary_original_text=_salary_from_lines(lines) or _salary_text(combined),
+            salary_original_text=metadata.get("salario")
+            or _salary_from_lines(lines)
+            or _salary_text(combined),
             url=url,
             publication_date=_publication_date(lines),
             raw_payload={
