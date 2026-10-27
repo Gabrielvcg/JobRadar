@@ -4,6 +4,9 @@
 
 ### Fixed
 
+- Retain a seven-day CI image artifact with source, image identity and
+  checksums for credential-free transfer to the existing production host.
+  Build its context only from tracked public source, excluding CI-generated data.
 - Lock CI and image Python dependencies to the previously validated versions and
   published wheel hashes; build the local package without remote dependency resolution.
 - Require binary distributions for downloaded Python dependencies in CI and app

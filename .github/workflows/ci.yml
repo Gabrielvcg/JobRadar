@@ -55,4 +55,43 @@ jobs:
           pytest --junitxml=test-results.xml
           python -c "import xml.etree.ElementTree as E; r=E.parse('test-results.xml'); assert not list(r.iter('skipped')), 'Unexpected skipped release gate'"
       - name: Docker build
-        run: docker build --build-arg APP_REVISION=${{ github.sha }} -t jobradar:ci .
+        env:
+          REVISION: ${{ github.sha }}
+        run: |
+          context="$RUNNER_TEMP/jobradar-build"
+          mkdir "$context"
+          git archive HEAD | tar -x -C "$context"
+          docker build --build-arg APP_REVISION="$REVISION" \
+            --label org.opencontainers.image.revision="$REVISION" -t jobradar:ci "$context"
+      - name: Save verified app image
+        env:
+          REVISION: ${{ github.sha }}
+        run: |
+          mkdir image-artifact
+          docker image inspect jobradar:ci > image-artifact/image-inspect.json
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          image = json.loads(Path('image-artifact/image-inspect.json').read_text())[0]
+          revision = os.environ['REVISION']
+          assert image['Architecture'] == 'amd64' and image['Os'] == 'linux'
+          assert image['Config']['Labels']['org.opencontainers.image.revision'] == revision
+          assert 'APP_REVISION=' + revision in image['Config']['Env']
+          allowed = {'PATH', 'LANG', 'GPG_KEY', 'PYTHON_VERSION', 'PYTHON_SHA256',
+                     'APP_REVISION', 'PYTHONDONTWRITEBYTECODE', 'PYTHONUNBUFFERED',
+                     'PIP_NO_CACHE_DIR'}
+          assert all(value.split('=', 1)[0] in allowed for value in image['Config']['Env'])
+          Path('image-artifact/source.txt').write_text(revision + '\n')
+          Path('image-artifact/image-id.txt').write_text(image['Id'] + '\n')
+          PY
+          docker save jobradar:ci | gzip > image-artifact/jobradar-image.tar.gz
+          cd image-artifact
+          sha256sum jobradar-image.tar.gz image-inspect.json source.txt image-id.txt > SHA256SUMS
+      - name: Retain app image for operator delivery
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: jobradar-image-${{ github.sha }}
+          path: image-artifact/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
