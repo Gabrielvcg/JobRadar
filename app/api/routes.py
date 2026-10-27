@@ -1,20 +1,21 @@
 from __future__ import annotations
 
-import csv
-import io
 import uuid
 from collections import Counter
 from datetime import datetime
+from importlib.metadata import version
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request, status
-from fastapi.responses import HTMLResponse, RedirectResponse, Response, StreamingResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import text
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
+from app.api.streaming import ClosingStreamingResponse as StreamingResponse
+from app.core.availability import current_verification
 from app.core.config import get_settings
-from app.core.profiles import get_profile, load_profiles, resolve_profile_key
+from app.core.profiles import get_profile, load_profiles, resolve_profile_key, uses_career_radar
 from app.db.session import get_session
 from app.formatting import experience_label, salary_label, salary_original_detail
 from app.models.enums import JobStatus, RemoteType
@@ -38,6 +39,7 @@ from app.security.auth import (
     validate_password_strength,
 )
 from app.services.ingestion import IngestionService
+from app.services.job_export import iter_csv_chunks
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -48,7 +50,7 @@ user_repository = UserRepository()
 @router.get("/health")
 def health(session: Annotated[Session, Depends(get_session)]) -> dict[str, str]:
     session.execute(text("SELECT 1"))
-    return {"status": "ok"}
+    return {"status": "ok", "version": version("jobradar"), "revision": get_settings().app_revision}
 
 
 @router.get("/login", response_class=HTMLResponse)
@@ -165,6 +167,9 @@ def web_index(
     salary_known: bool = Query(default=False),
     q: str | None = None,
     profile: str | None = None,
+    radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
+    category: str | None = Query(default=None, pattern="^([ABC])?$"),
+    verified_only: bool = False,
     sort: str = Query(default="score", pattern="^(score|date)$"),
     order: str = Query(default="desc", pattern="^(asc|desc)$"),
 ) -> Response:
@@ -174,6 +179,9 @@ def web_index(
     active_profile_key = resolve_profile_key(profile)
     filters = JobFilters(
         profile_key=active_profile_key,
+        radar=radar if uses_career_radar(active_profile_key) else None,
+        category=category if uses_career_radar(active_profile_key) else None,
+        verified_only=verified_only,
         min_score=min_score,
         match_level=match_level,
         technology=technology,
@@ -204,6 +212,8 @@ def web_index(
             "profiles": list(load_profiles().values()),
             "active_profile": get_profile(active_profile_key),
             "active_profile_key": active_profile_key,
+            "career_profile": uses_career_radar(active_profile_key),
+            "current_verification": current_verification,
             "statuses": list(JobStatus),
             "remote_types": list(RemoteType),
             "experience_label": experience_label,
@@ -251,6 +261,7 @@ def job_stats(
     request: Request,
     session: Annotated[Session, Depends(get_session)],
     profile: str | None = None,
+    radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
 ) -> JobStats:
     current_user = get_current_user(request, session)
     active_profile_key = resolve_profile_key(profile)
@@ -259,6 +270,7 @@ def job_stats(
             session,
             user_id=current_user.id if current_user else None,
             profile_key=active_profile_key,
+            radar=radar if uses_career_radar(active_profile_key) else None,
         )
     )
 
@@ -279,6 +291,9 @@ def list_jobs(
     published_after: datetime | None = None,
     q: str | None = None,
     profile: str | None = None,
+    radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
+    category: str | None = Query(default=None, pattern="^([ABC])?$"),
+    verified_only: bool = False,
     sort: str = Query(default="score", pattern="^(score|date)$"),
     order: str = Query(default="desc", pattern="^(asc|desc)$"),
     limit: int = Query(default=50, ge=1, le=200),
@@ -288,6 +303,9 @@ def list_jobs(
     active_profile_key = resolve_profile_key(profile)
     filters = JobFilters(
         profile_key=active_profile_key,
+        radar=radar if uses_career_radar(active_profile_key) else None,
+        category=category if uses_career_radar(active_profile_key) else None,
+        verified_only=verified_only,
         min_score=min_score,
         match_level=match_level,
         technology=technology,
@@ -319,45 +337,24 @@ def export_jobs(
     session: Annotated[Session, Depends(get_session)],
     min_score: int | None = Query(default=None, ge=0, le=100),
     profile: str | None = None,
+    radar: str = Query(default="current", pattern="^(current|strategic|excluded|all)$"),
+    include_disabled_sources: bool = False,
 ) -> StreamingResponse:
-    current_user = get_current_user(request, session)
+    current_user = _require_user(request, session)
     active_profile_key = resolve_profile_key(profile)
     filters = JobFilters(
         profile_key=active_profile_key,
+        radar=radar if uses_career_radar(active_profile_key) else None,
         min_score=min_score,
         user_id=current_user.id if current_user else None,
-        limit=10_000,
+        include_disabled_sources=include_disabled_sources,
     )
-    jobs = repository.list_jobs(session, filters)
-    user_statuses = (
-        repository.get_user_statuses(session, current_user.id, jobs) if current_user else {}
-    )
-    stream = io.StringIO()
-    writer = csv.writer(stream)
-    writer.writerow(
-        ["id", "score", "level", "company", "title", "salary/rate", "location", "status", "url"]
-    )
-    for job in jobs:
-        effective_status = user_statuses.get(str(job.id), job.status)
-        writer.writerow(
-            [
-                str(job.id),
-                job.match_score,
-                job.match_level,
-                job.company.name,
-                job.title,
-                _salary_label(
-                    job.salary_min, job.salary_max, job.salary_currency, job.salary_unknown
-                ),
-                job.location or "",
-                effective_status.value,
-                job.url or "",
-            ]
-        )
-    stream.seek(0)
+    # Retain only the engine and user ID; the request dependency owns a different session.
+    factory = sessionmaker(bind=session.get_bind().engine, class_=Session, autoflush=False)
+    chunks = iter_csv_chunks(factory, filters, current_user.id)
     filename = f"jobradar_{active_profile_key}_jobs.csv"
     headers = {"Content-Disposition": f"attachment; filename={filename}"}
-    return StreamingResponse(iter([stream.getvalue()]), media_type="text/csv", headers=headers)
+    return StreamingResponse(chunks, media_type="text/csv", headers=headers)
 
 
 @router.get("/jobs/{job_id}", response_model=JobOfferRead)
@@ -465,10 +462,7 @@ def _visible_stats(jobs: list[Any], user_statuses: dict[str, JobStatus]) -> dict
             "by_status": {},
             "by_match_level": {},
         }
-    statuses = [
-        str(user_statuses.get(str(job.id), job.status).value)
-        for job in jobs
-    ]
+    statuses = [str(user_statuses.get(str(job.id), job.status).value) for job in jobs]
     return {
         "total": len(jobs),
         "average_score": round(sum(job.match_score for job in jobs) / len(jobs), 1),

@@ -1,0 +1,107 @@
+[
+  {
+    "record_kind": "employer",
+    "employer_source": "[Camunda](https://jobs.ashbyhq.com/camunda)",
+    "interface": "Documented public Ashby posting feed",
+    "evidence_and_decision": "42 live postings. Indexed non-senior Backend Core/API role 93fc1bfe is absent. Current backend roles are senior distributed systems/data layer/streaming; the non-senior alternatives concern engineering operations and installation/infrastructure artifacts with strong prior platform skills. They do not establish a new early-career Java backend opportunity. No source added just for future-level references.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[Hazelcast](https://hazelcast.pinpointhq.com/)",
+    "interface": "Public Pinpoint board/feed",
+    "evidence_and_decision": "Nine postings; current Java Core and Java SDET roles are senior and specify UK remote. Corporate remote benefits do not establish Spain eligibility. Existing Pinpoint adapter is reusable, but current value is insufficient.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[Sportserve](https://careers.sportserve.co/jobs)",
+    "interface": "Public Teamtailor index and its advertised RSS",
+    "evidence_and_decision": "Index exposes no current Java job cards and the observed RSS contains zero items. An old indexed senior Java detail is insufficient live-feed evidence. Do not infer company-wide hiring has stopped, or add an empty feed as a discovery result.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[Sympower](https://careers.sympower.net/)",
+    "interface": "Corporate-linked Recruitee public careers site",
+    "evidence_and_decision": "Current observed index shows General Counsel and Head of Energy Markets/Trading. The earlier corporate join-the-team URL is 404 and points to this current host. No Java vacancy in the observed index.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[Axoniq](https://www.axoniq.io/careers)",
+    "interface": "Corporate careers HTML",
+    "evidence_and_decision": "Current advertised positions are Business Development Researcher and Sales Executive, both US remote. Core Java/event-sourcing product expertise does not imply an available Java engineering position.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[Appfire](https://job-boards.greenhouse.io/appfire)",
+    "interface": "Documented public Greenhouse posting API",
+    "evidence_and_decision": "27 live postings. Spain entries are Product Launch Manager and Senior TypeScript/Node/Effect fullstack. Current Java/React roles specify Poland/Bulgaria and require substantial frontend experience. Indexed Software Engineer–Java Spain is absent. No stale or wrong-country source added.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[Servinform](https://www.servinform.es/empleo/)",
+    "interface": "Corporate-linked [Bizneo portal](https://empleo.servinform.es/jobs)",
+    "evidence_and_decision": "Public paths allowed by robots. Current observed index is mainly BPO/admin/contact-center; its available category selector has no programming option. Previously indexed Sevilla junior Java ads do not prove a current vacancy. No eligible role established in this screening; no claim about uninspected historical pages.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[ITPartner — itpartner.es](https://itpartner.es/busco-oportunidades/)",
+    "interface": "Corporate opportunities page",
+    "evidence_and_decision": "Accessible general recruitment/contact page, with no vacancy-specific Java listing or reusable ATS feed established. The similarly named Italian IT Partner and other IT Partner brands are not substituted for this company.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[Nexion Solutions](https://nexions.com/carrera-laboral/)",
+    "interface": "Corporate careers URL from primary web index; direct GET",
+    "evidence_and_decision": "Corporate page returns HTTP 500. Indexed corporate backend example asks four-plus years; the separate two-year Java/Spring employer advert is on Indeed, without a suitable authorized feed or verified direct form established. Do not import salary/availability from republished mirrors.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[Grupo NS](https://grupo-ns.com/ofertas-de-trabajo/)",
+    "interface": "Corporate and public [Bizneo programming index](https://empleo.grupo-ns.com/jobs?subcategory=programming)",
+    "evidence_and_decision": "Current programming index has 13 entries. Its three Java examples are hybrid Madrid/Málaga, including Java/Scripting/PLSQL; the indexed remote Java/Eclipse advert is absent. Existing Bizneo adapter is sufficient technically, but current geography is incompatible.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[agap2 España](https://agap2.com/spain/jobs/)",
+    "interface": "Corporate WordPress jobs index/detail; employer publication",
+    "evidence_and_decision": "Observed index lists eight engineering/business roles, not Java. Separate live Spring Boot detail asks three years but mostly lists technologies and generic new development, without the concrete duties present in the distinct LinkedIn publication. Public feed paths are explicitly disallowed by robots; no RSS crawl or bespoke connector added.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[UST](https://www.ust.com/en/careers)",
+    "interface": "Corporate careers and employer's public job publication",
+    "evidence_and_decision": "Corporate GET is 403. Detailed LinkedIn role is a useful manual Java/backend lead, with cloud experience desirable. No maintainable authorized vacancy feed or verified direct application was established, and LinkedIn is not integrated.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[CONVOTIS Iberia](https://convotisiberia.teamtailor.com/)",
+    "interface": "Public Teamtailor RSS",
+    "evidence_and_decision": "Current feed has 29 entries and no Java-titled vacancy. Older Teralco/CONVOTIS Java fullstack results are hybrid and do not establish a current eligible backend role. These are the same renamed employer, not two companies.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[EPAM](https://careers.epam.com/en/jobs/spain)",
+    "interface": "Public Spain search and official indexed vacancy",
+    "evidence_and_decision": "Spain search is accessible but its observed response does not expose complete job links for reuse by an existing adapter. The examined indexed Java vacancy is senior and requires US-aligned working hours. No current early/mid Java source value proved; no undocumented/private endpoint guessed.",
+    "reviewed_on": "2026-10-23"
+  },
+  {
+    "record_kind": "employer",
+    "employer_source": "[Nunegal Consulting](https://www.nunegal.com/web/desarrollador-a-java-100-remoto/)",
+    "interface": "Corporate WordPress vacancy and inline form",
+    "evidence_and_decision": "Real development duties and email/CV fields, but explicit more-than-four-year requirement, unpublished salary and no vacancy-specific remote-country statement. No integration added simply because a form exists.",
+    "reviewed_on": "2026-10-23"
+  }
+]

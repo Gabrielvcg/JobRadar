@@ -8,6 +8,7 @@ from typing import Any
 
 import httpx
 
+from app.core.career_paths import matches_career_transition
 from app.core.config import get_settings
 from app.models.enums import RemoteType
 from app.sources.base import RawJob, SearchConfig
@@ -32,6 +33,7 @@ class ArbeitnowJobSource:
         self.retries = int(settings.get("retries", 2))
         self.minimum_score = int(settings.get("minimum_score", 50))
         self.strict_search_filter = bool(settings.get("strict_search_filter", False))
+        self.allow_career_transitions = bool(settings.get("allow_career_transitions", False))
         self.must_have_any_keywords = _string_list(settings.get("must_have_any_keywords", []))
         self.required_any_keywords = _string_list(settings.get("required_any_keywords", []))
         self.title_required_any_keywords = _string_list(
@@ -91,6 +93,7 @@ class ArbeitnowJobSource:
                 self.title_required_any_keywords,
                 self.excluded_keywords,
                 self.must_have_any_keywords,
+                self.allow_career_transitions,
             )
         ]
 
@@ -164,11 +167,14 @@ def _matches_affinity(
     title_required_any_keywords: list[str],
     excluded_keywords: list[str],
     must_have_any_keywords: list[str] | None = None,
+    allow_career_transitions: bool = False,
 ) -> bool:
     haystack = f"{job.title} {job.description} {job.requirements or ''}".lower()
     title = job.title.lower()
-    if must_have_any_keywords and not any(
-        _contains_keyword(haystack, keyword) for keyword in must_have_any_keywords
+    if (
+        must_have_any_keywords
+        and not any(_contains_keyword(haystack, keyword) for keyword in must_have_any_keywords)
+        and not (allow_career_transitions and matches_career_transition(job.title, haystack))
     ):
         return False
     if any(_contains_keyword(haystack, keyword) for keyword in excluded_keywords):

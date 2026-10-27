@@ -1,0 +1,479 @@
+"""Incremental engineering policy built on the existing configurable scoring rules."""
+
+from __future__ import annotations
+
+import re
+from dataclasses import asdict, replace
+from datetime import UTC, date, datetime
+from typing import TYPE_CHECKING, Any
+
+from app.core.availability import current_verification
+from app.core.experience import professional_months
+from app.scoring.alignment import analyze_work, recommendation, requirement_clauses
+from app.scoring.engine import ScoreResult
+from app.scoring.evidence import (
+    active_clauses,
+    binding_experience,
+    clauses,
+    development_evidence,
+    experience_requirements,
+    fold,
+    operations_only,
+    requirement_kind,
+)
+from app.scoring.geography import assess_location
+from app.scoring.text import detect_technologies
+from app.services.normalizer import NormalizedJob
+
+if TYPE_CHECKING:
+    from app.scoring.engine import ScoringEngine
+
+
+def score_career(engine: ScoringEngine, job: NormalizedJob, today: date) -> ScoreResult:
+    profile = engine.profile_config["profile"]
+    policy = profile["career"]
+    months = professional_months(str(policy["professional_start_month"]), today)
+    years = months / 12
+    positive: list[str] = []
+    negative: list[str] = []
+    uncertain: list[str] = []
+    blockers: list[str] = []
+    text = f"{job.description}\n{job.requirements or ''}"
+    if re.search(
+        r"\b(?:processo seletivo interno|vaga interna|vagas internas|"
+        r"internal (?:applicants|candidates|employees) only|only open to current employees)\b",
+        fold(text),
+    ):
+        blockers.append("internal_only")
+        negative.append("Proceso reservado a empleados actuales; no es candidatura externa")
+    evidence_text = "\n".join(active_clauses(f"{job.title}\n{text}"))
+    technologies = detect_technologies(evidence_text, engine.scoring_config)
+    # Do not feed normalized tags back into matching: they can include negated stack.
+    evidence_job = replace(
+        job,
+        description=evidence_text,
+        requirements=None,
+        technologies=technologies,
+        normalized_title=job.title.lower(),
+    )
+    role = engine._role_fit(evidence_job, positive)
+    development = development_evidence(text)
+    transition = engine._matches_career_transition(evidence_job)
+    primary = bool(set(technologies) & {"Java", "Spring Boot"})
+    backend = bool(
+        re.search(r"\b(backend|back.end|software|java|spring|desarroll\w*)\b", fold(job.title))
+    )
+    java_work = bool(re.search(r"\b(java|spring|backend|back.end)\b", fold(job.title))) or any(
+        re.search(r"\b(java|spring)\b", fold(clause)) for clause in development
+    )
+    aligned = (primary and backend and java_work) or transition
+    if re.search(
+        r"\b(ai coding tasks|coding evaluator|ai trainer|data annotator)\b", fold(job.title)
+    ):
+        aligned = False
+    if not aligned:
+        negative.append(
+            "No hay encaje suficiente con backend Java/Spring o desarrollo AppSec/cloud"
+        )
+        explicit_other_stack = bool(re.search(
+            r"\b(?:javascript|node\.js|ruby|golang|rust|product owner)\b",
+            fold(f"{job.title}\n{evidence_text}"),
+        ))
+        if len(text.split()) >= 20 or explicit_other_stack:
+            blockers.append("role_mismatch")
+    if operations_only(job.title, text):
+        negative.append(
+            "Puesto principalmente de soporte, helpdesk u operaciones sin desarrollo demostrado"
+        )
+        blockers.append("operations_only")
+    professional = set(policy.get("professional_technologies", []))
+    project = set(policy.get("project_technologies", []))
+    tech_points = sum(
+        4 if tech in professional else 1 if tech in project else 0 for tech in technologies
+    )
+    # Adjacent security skills are knowledge, not demonstrated employment in security.
+    if transition:
+        tech_points += min(6, len(set(technologies) - professional - project))
+    tech_points = min(30, tech_points)
+    if technologies:
+        positive.append(f"Stack activo en la oferta: {', '.join(technologies[:10])}")
+    engine._disability_focus_score(evidence_job, positive)
+    if set(technologies) & project:
+        uncertain.append(
+            "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional"
+        )
+
+    experience = experience_requirements(text)
+    contexts = {clause[:400]: kind for clause, kind in requirement_clauses(text)}
+    experience = [replace(item, kind=contexts.get(item.evidence, item.kind))
+                  for item in experience]
+    binding = binding_experience(experience)
+    # Structured fields are a fallback, never override classified desirable requirements.
+    if not experience and job.experience_min_years is not None:
+        uncertain.append("Experiencia estructurada sin contexto verificable; confirmar requisito")
+    exp_points = 14
+    gap = 0.0
+    if binding:
+        gap = max(0, binding.minimum - years)
+        exp_points = (
+            25
+            if gap == 0
+            else 23
+            if gap <= 1
+            else 19
+            if gap <= 2
+            else 12
+            if gap <= 3
+            else 6
+            if gap <= 4
+            else 0
+        )
+        target = (
+            f"{binding.minimum:g}-{binding.maximum:g}"
+            if binding.minimum != binding.maximum
+            else f"{binding.minimum:g}"
+        )
+        reason = (
+            f"Experiencia {binding.kind}: {target} anos; "
+            f"trayectoria profesional calculada: {months} meses"
+        )
+        (negative if gap > 0 else positive).append(reason)
+    else:
+        uncertain.append("Experiencia obligatoria no especificada; no se presupone cumplida")
+    if any(item.kind == "desirable" for item in experience):
+        positive.append("Experiencia deseable separada de los requisitos obligatorios")
+
+    english_points = 8
+    english = "not_specified"
+    for clause in clauses(text):
+        lower = fold(clause)
+        if not re.search(r"\b(english|ingles)\b", lower):
+            continue
+        if requirement_kind(clause) == "desirable":
+            continue
+        if re.search(r"\b(c1|c2|fluent|native|bilingual|fluido|bilingue|nativo)\b", lower):
+            english_points, english = 2, "above_certified_b2"
+            negative.append(
+                "Ingles exigido superior al B2 certificado; C1 es un objetivo pendiente"
+            )
+        elif re.search(r"\bb[12]\b|intermediate|intermedio", lower):
+            english_points, english = 10, "compatible_b2"
+
+    required_unknown = []
+    for clause in active_clauses(text):
+        if requirement_kind(clause) != "mandatory":
+            continue
+        lower = fold(clause)
+        if re.search(r"\b(java|spring)\b.*\bor\b|\bor\b.*\b(java|spring)\b", lower):
+            continue
+        if re.search(r"(?<!\w)(golang|ruby|rails|rust|c\+\+|\.net|c#|swift)(?!\w)", lower):
+            required_unknown.append(clause[:300])
+    if required_unknown:
+        negative.append(
+            "Stack obligatorio alejado de la experiencia demostrada; revisar requisitos"
+        )
+        blockers.append("mandatory_stack_mismatch")
+
+    unsupported = []
+    languages = r"\b(french|frances|german|aleman|portuguese|portugues|dutch|neerlandes)\b"
+    for clause in [job.title, *clauses(text)]:
+        lower = fold(clause)
+        if requirement_kind(clause) == "desirable":
+            continue
+        if re.search(languages, lower) and (
+            clause == job.title
+            or requirement_kind(clause) == "mandatory"
+            or re.search(r"\b(b2|c1|c2|fluent|alto|fluido|bilingue|native)\b", lower)
+        ):
+            unsupported.append(clause[:200])
+    if unsupported:
+        negative.append("Idioma obligatorio fuera del perfil espanol/ingles certificado")
+        blockers.append("unsupported_language")
+
+    work = analyze_work(job.title, text, professional, experience)
+    development = work.software
+    responsibility_points = 10 if development else 3
+    if not development:
+        uncertain.append("Descripcion sin responsabilidades concretas de desarrollo verificables")
+    fit = max(0, min(100, role + tech_points + exp_points + english_points + responsibility_points))
+    frontend_years = [
+        item
+        for item in experience
+        if item.minimum >= 2
+        and item.kind != "desirable"
+        and re.search(r"\b(frontend|front.end|react|angular)\b", fold(item.evidence))
+    ]
+    if frontend_years and not professional.intersection({"React", "Angular", "Frontend"}):
+        fit = max(0, fit - 20)
+        uncertain.append(
+            "Exige experiencia profesional independiente en frontend; "
+            "no queda acreditada por Java backend"
+        )
+    if work.focus in {"operations", "quality_assurance", "frontend", "management", "ai_evaluation"}:
+        blockers.append("career_direction_mismatch")
+        negative.append("Las tareas principales no siguen la trayectoria de ingenieria backend")
+    if work.independent_experience:
+        fit = max(0, fit - 15)
+        uncertain.append(
+            "La antiguedad backend no acredita anos profesionales en otra especialidad"
+        )
+    if work.specialist_gaps:
+        uncertain.append("Competencias profesionales por confirmar: " + ", ".join(
+            dict.fromkeys(gap.split(":", 1)[0] for gap in work.specialist_gaps)
+        ))
+    growth, growth_reasons = _growth(text, work.software)
+    positive.extend(growth_reasons)
+    location = assess_location(
+        job.location,
+        job.country,
+        job.remote_type,
+        f"{job.title}\n{text}",
+        list(profile.get("location", {}).get("preferred_locations", ["Sevilla"])),
+    )
+    (
+        positive
+        if location.status == "compatible"
+        else negative
+        if location.status == "incompatible"
+        else uncertain
+    ).append(location.reason)
+    if location.status == "incompatible":
+        blockers.append("location_incompatible")
+
+    salary_status, salary_points, salary_reason = _salary(engine, job)
+    (
+        negative
+        if salary_status == "below_minimum"
+        else uncertain
+        if salary_status in {"unknown", "published_not_comparable", "overlapping_minimum"}
+        else positive
+    ).append(salary_reason)
+    if salary_status == "below_minimum":
+        blockers.append("salary_below_minimum")
+
+    availability = current_verification(job.raw_payload, job.url)
+    if availability["state"] == "closed":
+        blockers.append("listing_closed")
+        negative.append("La pagina confirma que la oferta ya no acepta candidaturas")
+    elif availability["state"] == "active":
+        positive.append("Pagina accesible con un control habilitado para presentar candidatura")
+    else:
+        uncertain.append(
+            "Solicitud sin verificar; una ingesta reciente no demuestra que siga abierta"
+        )
+
+    freshness_points = 100
+    freshness = "undated"
+    if job.expiration_date and _day(job.expiration_date) < today:
+        freshness, freshness_points = "expired", 0
+        blockers.append("expired")
+        negative.append("Oferta caducada segun su fecha de expiracion")
+    elif job.publication_date:
+        age = (today - _day(job.publication_date)).days
+        freshness = "fresh" if age <= 45 else "aging" if age <= 90 else "stale"
+        freshness_points = 100 if age <= 45 else 70 if age <= 90 else 30
+        if age < 0:
+            freshness, freshness_points = "future_date", 50
+            uncertain.append("Fecha de publicacion futura; confirmar vigencia")
+        elif age > 45:
+            negative.append(f"Publicada hace {age} dias; confirmar vigencia")
+    else:
+        freshness_points = 70
+        uncertain.append("Vigencia desconocida: no publica fecha")
+
+    viability = round(
+        0.35 * location.points
+        + 0.25 * salary_points
+        + 0.2 * freshness_points
+        + 0.2 * (100 if development else 50)
+    )
+    viability -= round(min(35, gap * (10 if binding and binding.kind == "mandatory" else 7)))
+    if english == "above_certified_b2":
+        viability -= 15
+    advanced_title = re.search(
+        r"\b(senior|sr|staff|principal|lead|lider|architect|arquitect\w*|head of|manager)\b",
+        fold(job.title),
+    )
+    advanced_duties = re.search(
+        r"\b(own|lead|define|liderar|definir)\w*\s+(?:the\s+)?(?:company.wide|cross.team|"
+        r"organization.wide|technical strategy|estrategia tecnica|arquitectura corporativa)\b",
+        fold(text),
+    )
+    expert_level = bool(re.search(r"\badvanced\s*\(expert\)|\bnivel experto\b", fold(text)))
+    senior_body = bool(re.search(
+        r"\b(?:buscamos|we are seeking|we.re looking for|asumiendo un rol de)"
+        r"[^.!?\n]{0,90}\b(?:senior|staff|principal|arquitect[oa])\b", fold(text),
+    ))
+    future = bool(
+        advanced_title
+        or advanced_duties
+        or expert_level
+        or senior_body
+        or (binding and binding.minimum >= 5 and binding.minimum > years + 2)
+    )
+    category = (
+        "C" if future else "A" if primary and backend else "B" if transition else "unclassified"
+    )
+    if future:
+        negative.append(
+            "Referencia senior/arquitectura futura; la antiguedad por si sola no acredita seniority"
+        )
+        viability = min(viability, 55)
+    if advanced_duties:
+        negative.append("Responsabilidades de liderazgo transversal evidencian seniority real")
+    if binding and binding.kind == "mandatory" and gap > 2:
+        viability = min(viability, 45)
+    viability = max(0, min(100, viability))
+    # Core fit and feasibility dominate. Growth cannot overcome an eliminating condition.
+    weights = engine.scoring_config.get(
+        "career_weights", {"professional_fit": 0.65, "growth": 0.1, "viability": 0.25}
+    )
+    score = round(
+        fit * weights["professional_fit"]
+        + growth * weights["growth"]
+        + viability * weights["viability"]
+    )
+    if future or frontend_years:
+        score = min(score, 59)
+    elif gap > 3:
+        score = min(score, 49)
+    elif gap > 2 and growth < 60:
+        score = min(score, 59)
+    if not aligned or blockers:
+        score = min(score, 34)
+    if not aligned and not technologies:
+        score = min(score, 19)
+    if operations_only(job.title, text):
+        score = min(score, 19)
+    if work.focus == "operations":
+        score = min(score, 19)
+    elif work.focus == "software_platform":
+        score = min(score, 69)
+    elif work.focus == "application_security":
+        score = min(score, 64)
+    elif work.focus == "unknown":
+        score = min(score, 49)
+    if work.independent_experience or work.specialist_gaps:
+        score = min(score, 59 if work.independent_experience else 64)
+    if (location.status == "uncertain" or availability["state"] != "active"
+            or english == "above_certified_b2"):
+        score = min(score, 64)
+    radar = "excluded" if blockers else "strategic" if future else "current"
+    if not development and len(text.split()) < 20:
+        score = min(score, 69)
+    score = max(0, min(100, score))
+    advice, advice_reason = recommendation(
+        blockers=blockers, future=future, work=work, location=location.status,
+        availability=availability["state"], experience_gap=gap, english=english,
+    )
+    assessment: dict[str, Any] = {
+        "version": engine.policy_version,
+        "evaluated_on": today.isoformat(),
+        "professional_months": months,
+        "category": category,
+        "radar": radar,
+        "professional_fit": fit,
+        "career_alignment": work.points,
+        "work_focus": work.focus,
+        "software_work_evidence": work.software[:5],
+        "operations_work_evidence": work.operations[:5],
+        "recommendation": advice,
+        "recommendation_reason": advice_reason,
+        "specialist_requirements_to_confirm": work.specialist_gaps,
+        "independent_professional_experience": work.independent_experience,
+        "growth": growth,
+        "viability": viability,
+        "experience_requirements": [asdict(item) for item in experience],
+        "location_status": location.status,
+        "remote_scope": location.scope,
+        "salary_status": salary_status,
+        "salary_evidence": "published" if not job.salary_unknown else "unknown",
+        "english_requirement": english,
+        "freshness": freshness,
+        "availability": availability,
+        "blockers": blockers,
+        "uncertainties": uncertain,
+        "development_evidence": development[:4],
+        "mandatory_stack_gaps": required_unknown,
+        "unsupported_language_evidence": unsupported,
+        "heuristic_only": True,
+    }
+    positive.insert(
+        0,
+        f"Encaje profesional {fit}/100; crecimiento {growth}/100; "
+        f"viabilidad {viability}/100 (heuristica, no probabilidad)",
+    )
+    negative.extend(uncertain)
+    return ScoreResult(score, engine._level(score), positive, negative, assessment)
+
+
+def _growth(text: str, software: list[str]) -> tuple[int, list[str]]:
+    evidence = " ".join(software)
+    rules = (
+        (
+            r"\b(?:design|disen\w*|architecture|arquitectura)\b",
+            20,
+            "Diseno de sistemas en las responsabilidades",
+        ),
+        (
+            r"\b(?:distributed|distribuid\w*|messaging|mensajeria|kafka|sqs|rabbitmq)\b",
+            20,
+            "Desarrollo de sistemas distribuidos o mensajeria",
+        ),
+        (r"\b(?:aws|lambda|dynamodb|s3)\b", 20, "Desarrollo de servicios sobre AWS"),
+        (
+            r"\b(?:terraform|infrastructure as code|infraestructura como codigo)\b",
+            15,
+            "Automatizacion de infraestructura como codigo",
+        ),
+        (
+            r"\b(?:resilien\w*|scalab\w*|escalab\w*|concurren\w*|security|seguridad)\b",
+            15,
+            "Ingenieria de resiliencia, escalabilidad o seguridad",
+        ),
+    )
+    reasons, points = [], 0
+    for pattern, value, reason in rules:
+        if re.search(pattern, fold(evidence)):
+            points += value
+            reasons.append(reason)
+    if re.search(
+        r"\b(mentorship|mentoring|mentoria|career progression|plan de carrera)\b", fold(text)
+    ):
+        points += 10
+        reasons.append("Mentoria o progresion explicitada")
+    return min(100, points), reasons
+
+
+def _salary(engine: ScoringEngine, job: NormalizedJob) -> tuple[str, int, str]:
+    if job.salary_unknown or (job.salary_min is None and job.salary_max is None):
+        return "unknown", 65, "Salario desconocido; se conserva sin estimaciones inventadas"
+    if job.salary_currency != "EUR" or job.salary_period not in {None, "annual", "monthly"}:
+        return (
+            "published_not_comparable",
+            65,
+            "Salario publicado; conversion de moneda o tarifa no verificada",
+        )
+    minimum = int(engine.salary_config["minimum_annual_eur"])
+    upper = job.salary_max if job.salary_max is not None else job.salary_min
+    assert upper is not None
+    if upper < minimum:
+        return "below_minimum", 0, f"Salario publicado inferior al minimo de cambio: {minimum} EUR"
+    if job.salary_min is None or job.salary_min < minimum:
+        return (
+            "overlapping_minimum",
+            60,
+            f"El salario publicado no garantiza el minimo de {minimum} EUR; confirmar oferta final",
+        )
+    if job.salary_min >= int(engine.salary_config["target_min_annual_eur"]):
+        return (
+            "target_or_above",
+            100,
+            "Salario publicado en rango preferido o superior; "
+            "sin inferir probabilidad de contratacion",
+        )
+    return "minimum_met", 85, "Salario publicado cumple el minimo para cambiar de empresa"
+
+
+def _day(value: datetime) -> date:
+    return (value.replace(tzinfo=UTC) if value.tzinfo is None else value).date()

@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-22",
+  "before_release": "0.1.41",
+  "after_release": "0.1.45",
+  "revision": "c7c0b750b81d56bd731ef8b52aee37e582e7ebad",
+  "before": {
+    "timestamp": "2026-10-22 09:21:22.817832+00:00",
+    "total": 715,
+    "candidate_total": 560,
+    "current_min35": 77,
+    "verified_current": 3,
+    "verification": {
+      "unverified": 545,
+      "closed": 12,
+      "active": 3
+    },
+    "duplicate_urls": 0,
+    "source_errors": []
+  },
+  "after": {
+    "timestamp": "2026-10-22 14:27:12.887822+00:00",
+    "total": 750,
+    "candidate_total": 595,
+    "current_min35": 92,
+    "verified_current": 47,
+    "verification": {
+      "unverified": 530,
+      "active": 50,
+      "closed": 15
+    },
+    "duplicate_urls": 0,
+    "source_errors": []
+  },
+  "extra_after": {
+    "current_location_compatible": 67,
+    "current_years_0_3": 23,
+    "current_years_unknown": 46,
+    "current_published_salary_min24k": 5
+  },
+  "new_database_rows": 35,
+  "new_rows_by_radar": {
+    "current": 20,
+    "strategic": 14,
+    "excluded": 1
+  },
+  "current_application_evidence_levels": {
+    "application_form": 39,
+    "application_control": 7,
+    "legacy_control": 1
+  },
+  "preservation": {
+    "original_offer_records": 715,
+    "all_original_offer_ids_and_statuses_preserved": true,
+    "profile_count": 2,
+    "accounts_and_password_roles_unchanged": true,
+    "user_job_states_unchanged": true
+  },
+  "new_conditionally_relevant_families": [
+    {
+      "company": "Talent Connect",
+      "title": "Backend Developer Java/Spring/AWS",
+      "years": 3,
+      "location": "Remote from other Spanish locations; hybrid in listed office cities",
+      "salary": "Unknown",
+      "url": "https://jobs.talentconnect.ai/jobs/612354-backend-developer-java-spring-boot-aws-spain-hybrid-remote/applications/new",
+      "limits": "Three-plus years and AWS working experience need confirmation; original publication is 161 days old, form freshly retrieved."
+    },
+    {
+      "company": "The White Team",
+      "title": "Backend Java/Spring Boot/Microservices",
+      "years": 4,
+      "location": "Spain remote",
+      "salary": "Unknown",
+      "url": "https://careers.twtspain.com/jobs/8559939-desarrollador-a-backend-java-spring-boot-microservicios/applications/new",
+      "limits": "Four-year requirement makes this a lower-priority stretch, not a strong current match."
+    }
+  ],
+  "discovery_interpretation": "Two conservative new Java/Spring families documented individually; other new rows include unproved specialist skills, variants, future references and an excluded listing. Rows or application controls are not counts of fully suitable distinct vacancies. The monthly target is not established from one day.",
+  "tests": {
+    "local_passed": 242,
+    "local_postgres_skipped": 3,
+    "ci_passed": 245,
+    "ci_run": 39794443083
+  },
+  "scheduled_final_run": {
+    "timestamp": "2026-10-22T14:30:15Z",
+    "release": "0.1.45",
+    "fetched": 7,
+    "created": 0,
+    "updated": 2,
+    "errors": 0
+  }
+}

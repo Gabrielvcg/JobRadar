@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from importlib.metadata import version
+
 from fastapi import FastAPI
 
 from app.api.routes import router
@@ -9,7 +11,7 @@ configure_logging()
 
 app = FastAPI(
     title="JobRadar",
-    version="0.1.33",
+    version=version("jobradar"),
     description="Collect, normalize, score, and track job offers for a backend/cloud career path.",
 )
 app.include_router(router)

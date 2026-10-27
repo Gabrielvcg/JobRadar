@@ -34,6 +34,8 @@ services:
     restart: unless-stopped
     mem_limit: ${APP_MEM_LIMIT:-256m}
     pids_limit: 256
+    volumes:
+      - ./runtime-config:/app/runtime-config:ro
     environment:
       APP_ENV: ${APP_ENV:-production}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -65,6 +67,8 @@ services:
     restart: "no"
     mem_limit: ${INGEST_MEM_LIMIT:-384m}
     pids_limit: 256
+    volumes:
+      - ./runtime-config:/app/runtime-config:ro
     environment:
       APP_ENV: ${APP_ENV:-production}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}

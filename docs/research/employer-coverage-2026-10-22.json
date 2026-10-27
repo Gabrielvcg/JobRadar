@@ -1,0 +1,394 @@
+[
+  {
+    "employer": "eXperience IT Solutions",
+    "official_careers_url": "https://jobs.experienceis.com/jobs?subcategory=programming",
+    "interface": "Bizneo public HTML, existing adapter",
+    "vacancy_and_eligibility_evidence": "Three current Spain-remote Java roles, minimum 3/4/3 years; two annual salary ranges EUR 30-50k and 32-35k.",
+    "decision_and_viability": "Integrated: bounded programming index, opted-in structured metadata, public job-bound candidate forms; robots allows public jobs.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "SNGULAR",
+    "official_careers_url": "https://www.sngular.com/es/talento-y-cultura/jobs",
+    "interface": "Public HTML and JobPosting; configurable employer_html adapter",
+    "vacancy_and_eligibility_evidence": "One Java role, Spain 100% remote label; advanced Kafka/Spring/Java; numeric years and salary unknown.",
+    "decision_and_viability": "Integrated: same-origin index links and full visible duties; public vacancy-bound CV form requires human consent/CAPTCHA; robots allows Spanish jobs.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Devoteam",
+    "official_careers_url": "https://jobs.smartrecruiters.com/Devoteam/744000154404420-desarrollador-java-",
+    "interface": "SmartRecruiters public postings",
+    "vacancy_and_eligibility_evidence": "Java role, 3 years overall / 2 Java; primarily telework Spain. Duties insufficiently concrete for current automated work-focus assessment.",
+    "decision_and_viability": "Manual lead U; existing adapter reusable, but no verified A/B contribution demonstrated.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Sopra Steria",
+    "official_careers_url": "https://careers.smartrecruiters.com/SopraSteria1",
+    "interface": "SmartRecruiters",
+    "vacancy_and_eligibility_evidence": "11 indexed Java matches; Sevilla examples require French; other jobs require relocation or 5+ years.",
+    "decision_and_viability": "No current compatible A/B established; avoid volume.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Inetum",
+    "official_careers_url": "https://careers.smartrecruiters.com/Inetum2",
+    "interface": "SmartRecruiters",
+    "vacancy_and_eligibility_evidence": "Four Spanish Java index matches; detail checks show Madrid office / Genesys or fullstack constraints.",
+    "decision_and_viability": "No new usable A/B; older backend search hit not in live query.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Endava",
+    "official_careers_url": "https://careers.smartrecruiters.com/endava",
+    "interface": "SmartRecruiters",
+    "vacancy_and_eligibility_evidence": "No Spain Java records in the checked country/query response.",
+    "decision_and_viability": "Public adapter viable; insufficient current value.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "act digital / Alter Solutions",
+    "official_careers_url": "https://careers.smartrecruiters.com/AlterSolutions",
+    "interface": "SmartRecruiters",
+    "vacancy_and_eligibility_evidence": "Current Spanish Java example requires Madrid presence.",
+    "decision_and_viability": "No current Sevilla/remote match.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "lastminute.com",
+    "official_careers_url": "https://careers.smartrecruiters.com/lastminutecom",
+    "interface": "SmartRecruiters and official listing",
+    "vacancy_and_eligibility_evidence": "17 live postings globally, none Spain. Finance Core Platform detail is Chiasso, Switzerland, hybrid despite an indexed Madrid label.",
+    "decision_and_viability": "Reject current geography; country filtering is correct, not a false negative.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Flywire",
+    "official_careers_url": "https://careers.smartrecruiters.com/Flywire1",
+    "interface": "SmartRecruiters",
+    "vacancy_and_eligibility_evidence": "Two-year Java/Ruby software role explicitly requires Valencia office/relocation.",
+    "decision_and_viability": "D for residence constraint; generic remote benefits do not override office duty.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "SQLI",
+    "official_careers_url": "https://careers.smartrecruiters.com/SQLI1",
+    "interface": "SmartRecruiters",
+    "vacancy_and_eligibility_evidence": "Java role requires 5+ years and Valencia presence.",
+    "decision_and_viability": "No current opportunity; future/reference only.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Auctane",
+    "official_careers_url": "https://job-boards.greenhouse.io/auctane",
+    "interface": "Greenhouse public board",
+    "vacancy_and_eligibility_evidence": "22 jobs, six Java mentions; Madrid integrations example requires five office days.",
+    "decision_and_viability": "No current location-compatible contribution.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Vonage",
+    "official_careers_url": "https://job-boards.greenhouse.io/vonage",
+    "interface": "Greenhouse",
+    "vacancy_and_eligibility_evidence": "15 active jobs, no current Java match. Previously indexed Java/Kotlin vacancy removed.",
+    "decision_and_viability": "Do not ingest removed search hits.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Duetto",
+    "official_careers_url": "https://job-boards.greenhouse.io/duettoresearch",
+    "interface": "Greenhouse",
+    "vacancy_and_eligibility_evidence": "15 postings, five Java matches; Spain roles are senior/staff.",
+    "decision_and_viability": "C reference; no current A/B.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "FREENOW",
+    "official_careers_url": "https://job-boards.greenhouse.io/freenow",
+    "interface": "Greenhouse",
+    "vacancy_and_eligibility_evidence": "16 active postings, no current Java match; indexed backend hit removed.",
+    "decision_and_viability": "No integration value at snapshot.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "New Relic",
+    "official_careers_url": "https://job-boards.greenhouse.io/newrelic",
+    "interface": "Greenhouse",
+    "vacancy_and_eligibility_evidence": "57 active postings; Java mentions largely boilerplate / US or India. Indexed Software Engineer II removed.",
+    "decision_and_viability": "No current eligible vacancy confirmed.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Sonatype",
+    "official_careers_url": "https://jobs.lever.co/sonatype",
+    "interface": "Lever public postings",
+    "vacancy_and_eligibility_evidence": "11 active records mention Java in body; checked roles are outside Spain or incompatible functions.",
+    "decision_and_viability": "Java company boilerplate does not prove role fit.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Zartis",
+    "official_careers_url": "https://jobs.lever.co/zartis",
+    "interface": "Lever",
+    "vacancy_and_eligibility_evidence": "Seven jobs; no actual current Java role. Senior Scala/GenAI and open application do not meet target.",
+    "decision_and_viability": "No source added.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Job&Talent",
+    "official_careers_url": "https://jobs.lever.co/jobandtalent",
+    "interface": "Lever",
+    "vacancy_and_eligibility_evidence": "30 jobs; no current Java match in response.",
+    "decision_and_viability": "Public adapter viable, no current value.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Lynx",
+    "official_careers_url": "https://lynxtech.com/es/empleo/",
+    "interface": "Official Greenhouse links / public board",
+    "vacancy_and_eligibility_evidence": "Live global board contains 11 jobs and no Java match; old EU links on corporate site are not evidence of live Java hiring.",
+    "decision_and_viability": "No integration added.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Secture",
+    "official_careers_url": "https://secturelabs.recruitee.com/",
+    "interface": "Recruitee",
+    "vacancy_and_eligibility_evidence": "Observed public offers endpoint returns 404; Java remote search advertisement is old.",
+    "decision_and_viability": "No active feed established; no repeated retry/bypass.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Capitole",
+    "official_careers_url": "https://careers.capitole-consulting.com/",
+    "interface": "Current Viterbit; old Teamtailor feed",
+    "vacancy_and_eligibility_evidence": "Old feed has 14 roles, no Java; current board blocks local automated access. Old remote Java slug redirects to index.",
+    "decision_and_viability": "Respect block; do not use stale board to imply active vacancy.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Q-Tech",
+    "official_careers_url": "https://qtech.teamtailor.com/",
+    "interface": "Teamtailor RSS",
+    "vacancy_and_eligibility_evidence": "90 roles / 12 Java matches; checked matches mainly Barcelona presence/senior, one lacks location.",
+    "decision_and_viability": "D/C/U; no confirmed current A/B.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Kapres",
+    "official_careers_url": "https://kapres.teamtailor.com/",
+    "interface": "Teamtailor RSS",
+    "vacancy_and_eligibility_evidence": "84 records; only one Java match and no current A/B established.",
+    "decision_and_viability": "Low marginal value.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "TNG Technology Consulting",
+    "official_careers_url": "https://tngtech.jobs.personio.de/job/2577771?language=en",
+    "interface": "Personio public XML, 17 roles",
+    "vacancy_and_eligibility_evidence": "Entry-level software role, Sevilla/remote Spain, EUR 32,200–39,200; proficient English; German/Spanish advantageous. Role does not specify Java assignment.",
+    "decision_and_viability": "Useful manual lead; do not inject corporate Java boilerplate into language-agnostic role to manufacture fit.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Grupo Digital",
+    "official_careers_url": "https://ofertasempleo.grupodigital.eu/jobs",
+    "interface": "Public Bizneo, two programming pages checked",
+    "vacancy_and_eligibility_evidence": "Java candidates require Madrid/Barcelona presence or senior experience; Spring Boot generic title hides 6+ years despite a separate one-year specialist requirement.",
+    "decision_and_viability": "No new current A/B; old/current board overlap needs caution.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "GFT",
+    "official_careers_url": "https://jobs.gft.com/go/spain/4411401/",
+    "interface": "Official SuccessFactors RSS link",
+    "vacancy_and_eligibility_evidence": "Backend Java requires 6+ years and Madrid/Bilbao office attendance three days; remote microservices role is senior.",
+    "decision_and_viability": "No current A/B; RSS only exposes newest ten, so no exhaustive vacancy-count claim.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Solera",
+    "official_careers_url": "https://www.solera.com/careers/",
+    "interface": "Workday, robots-declared public sitemap",
+    "vacancy_and_eligibility_evidence": "Old Sevilla Java job renders empty and is absent from current sitemap. Current Spanish sitemap cases are management.",
+    "decision_and_viability": "No private Workday API or stale job integration.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Sportradar",
+    "official_careers_url": "https://sportradar.com/empleo/?lang=es",
+    "interface": "Official careers page",
+    "vacancy_and_eligibility_evidence": "Automated request blocked; indexed senior Java examples do not prove current Sevilla junior/mid hiring.",
+    "decision_and_viability": "No bypass; insufficient reliable feed evidence.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Scopely",
+    "official_careers_url": "https://careers.scopely.com/us/en/search-results",
+    "interface": "Phenom careers",
+    "vacancy_and_eligibility_evidence": "Checked engineering examples are senior/staff; Barcelona office presence.",
+    "decision_and_viability": "No current match; complex interface unjustified.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "SOLTEL",
+    "official_careers_url": "https://www.soltel.es/unete-a-nosotros/",
+    "interface": "Corporate CV form",
+    "vacancy_and_eligibility_evidence": "Employer's junior Java remote/Sevilla advertisement is promising (1–2 years), but official site exposes only general CV intake.",
+    "decision_and_viability": "Manual lead; no individual live posting feed or vacancy-bound form confirmed.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Tailor Hub / Manfred",
+    "official_careers_url": "https://www.getmanfred.com/en/job-offers/8375/tailor-hub-java-backend-developer-jun26",
+    "interface": "Named employer's Manfred vacancy",
+    "vacancy_and_eligibility_evidence": "Remote Spain, EUR 35–40k, but live page explicitly closed before this review.",
+    "decision_and_viability": "Closed; not a discovery for current applications.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Hiberus",
+    "official_careers_url": "https://www.hiberus.com/unete/ofertas-de-empleo/microservicios-java-developer",
+    "interface": "Drupal public HTML",
+    "vacancy_and_eligibility_evidence": "Java/microservices role; flexible office arrangements, no numeric minimum. Spain-wide remote eligibility not established.",
+    "decision_and_viability": "U geography/application; no custom scraper without clearer benefit.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Digital Talent Agency",
+    "official_careers_url": "https://dtagency.tech/ofertas-de-empleo/",
+    "interface": "WordPress links to portals",
+    "vacancy_and_eligibility_evidence": "Official Java cards exist, but no maintained vacancy feed established; links point to third-party portals.",
+    "decision_and_viability": "Insufficient freshness/application proof; avoid another custom connector.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Métrica",
+    "official_careers_url": "https://empleo.metrica-global.com/",
+    "interface": "Official recruiting host",
+    "vacancy_and_eligibility_evidence": "Automated access returns 403. An unrelated metrica.com interiors careers site is not this employer.",
+    "decision_and_viability": "Respect block and employer identity.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Kairós DS",
+    "official_careers_url": "https://www.kairosds.com/es/job-offers",
+    "interface": "Corporate page / Viterbit",
+    "vacancy_and_eligibility_evidence": "Observed backend Java example asks 10+ years.",
+    "decision_and_viability": "C; not evidence of early-career hiring.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Ayesa Digital",
+    "official_careers_url": "https://ayesa-digital.com/ofertas-trabajo/oferta/analista-programador-a-java/26SP.271/",
+    "interface": "Corporate vacancy HTML",
+    "vacancy_and_eligibility_evidence": "Sevilla Java September example is senior.",
+    "decision_and_viability": "Future/reference, not current A/B; distinguish digital business from unrelated engineering vacancies.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Liferay",
+    "official_careers_url": "https://jobs.jobvite.com/liferay/job/otaAAfwx",
+    "interface": "Jobvite public JobPosting",
+    "vacancy_and_eligibility_evidence": "Software Engineer, 3+ years Java/Freemarker/SQL; visible Madrid, schema Spain; remote Spain not confirmed.",
+    "decision_and_viability": "U geography, not remote by inference.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Playtomic",
+    "official_careers_url": "https://playtomic.factorial.es/job_posting/senior-backend-engineer-325318",
+    "interface": "Factorial",
+    "vacancy_and_eligibility_evidence": "Senior role requires commuting to Madrid several times per month.",
+    "decision_and_viability": "No current match from Sevilla.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Metricool",
+    "official_careers_url": "https://careers.metricool.com/jobs",
+    "interface": "Teamtailor custom host",
+    "vacancy_and_eligibility_evidence": "One current role, Senior Security; no Java.",
+    "decision_and_viability": "No source added.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "PrimeIT",
+    "official_careers_url": "https://www.primeit.es/en/carrers/jobs/java-software-engineer",
+    "interface": "Corporate indexed job",
+    "vacancy_and_eligibility_evidence": "Previously indexed remote Java page now 404.",
+    "decision_and_viability": "Removed, not a live opportunity.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Azertium IT",
+    "official_careers_url": "https://vacantes.azertiumit.com/jobs/7672607-programador-a-java",
+    "interface": "Teamtailor public RSS",
+    "vacancy_and_eligibility_evidence": "Indexed Java job returns 410; live RSS has Power Platform/other skills, not current Java.",
+    "decision_and_viability": "No stale-vacancy ingestion.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Hasten",
+    "official_careers_url": "https://www.grupohasten.com/grupo-hasten-unete/",
+    "interface": "WordPress public job index",
+    "vacancy_and_eligibility_evidence": "Checked Java examples are senior or fullstack with PHP/Angular required.",
+    "decision_and_viability": "No verified current Java-backend A/B; no bespoke connector added.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "PSS",
+    "official_careers_url": "https://pss.tecnoempleo.com/trabajo.php",
+    "interface": "Employer portal on Tecnoempleo",
+    "vacancy_and_eligibility_evidence": "Public portal access blocked in this environment.",
+    "decision_and_viability": "No bypass or inferred current openings.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Infortec",
+    "official_careers_url": "https://empleo.infortec.net/jobs?subcategory=programming",
+    "interface": "Bizneo, four observed programming pages",
+    "vacancy_and_eligibility_evidence": "Three selected Java details: tech lead, incompatible location/Python specialist, junior with skill list but no concrete development duties. Another fullstack junior explicitly closed.",
+    "decision_and_viability": "No A/B proved under existing policy. Keep manual review uncertainty; don't rewrite work-focus scoring to add employer count.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Revolut",
+    "official_careers_url": "https://www.revolut.com/careers/position/software-engineer-backend-530d3bfd-bdca-4390-8f8a-bc88ddc1eb51/",
+    "interface": "Official careers HTML",
+    "vacancy_and_eligibility_evidence": "Mid/Senior backend Java requires 4+ years; Spain remote eligibility differs by role. Platform Java example requires 7+.",
+    "decision_and_viability": "Future/ambitious reference; do not copy broader mirror country lists into exact role.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Amazon",
+    "official_careers_url": "https://www.amazon.jobs/en/search?base_query=java",
+    "interface": "Official job search",
+    "vacancy_and_eligibility_evidence": "Spain Java hits include Ring in Madrid; global results mix 5+ year runtime and architecture roles.",
+    "decision_and_viability": "Big Tech reference; no specific current Sevilla/remote Java vacancy proved, no private API integration.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Google",
+    "official_careers_url": "https://www.google.com/about/careers/applications/jobs/results/?location=Spain",
+    "interface": "Official job search",
+    "vacancy_and_eligibility_evidence": "Spain search shows Málaga engineer roles and remote-eligible Staff security. The checked applied-AI URL is removed.",
+    "decision_and_viability": "Big Tech future/reference; Málaga attendance and staff level are not current eligibility.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Adyen",
+    "official_careers_url": "https://careers.adyen.com/vacancies/6924441-software-engineer-java",
+    "interface": "Official vacancy",
+    "vacancy_and_eligibility_evidence": "Senior Java/PostgreSQL, Madrid; explicitly office-first, no remote-only roles.",
+    "decision_and_viability": "Future/reference; no Sevilla-compatible current vacancy.",
+    "checked_on": "2026-10-22"
+  },
+  {
+    "employer": "Mozilla",
+    "official_careers_url": "https://www.mozilla.org/en-US/careers/listings/",
+    "interface": "Official listings / RSS advertised",
+    "vacancy_and_eligibility_evidence": "Remote Spain available for senior browser/security roles, not verified early Java backend.",
+    "decision_and_viability": "Future/reference, no Java-role inference from company name.",
+    "checked_on": "2026-10-22"
+  }
+]

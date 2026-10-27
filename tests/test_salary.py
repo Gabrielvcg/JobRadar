@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from app.formatting import salary_label
 from app.scoring.salary import extract_salary
 
 
@@ -104,8 +105,7 @@ def test_extracts_sek_range_from_context_currency() -> None:
 
 def test_ignores_benefit_day_count_near_salary_word() -> None:
     salary = extract_salary(
-        "Strong base salary. Flexible work location. Spend up to 30 days per year working "
-        "remotely."
+        "Strong base salary. Flexible work location. Spend up to 30 days per year working remotely."
     )
 
     assert salary.unknown is True
@@ -170,3 +170,31 @@ def test_does_not_extract_location_postcode_as_salary_range() -> None:
     salary = extract_salary("Kraków, 30-347, Poland")
 
     assert salary.unknown is True
+
+
+def test_salary_ceiling_does_not_invent_a_lower_bound() -> None:
+    salary = extract_salary("Salario hasta 33K")
+    assert salary.salary_min is None
+    assert salary.salary_max == 33000
+    assert salary.unknown is False
+    assert (
+        salary_label(salary.salary_min, salary.salary_max, salary.currency, False)
+        == "up to 33,000 EUR"
+    )
+
+
+def test_spanish_gross_annual_abbreviation_establishes_salary_range() -> None:
+    salary = extract_salary("Tarifa de referencia: 30-32K SBA.")
+    assert (salary.salary_min, salary.salary_max, salary.period) == (30000, 32000, "annual")
+
+
+def test_project_duration_does_not_turn_annual_salary_into_monthly() -> None:
+    salary = extract_salary("Estimated project duration: 7 months. "
+                            "Salary: \u20ac40,000 - \u20ac43,000 gross annual salary.")
+    assert (salary.salary_min, salary.salary_max, salary.period) == (40000, 43000, "annual")
+
+
+def test_abbreviated_maximum_is_a_ceiling_not_a_published_floor() -> None:
+    salary = extract_salary("Salario: Max 35k.")
+    assert salary.salary_min is None and salary.salary_max == 35000
+    assert salary.period == "annual"

@@ -304,9 +304,10 @@
         <input type="hidden" name="profile" value="{{ active_profile_key }}">
         <button type="submit">Run ingestion</button>
       </form>
-      <a class="button secondary" href="/jobs/export?profile={{ active_profile_key }}">Export CSV</a>
-      <a class="button secondary" href="/?profile={{ active_profile_key }}&min_score=0">Show all</a>
-      {% if active_profile_key == "operations" %}
+      <a class="button secondary" href="/jobs/export?profile={{ active_profile_key }}&radar={{ filters.radar or 'all' }}">Export radar CSV</a>
+      <a class="button secondary" href="/jobs/export?profile={{ active_profile_key }}&radar=all&include_disabled_sources=true">Export all offers CSV</a>
+      <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=all&min_score=0">Show all</a>
+      {% if not career_profile %}
         <a class="button secondary" href="https://www.adzuna.es" target="_blank" rel="noopener">Adzuna</a>
         <a class="button secondary" href="https://www.infoempleo.com" target="_blank" rel="noopener">Infoempleo</a>
         <a class="button secondary" href="https://www.trabajos.com" target="_blank" rel="noopener">Trabajos.com</a>
@@ -348,6 +349,26 @@
 
     <form class="filters" method="get" action="/">
       <input type="hidden" name="profile" value="{{ active_profile_key }}">
+      {% if career_profile %}
+      <label class="inline-check">Verified application open
+        <input type="checkbox" name="verified_only" value="true" {% if filters.verified_only %}checked{% endif %}>
+      </label>
+      <label>Radar
+        <select name="radar">
+          {% for value in ["current", "strategic", "excluded", "all"] %}
+          <option value="{{ value }}" {% if filters.radar == value %}selected{% endif %}>{{ value }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Category
+        <select name="category">
+          <option value="">Any</option>
+          {% for value in ["A", "B", "C"] %}
+          <option value="{{ value }}" {% if filters.category == value %}selected{% endif %}>{{ value }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      {% endif %}
       <label>Min score
         <input type="number" min="0" max="100" name="min_score" value="{{ filters.min_score or '' }}">
       </label>
@@ -404,9 +425,15 @@
 
     <div class="job-toolbar">
       <div class="filter-shortcuts">
+        {% if career_profile %}
+        <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=current&verified_only=true&min_score=35">Verified active</a>
+        <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=current&min_score=35">Current applications</a>
+        <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=strategic&min_score=0">Future references</a>
+        <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=all&min_score=0">All assessments</a>
+        {% endif %}
         <a class="button secondary" href="/?profile={{ active_profile_key }}&min_score=50">50+ strong</a>
         <a class="button secondary" href="/?profile={{ active_profile_key }}&min_score=35">35+ review</a>
-        <a class="button secondary" href="/?profile={{ active_profile_key }}&min_score=0">All</a>
+        <a class="button secondary" href="/?profile={{ active_profile_key }}&radar=all&min_score=0">All</a>
       </div>
       <span class="muted">Showing up to 200 offers</span>
     </div>
@@ -427,6 +454,24 @@
                 {{ job.title }}
               {% endif %}
             </h2>
+            {% set assessment = job.match_reasons.get("assessment") %}
+            {% if assessment %}
+            {% set proof = current_verification(job.raw_payload, job.url) %}
+            <div class="muted">
+              Category {{ assessment.category }} &middot; {{ assessment.radar }}
+              {% if assessment.get('recommendation') %}
+              &middot; Recommendation {{ assessment.recommendation }}
+              &middot; Alignment {{ assessment.career_alignment }}/100
+              <div>{{ assessment.recommendation_reason }}</div>
+              {% endif %}
+              &middot; Fit {{ assessment.professional_fit }}/100
+              &middot; Growth {{ assessment.growth }}/100
+              &middot; Feasibility {{ assessment.viability }}/100
+              <br>Heuristic scores, not hiring probabilities.
+              <br>Application: {{ proof.state }}{% if proof.checked_at %} &middot; checked {{ proof.checked_at[:16] }} UTC{% endif %}
+              {% if proof.state != "active" %}<br>{{ proof.reason }}{% endif %}
+            </div>
+            {% endif %}
             <div class="company-line">
               <strong>{{ job.company.name }}</strong>
               <span class="muted">&middot; {{ job.source.name }}</span>
@@ -469,6 +514,9 @@
           </div>
 
           <div class="job-actions">
+            {% if assessment and proof.state == "active" and proof.application_url %}
+            <a class="button" href="{{ proof.application_url }}" target="_blank" rel="noopener">Apply on verified page</a>
+            {% endif %}
             <form class="status-form" method="post" action="/web/jobs/{{ job.id }}/status">
               {% set effective_status = user_statuses.get(job.id|string, job.status) %}
               <select name="status">

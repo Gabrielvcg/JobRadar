@@ -8,6 +8,7 @@ from typing import Any
 
 import httpx
 
+from app.core.career_paths import matches_career_transition
 from app.core.config import get_settings
 from app.models.enums import RemoteType
 from app.sources.base import RawJob, SearchConfig
@@ -32,6 +33,7 @@ class HimalayasJobSource:
         self.rate_limit_seconds = float(settings.get("rate_limit_seconds", 1))
         self.max_pages = int(settings.get("max_pages", 1))
         self.requests = _request_settings(settings.get("requests", []))
+        self.allow_career_transitions = bool(settings.get("allow_career_transitions", False))
         self.must_have_any_keywords = _string_list(settings.get("must_have_any_keywords", []))
         self.required_any_keywords = _string_list(settings.get("required_any_keywords", []))
         self.title_required_any_keywords = _string_list(
@@ -75,6 +77,7 @@ class HimalayasJobSource:
                 self.excluded_keywords,
                 self.allowed_location_keywords,
                 self.must_have_any_keywords,
+                self.allow_career_transitions,
             )
         ]
 
@@ -154,6 +157,7 @@ def _matches_affinity(
     excluded_keywords: list[str],
     allowed_location_keywords: list[str],
     must_have_any_keywords: list[str] | None = None,
+    allow_career_transitions: bool = False,
 ) -> bool:
     title = job.title.lower()
     location = (job.location or "").lower()
@@ -162,8 +166,10 @@ def _matches_affinity(
         keyword.lower() in location for keyword in allowed_location_keywords
     ):
         return False
-    if must_have_any_keywords and not any(
-        _contains_keyword(haystack, keyword) for keyword in must_have_any_keywords
+    if (
+        must_have_any_keywords
+        and not any(_contains_keyword(haystack, keyword) for keyword in must_have_any_keywords)
+        and not (allow_career_transitions and matches_career_transition(job.title, haystack))
     ):
         return False
     if any(_contains_keyword(haystack, keyword) for keyword in excluded_keywords):

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 
 @dataclass(frozen=True)
@@ -84,7 +84,20 @@ def extract_salary(text: str) -> SalaryExtraction:
         )
         if not _amounts_are_plausible(amount, amount, period, currency, original):
             continue
-        return _build_salary(amount, amount, period, original, currency)
+        salary = _build_salary(amount, amount, period, original, currency)
+        prefix = normalized[max(0, match.start() - 30) : match.start()]
+        ceiling = re.search(
+            r"\b(?:hasta|up to|at most|max(?:imum)?(?: of)?|m[aá]ximo|tope(?: de)?)\s*[:.]?\s*$",
+            prefix,
+            re.I,
+        )
+        if ceiling:
+            return replace(
+                salary,
+                salary_min=None,
+                original_text=prefix[ceiling.start() :] + original,
+            )
+        return salary
 
     return SalaryExtraction(None, None, None, None, None, True)
 
@@ -110,7 +123,6 @@ def _looks_like_salary(text: str, start: int, end: int, matched: str) -> bool:
     context = _salary_context(text, start, end).lower()
     matched_lower = matched.lower()
     has_currency = bool(re.search(CURRENCY_PATTERN, matched_lower, re.IGNORECASE))
-    has_currency_context = bool(re.search(CURRENCY_PATTERN, context, re.IGNORECASE))
     has_salary_word = any(
         word in context
         for word in (
@@ -123,7 +135,11 @@ def _looks_like_salary(text: str, start: int, end: int, matched: str) -> bool:
             "brutos",
         )
     )
-    return has_currency or has_currency_context or has_salary_word
+    return (
+        has_currency or has_salary_word
+        or bool(re.search(r"\bsba\b", context))
+        or bool(re.search(r"contrato indefinido", context) and re.search(r"\dk\b", matched_lower))
+    )
 
 
 def _looks_like_identifier_or_percentage_fragment(
@@ -133,6 +149,16 @@ def _looks_like_identifier_or_percentage_fragment(
     trimmed_end = start + len(matched.rstrip())
     previous_character = text[trimmed_start - 1] if trimmed_start > 0 else ""
     next_character = text[trimmed_end] if trimmed_end < len(text) else ""
+    if previous_character == ":" or next_character == ":":
+        return True
+    if re.search(r"\bISO(?:/IEC)?\s*$", text[max(0, trimmed_start - 15):trimmed_start], re.I):
+        return True
+    if re.match(
+        r"\+?\s*(?:community members|users|customers|team members|employees|downloads|"
+        r"days (?:paid )?annual leave)\b",
+        text[trimmed_end:], re.I,
+    ):
+        return True
     if next_character.lower() == "k":
         return False
     if previous_character.isalpha() or next_character.isalpha():
@@ -242,14 +268,24 @@ def _amounts_are_plausible(
 
 
 def _period_from_context(text: str, start: int, end: int) -> str:
-    context = _salary_context(text, start, end).lower()
-    if re.search(r"\bmonths?\b|\bmonthly\b|/mes\b|\bmes\b|\bmensual\b", context):
-        return "monthly"
-    if re.search(r"\bhours?\b|\bhourly\b|(?<![a-z0-9])/h(?:\b|$)|/hora\b|\bhora\b", context):
-        return "hourly"
-    if re.search(r"\bdays?\b|\bdaily\b|/dia\b|/day\b|\bdia\b", context):
-        return "daily"
-    return "annual"
+    boundary = text.rfind(". ", 0, start)
+    offset = max(0, start - 80, boundary + 2 if boundary >= 0 else 0)
+    stop = text.find(". ", end)
+    stop = min(len(text), end + 80, stop if stop >= 0 else len(text))
+    context = text[offset:stop].lower()
+    # Bind the nearest period to the amount, not an unrelated project duration.
+    patterns = {
+        "annual": r"\b(?:annual(?:ly)?|anual(?:es)?|yearly|per year|sba)\b",
+        "monthly": r"\bmonths?\b|\bmonthly\b|/mes\b|\bmes\b|\bmensual\b",
+        "hourly": r"\bhours?\b|\bhourly\b|(?<![a-z0-9])/h(?:\b|$)|/hora\b|\bhora\b",
+        "daily": r"\bdays?\b|\bdaily\b|/dia\b|/day\b|\bdia\b",
+    }
+    candidates = [
+        (max(start - (match.end() + offset), match.start() + offset - end, 0), period)
+        for period, pattern in patterns.items()
+        for match in re.finditer(pattern, context)
+    ]
+    return min(candidates)[1] if candidates else "annual"
 
 
 def _to_annual(amount: int, period: str) -> int:

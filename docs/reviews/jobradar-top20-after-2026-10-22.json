@@ -1,0 +1,756 @@
+{
+  "date": "2026-10-22",
+  "release": "0.1.45",
+  "methodology": "Final top twenty re-read individually against the same occupational/geographic plausibility definition as the independent before-audit. Conditional relevance allows the explicitly authorized 2-3-year stretch; it never proves every skill or predicts hiring. Unknown exact primary, geography, specialty experience or required frontend fit stays outside precision. Public GET application evidence comes from production checks; no application was submitted. The final re-review is by the implementing agent; the original twenty-case review was independent. Samples differ because ranking changed.",
+  "metrics": {
+    "sample_size": 20,
+    "conditionally_relevant": 12,
+    "incompatible_or_removed": 0,
+    "unknown": 8,
+    "assessable": 12,
+    "conditional_relevance_precision_percent": 100.0,
+    "open_application_paths": 14,
+    "retrieved_application_forms": 12,
+    "published_salary_floor_24k": 0
+  },
+  "rows": [
+    {
+      "rank": 1,
+      "company": "MDOTM",
+      "title": "DevOps Engineer",
+      "score": 88,
+      "listing_url": "https://himalayas.app/companies/mdotm/jobs/devops-engineer",
+      "application_url": null,
+      "relevance": "unknown",
+      "judgment": "Professional DevOps/SRE tenure and Spain eligibility not established; Java is a bonus, not the primary work.",
+      "experience_min_years": 1.0,
+      "experience_evidence": [
+        {
+          "minimum": 1.0,
+          "maximum": 3.0,
+          "kind": "indicative"
+        }
+      ],
+      "geography": {
+        "location": "Worldwide",
+        "country": "Worldwide",
+        "mode": "remote",
+        "assessment": "uncertain"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-09-26 20:33:15+00:00",
+      "checked_at": "2026-10-21T22:01:49.994153+00:00",
+      "application_state": "unverified",
+      "evidence_level": null,
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Remoto mundial; elegibilidad y contrato desde Espana por confirmar",
+        "Salario desconocido; se conserva sin estimaciones inventadas",
+        "Solicitud sin verificar; una ingesta reciente no demuestra que siga abierta"
+      ],
+      "technical_review": "Professional DevOps/SRE tenure and Spain eligibility not established; Java is a bonus, not the primary work."
+    },
+    {
+      "rank": 2,
+      "company": "Talan",
+      "title": "SSR Java Springboot Developer",
+      "score": 81,
+      "listing_url": "https://jobs.smartrecruiters.com/Talan/744000155711258-ssr-java-springboot-developer",
+      "application_url": "https://jobs.smartrecruiters.com/Talan/744000155711258-ssr-java-springboot-developer",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Málaga, Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-10-15 09:32:42.967000+00:00",
+      "checked_at": "2026-10-22T13:54:00.839262+00:00",
+      "application_state": "active",
+      "evidence_level": "application_control",
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Java/Spring backend services, REST APIs and OpenShift. Frontend collaboration is distinct from owning Angular delivery. Numeric tenure and salary are unstated."
+    },
+    {
+      "rank": 3,
+      "company": "Talan",
+      "title": "SSR Java Springboot Developer",
+      "score": 81,
+      "listing_url": "https://jobs.smartrecruiters.com/talan/744000154386250-ssr-java-springboot-developer",
+      "application_url": "https://jobs.smartrecruiters.com/talan/744000154386250-ssr-java-springboot-developer",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-10-16 20:30:20+00:00",
+      "checked_at": "2026-10-22T13:54:02.390198+00:00",
+      "application_state": "active",
+      "evidence_level": "application_control",
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Java/Spring backend services, REST APIs and OpenShift. Frontend collaboration is distinct from owning Angular delivery. Numeric tenure and salary are unstated."
+    },
+    {
+      "rank": 4,
+      "company": "knowmad mood",
+      "title": "Backend & DevOps Engineer | Java, Kotlin, Kubernetes & Azure | 100% Remoto",
+      "score": 80,
+      "listing_url": "https://himalayas.app/companies/knowmad-mood/jobs/backend-devops-engineer-java-kotlin-kubernetes-azure-100-remoto",
+      "application_url": null,
+      "relevance": "unknown",
+      "judgment": "Primary identity/application unresolved; possibly a title variant of the verified Java/Kotlin/Azure posting, not an independent opportunity.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-10-15 17:47:16+00:00",
+      "checked_at": "2026-10-21T20:12:21.176148+00:00",
+      "application_state": "unverified",
+      "evidence_level": null,
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Salario desconocido; se conserva sin estimaciones inventadas",
+        "Solicitud sin verificar; una ingesta reciente no demuestra que siga abierta"
+      ],
+      "technical_review": "Primary identity/application unresolved; possibly a title variant of the verified Java/Kotlin/Azure posting, not an independent opportunity."
+    },
+    {
+      "rank": 5,
+      "company": "knowmad mood",
+      "title": "Software Developer Java - Remoto",
+      "score": 78,
+      "listing_url": "https://knowmadmood.teamtailor.com/jobs/8483639-software-developer-java-remoto",
+      "application_url": "https://knowmadmood.teamtailor.com/jobs/8483639-software-developer-java-remoto/applications/new",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Sevilla, Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-10-01 08:00:31+00:00",
+      "checked_at": "2026-10-22T13:54:03.554281+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Java/Spring REST backend, SQL Server, Git and CI/CD; Camunda/BPM familiarity also requested. No numeric experience floor published."
+    },
+    {
+      "rank": 6,
+      "company": "IRIUM",
+      "title": "Full Stack Developer - Java & Angular",
+      "score": 78,
+      "listing_url": "https://iriumspain.applytojob.com/apply/XOerr7VIT9/Full-Stack-Developer-Java-Angular",
+      "application_url": "https://iriumspain.applytojob.com/apply/XOerr7VIT9/Full-Stack-Developer-Java-Angular",
+      "relevance": "unknown",
+      "judgment": "Open form and Spain remote, but mandatory Angular/Jasmine competence is not established by the candidate's backend employment. Up to 33k is a ceiling.",
+      "experience_min_years": 0.0,
+      "experience_evidence": [
+        {
+          "minimum": 0,
+          "maximum": 3.0,
+          "kind": "indicative"
+        }
+      ],
+      "geography": {
+        "location": "ESPAÑA",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": 33000,
+        "unknown": false
+      },
+      "published_at": "2026-10-05 00:00:00+00:00",
+      "checked_at": "2026-10-22T13:54:05.265328+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "El salario publicado no garantiza el minimo de 24000 EUR; confirmar oferta final"
+      ],
+      "technical_review": "Open form and Spain remote, but mandatory Angular/Jasmine competence is not established by the candidate's backend employment. Up to 33k is a ceiling."
+    },
+    {
+      "rank": 7,
+      "company": "Softtek",
+      "title": "Software Engineer Fullstack",
+      "score": 77,
+      "listing_url": "https://himalayas.app/companies/softtek/jobs/software-engineer-fullstack",
+      "application_url": null,
+      "relevance": "unknown",
+      "judgment": "Three-year fullstack stretch with Angular; exact employer application remains unverified.",
+      "experience_min_years": 3.0,
+      "experience_evidence": [
+        {
+          "minimum": 3.0,
+          "maximum": 3.0,
+          "kind": "mandatory"
+        },
+        {
+          "minimum": 3.0,
+          "maximum": 3.0,
+          "kind": "mandatory"
+        }
+      ],
+      "geography": {
+        "location": "Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-10-18 03:23:45+00:00",
+      "checked_at": "2026-10-21T20:12:26.733285+00:00",
+      "application_state": "unverified",
+      "evidence_level": null,
+      "uncertainties": [
+        "Salario desconocido; se conserva sin estimaciones inventadas",
+        "Solicitud sin verificar; una ingesta reciente no demuestra que siga abierta"
+      ],
+      "technical_review": "Three-year fullstack stretch with Angular; exact employer application remains unverified."
+    },
+    {
+      "rank": 8,
+      "company": "knowmad mood",
+      "title": "Software Engineer Java - Remoto",
+      "score": 77,
+      "listing_url": "https://knowmadmood.teamtailor.com/jobs/8283100-software-engineer-java-remoto",
+      "application_url": "https://knowmadmood.teamtailor.com/jobs/8283100-software-engineer-java-remoto/applications/new",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-08-28 07:23:14+00:00",
+      "checked_at": "2026-10-22T13:54:06.603207+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Modernization of Spanish public-sector systems using Java/Spring, Oracle, Hibernate and Docker, with backend and API development."
+    },
+    {
+      "rank": 9,
+      "company": "knowmad mood",
+      "title": "Software Engineer | Java, Kotlin, Kubernetes & Azure | 100% Remoto",
+      "score": 76,
+      "listing_url": "https://knowmadmood.teamtailor.com/jobs/8108182-software-engineer-java-kotlin-kubernetes-azure-100-remoto",
+      "application_url": "https://knowmadmood.teamtailor.com/jobs/8108182-software-engineer-java-kotlin-kubernetes-azure-100-remoto/applications/new",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-07-22 10:34:52+00:00",
+      "checked_at": "2026-10-22T13:54:08.213174+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Java or Kotlin microservices and Spring APIs with Azure/Kubernetes, automation and testing. B2 English is compatible; professional Azure experience is unproved."
+    },
+    {
+      "rank": 10,
+      "company": "knowmad mood",
+      "title": "Java + Liferay Developer",
+      "score": 76,
+      "listing_url": "https://himalayas.app/companies/knowmad-mood/jobs/java-liferay-developer",
+      "application_url": null,
+      "relevance": "unknown",
+      "judgment": "Professional Liferay experience is required but absent from the known profile; primary application not resolved.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-10-15 23:12:13+00:00",
+      "checked_at": "2026-10-21T20:12:28.921203+00:00",
+      "application_state": "unverified",
+      "evidence_level": null,
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Salario desconocido; se conserva sin estimaciones inventadas",
+        "Solicitud sin verificar; una ingesta reciente no demuestra que siga abierta"
+      ],
+      "technical_review": "Professional Liferay experience is required but absent from the known profile; primary application not resolved."
+    },
+    {
+      "rank": 11,
+      "company": "knowmad mood",
+      "title": "Software Engineer | Java, Kotlin, Microservicios | 100% Remoto",
+      "score": 75,
+      "listing_url": "https://knowmadmood.teamtailor.com/jobs/8267395-software-engineer-java-kotlin-microservicios-100-remoto",
+      "application_url": "https://knowmadmood.teamtailor.com/jobs/8267395-software-engineer-java-kotlin-microservicios-100-remoto/applications/new",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-08-25 12:51:53+00:00",
+      "checked_at": "2026-10-22T13:54:09.748269+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Critical backend services using Java/Kotlin, Spring and AWS with event-driven and domain-oriented design. Kotlin/AWS experience needs confirmation."
+    },
+    {
+      "rank": 12,
+      "company": "knowmad mood",
+      "title": "Ingeniero/a Software Java + SDD | 100% Remoto",
+      "score": 74,
+      "listing_url": "https://knowmadmood.teamtailor.com/jobs/8525091-ingeniero-a-software-java-sdd-100-remoto",
+      "application_url": "https://knowmadmood.teamtailor.com/jobs/8525091-ingeniero-a-software-java-sdd-100-remoto/applications/new",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Madrid, Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-10-09 11:29:30+00:00",
+      "checked_at": "2026-10-22T13:54:11.389677+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Java backend development with SDD methods; specialist process and tool experience require confirmation rather than assuming them from general backend tenure."
+    },
+    {
+      "rank": 13,
+      "company": "knowmad mood",
+      "title": "Software Developer Java & AI | Remoto",
+      "score": 74,
+      "listing_url": "https://knowmadmood.teamtailor.com/jobs/8525151-software-developer-java-ai-remoto",
+      "application_url": "https://knowmadmood.teamtailor.com/jobs/8525151-software-developer-java-ai-remoto/applications/new",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": 3.0,
+      "experience_evidence": [
+        {
+          "minimum": 3.0,
+          "maximum": 3.0,
+          "kind": "indicative"
+        }
+      ],
+      "geography": {
+        "location": "Sevilla, Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-10-09 11:36:04+00:00",
+      "checked_at": "2026-10-22T13:54:14.047139+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Java/Spring backend, API design, microservices and AI-assisted delivery. More than three software years and SDD experience create a substantial stretch."
+    },
+    {
+      "rank": 14,
+      "company": "knowmad mood",
+      "title": "Software Developer Java + SDD | 100% Remoto",
+      "score": 73,
+      "listing_url": "https://knowmadmood.teamtailor.com/jobs/8525103-software-developer-java-sdd-100-remoto",
+      "application_url": "https://knowmadmood.teamtailor.com/jobs/8525103-software-developer-java-sdd-100-remoto/applications/new",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": 3.0,
+      "experience_evidence": [
+        {
+          "minimum": 3.0,
+          "maximum": 3.0,
+          "kind": "mandatory"
+        }
+      ],
+      "geography": {
+        "location": "Madrid, Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-10-09 11:31:00+00:00",
+      "checked_at": "2026-10-22T13:54:15.764190+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Java21/Spring, API-first microservices, Kafka, relational/NoSQL data and Kubernetes. Three backend years requested."
+    },
+    {
+      "rank": 15,
+      "company": "knowmad mood",
+      "title": "Mid-Level Java Developer / Full remote",
+      "score": 73,
+      "listing_url": "https://knowmadmood.teamtailor.com/jobs/8465813-mid-level-java-developer-full-remote",
+      "application_url": "https://knowmadmood.teamtailor.com/jobs/8465813-mid-level-java-developer-full-remote/applications/new",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": 3.0,
+      "experience_evidence": [
+        {
+          "minimum": 3.0,
+          "maximum": 3.0,
+          "kind": "indicative"
+        }
+      ],
+      "geography": {
+        "location": "Madrid, Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-09-28 12:18:02+00:00",
+      "checked_at": "2026-10-22T13:54:17.323283+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Java17/21 backend, Spring microservices and APIs. Three-plus years, demonstrated SDD and professional AI-assisted delivery are requested."
+    },
+    {
+      "rank": 16,
+      "company": "Talent Sam",
+      "title": "Back-End Developer",
+      "score": 73,
+      "listing_url": "https://himalayas.app/companies/talent-sam/jobs/back-end-developer-7915206276",
+      "application_url": null,
+      "relevance": "unknown",
+      "judgment": "Worldwide portal metadata does not establish a Spain contract or exact current application.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Worldwide",
+        "country": "Worldwide",
+        "mode": "remote",
+        "assessment": "uncertain"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-08-30 20:36:00+00:00",
+      "checked_at": "2026-10-21T20:12:36.638247+00:00",
+      "application_state": "unverified",
+      "evidence_level": null,
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Remoto mundial; elegibilidad y contrato desde Espana por confirmar",
+        "Salario desconocido; se conserva sin estimaciones inventadas",
+        "Solicitud sin verificar; una ingesta reciente no demuestra que siga abierta"
+      ],
+      "technical_review": "Worldwide portal metadata does not establish a Spain contract or exact current application."
+    },
+    {
+      "rank": 17,
+      "company": "knowmad mood",
+      "title": "Software Engineer Java - Sector Bancario - Remoto 100%",
+      "score": 72,
+      "listing_url": "https://knowmadmood.teamtailor.com/jobs/7667578-software-engineer-java-sector-bancario-remoto-100",
+      "application_url": "https://knowmadmood.teamtailor.com/jobs/7667578-software-engineer-java-sector-bancario-remoto-100/applications/new",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": null,
+      "experience_evidence": [],
+      "geography": {
+        "location": "Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-04-30 15:35:05+00:00",
+      "checked_at": "2026-10-22T13:54:18.887104+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Experiencia obligatoria no especificada; no se presupone cumplida",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Java/Spring banking services, microservices and event-driven APIs, with mandatory spoken B2 English; numeric tenure not specified."
+    },
+    {
+      "rank": 18,
+      "company": "IRIUM",
+      "title": "DESARROLLADOR/A JAVA (REMOTO)",
+      "score": 72,
+      "listing_url": "https://himalayas.app/companies/irium/jobs/desarrollador-a-java-remoto",
+      "application_url": null,
+      "relevance": "unknown",
+      "judgment": "Three-to-five Java years plus more than three specifically Kafka/reactive years; exact current form unverified. Max 35k is not a salary floor.",
+      "experience_min_years": 3.0,
+      "experience_evidence": [
+        {
+          "minimum": 3.0,
+          "maximum": 3.0,
+          "kind": "indicative"
+        },
+        {
+          "minimum": 3.0,
+          "maximum": 5.0,
+          "kind": "indicative"
+        }
+      ],
+      "geography": {
+        "location": "Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": 35000,
+        "unknown": false
+      },
+      "published_at": "2026-08-23 05:29:31+00:00",
+      "checked_at": "2026-10-21T20:27:08.253218+00:00",
+      "application_state": "unverified",
+      "evidence_level": null,
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "El salario publicado no garantiza el minimo de 24000 EUR; confirmar oferta final",
+        "Solicitud sin verificar; una ingesta reciente no demuestra que siga abierta"
+      ],
+      "technical_review": "Three-to-five Java years plus more than three specifically Kafka/reactive years; exact current form unverified. Max 35k is not a salary floor."
+    },
+    {
+      "rank": 19,
+      "company": "Talent Connect",
+      "title": "Backend Developer (Java / Spring Boot / AWS) - Spain (Hybrid/Remote)",
+      "score": 71,
+      "listing_url": "https://jobs.talentconnect.ai/jobs/612354-backend-developer-java-spring-boot-aws-spain-hybrid-remote",
+      "application_url": "https://jobs.talentconnect.ai/jobs/612354-backend-developer-java-spring-boot-aws-spain-hybrid-remote/applications/new",
+      "relevance": "conditionally_relevant",
+      "judgment": "Java/backend duties and Spain route are plausible within the authorized experience stretch; omitted years and unproved specialist skills remain uncertainties, not assumed qualifications.",
+      "experience_min_years": 3.0,
+      "experience_evidence": [
+        {
+          "minimum": 3.0,
+          "maximum": 3.0,
+          "kind": "indicative"
+        }
+      ],
+      "geography": {
+        "location": "Madrid, Spain",
+        "country": "Spain",
+        "mode": "hybrid",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-05-14 12:42:52+00:00",
+      "checked_at": "2026-10-22T14:15:35.393402+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Cloud/IaC de proyectos o certificaciones no equivale a experiencia profesional",
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Java/Spring/AWS backend, REST APIs, PostgreSQL/JPA and testing. Three-plus years and AWS working experience requested; B2 English. Remote from other Spanish locations is explicit."
+    },
+    {
+      "rank": 20,
+      "company": "knowmad mood",
+      "title": "Software Developer Full Stack (Java + Angular)",
+      "score": 71,
+      "listing_url": "https://knowmadmood.teamtailor.com/jobs/8581776-software-developer-full-stack-java-angular",
+      "application_url": "https://knowmadmood.teamtailor.com/jobs/8581776-software-developer-full-stack-java-angular/applications/new",
+      "relevance": "unknown",
+      "judgment": "Three-year fullstack role with mandatory frontend duties. Professional Angular competence is not established, despite open Spain form.",
+      "experience_min_years": 3.0,
+      "experience_evidence": [
+        {
+          "minimum": 3.0,
+          "maximum": 5.0,
+          "kind": "indicative"
+        }
+      ],
+      "geography": {
+        "location": "Sevilla, Spain",
+        "country": "Spain",
+        "mode": "remote",
+        "assessment": "compatible"
+      },
+      "mandatory_stack_gaps": [],
+      "salary": {
+        "minimum": null,
+        "maximum": null,
+        "unknown": true
+      },
+      "published_at": "2026-10-21 07:38:28+00:00",
+      "checked_at": "2026-10-22T13:54:20.405210+00:00",
+      "application_state": "active",
+      "evidence_level": "application_form",
+      "uncertainties": [
+        "Salario desconocido; se conserva sin estimaciones inventadas"
+      ],
+      "technical_review": "Three-year fullstack role with mandatory frontend duties. Professional Angular competence is not established, despite open Spain form."
+    }
+  ]
+}

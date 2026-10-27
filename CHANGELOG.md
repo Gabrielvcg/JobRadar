@@ -1,5 +1,155 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Retain a seven-day CI image artifact with source, image identity and
+  checksums for credential-free transfer to the existing production host.
+  Build its context only from tracked public source, excluding CI-generated data.
+- Lock CI and image Python dependencies to the previously validated versions and
+  published wheel hashes; build the local package without remote dependency resolution.
+- Require binary distributions for downloaded Python dependencies in CI and app
+  images and install the local wheel at its exact project version.
+- Repair test-only typing to run the full app and test Mypy gate without relaxing it.
+- Require the external SonarCloud quality gate before any manual production promotion.
+- Validate all PostgreSQL release gates in CI and carry the exact source revision
+  into immutable images. Update only the existing app with health-checked rollback,
+  preserving configuration and schedules without implicit rescoring or ingestion.
+
+- Select verification work across bounded eligible batches while preserving global
+  per-profile priority and budget; tolerate non-object proof during scheduling.
+
+- Include published maximum-only salaries in salary-known filters and keep unknown
+  filtering complementary, without treating a ceiling as a guaranteed minimum.
+
+- Treat malformed raw availability state/URL metadata as unverified before list,
+  detail or CSV consumption, retaining compatible textual states and optional fields.
+
+- Keep an explicit full-remote/hybrid/office choice from being treated as mandatory
+  hybrid attendance, based on Marfeel's live Java vacancy. Preserve explicit office
+  requirements, client conditions and independent country-eligibility checks.
+
+- Use an offer ID tie breaker for list ordering so static offset pages remain
+  consistent across query plans. Reuse that order in exports without a duplicate ID key.
+
+- Stream complete CSV exports in batches with stable ordering and owned session/cursor
+  cleanup, including downloads above 10,000 offers. Preserve personal statuses and all fields.
+- Join active CSV worker reads before closing the generator, preserving the original
+  cancellation even when downloads are cancelled repeatedly during a read or cleanup.
+
+- Default offers without a signed-in user's personal status to new across API
+  list/detail, CSV export, and dashboard status data. Preserve shared legacy
+  statuses for reads without a user and retain other users' saved statuses.
+
+## 0.1.51 - 2026-10-23
+
+### Added
+
+- Add Signicat's public Teamtailor RSS for Java/backend roles in Spain, reusing
+  the existing RSS collector and vacancy-specific application verifier every
+  twelve hours. The current Spain role asks three-plus years with Java/Spring
+  Boot, has a live CV form, and remains an ambitious application with unknown pay.
+
+## 0.1.50 — 2026-10-23
+
+- Add GHCG's advertised Zoho RSS as a bounded employer source, reusing RSS discovery and reading complete public vacancy requirements and development duties.
+- Preserve structured/prose experience discrepancies, check vacancy identity and employer origin, and require actual text evidence for remote work.
+- Record the JavaScript-rendered application limitation explicitly; fresh browser verification uses the existing evidence lifetime and does not imply salary confirmation or active hiring guarantees.
+- Extend the employer research inventory with 17 companies; retain blocked, removed and geography-incompatible sources as evidence rather than importing them.
+
+## 0.1.49 - 2026-10-23
+
+- Honor explicit Spanish statements that a vacancy primarily involves operations or support, even when it also includes corrective Java coding; preserve evidence of both kinds of work and the existing career weights and thresholds.
+- Add a regression from the newly ingested official Java application-support vacancy, including controls for negated operations focus and backend development with incidental support.
+- Record the second employer research round, blind-application identity findings, manual leads, live production metrics and release validation.
+
+## 0.1.48 - 2026-10-22
+
+- Discover official Java vacancies at eXperience IT Solutions and SNGULAR using bounded, attributed public sources every twelve hours.
+- Read Bizneo icon metadata, annual salary and complete requirement sections with opt-in settings; preserve country and prioritize explicit office requirements over contradictory board headers.
+- Keep generic Software Engineer titles before bounded detail retrieval without treating JavaScript as Java.
+- Exclude explicit company-tenure boilerplate from candidate experience extraction without changing career scoring weights or thresholds.
+- Verify observed vacancy-specific Bizneo CV forms and SNGULAR's embedded candidate form; preserve human consent and CAPTCHA requirements and never submit applications.
+- Document the employer research inventory, rejected/stale/blocked sources and before/after production evidence.
+
+## 0.1.47 - 2026-10-22
+
+- Require an authenticated user for CSV exports after a live anonymous check found that the expanded stored-history download was publicly accessible.
+- Verify both authenticated full-history export and anonymous rejection in the repository HTTP regression check.
+
+## 0.1.46 - 2026-10-22
+
+- Separate demonstrated backend/software duties from infrastructure operations; prevent technology overlap and developer-platform wording from promoting operations above backend engineering.
+- Add independent A/B/C/D/U application advice and career alignment evidence while preserving the existing technical category and radar contracts; prefer actionable advice when scores tie.
+- Recognize requirement list headings, explicit language alternatives, specialist professional gaps, five-year requirements and senior duties without treating mirror tags or desirable experience as mandatory.
+- Cap uncertain application, specialist and English requirements; preserve meaningful software platform and application security paths.
+- Recalculate salary evidence without converting community counts, ISO numbers, working hours or annual leave into compensation; separate employee ranges from freelance day rates.
+- Respect explicit Latin America titles and eligible-country lists over broad portal metadata; update the preferred salary floor to EUR 28,000 and backend-led career priorities.
+- Add a complete stored-offer CSV download with descriptions, requirements, career advice and application evidence, including explicitly selected disabled-source history.
+- Add regression coverage for observed ranking, requirement and salary failures; evaluate the complete 595-offer stored cohort before rollout.
+
+## 0.1.45 - 2026-10-22
+
+- Treat abbreviated Max and Spanish maximum salary text as a ceiling, preserving an unknown minimum during ingestion and rescoring.
+
+## 0.1.44 - 2026-10-22
+
+- Respect explicit remote alternatives outside hybrid office cities in Spain, retaining mandatory attendance/residence restrictions and conflicting work-mode uncertainty.
+- Exclude explicitly internal-only selection and remote-in-Colombia postings despite broad portal metadata.
+- Keep portal registration gates out of verified employer application paths.
+- Read published SBA salary ranges and associate pay periods with salary amounts instead of unrelated project duration.
+
+## 0.1.43 - 2026-10-22
+
+- Fix explicit Java/Spring affinity in employer feeds when private search queries differ.
+- Reuse bounded official RSS for Whiteam and TalentConnect after checking real Spain backend vacancies and public application forms.
+- Verify Teamtailor's explicitly linked public application page, including its actual CV upload component and enabled submission control; preserve listing-only status when evidence is missing.
+
+## 0.1.42 - 2026-10-22
+
+- Discover jobs from knowmad mood's documented Teamtailor RSS feed and IRIUM's bounded public JazzHR board; extend the existing SmartRecruiters source to reviewed Scalian and Talan employers.
+- Preserve employer dates, locations and remote status; reuse existing variant grouping and retain portal identities when promoting matching mirrors to an employer listing, without allowing stale mirrors to overwrite official evidence or application states.
+- Check real Teamtailor application forms, distinguish accessible listings from unknown application status, and confirm removed Greenhouse postings through the official API when a stale URL redirects to the board.
+- Correct observed ranking errors involving independent frontend experience, Spanish technical-lead titles, expert-level duties, Galicia residence requirements, and Spanish between-three-and-five-year ranges.
+
+## 0.1.41 - 2026-10-21
+
+- Preserve published salary ceilings as an upper bound with no invented lower bound, display them as up to that amount, and require confirmation of the minimum change salary.
+- Correct legacy career offers carrying explicit salary ceilings during rescoring, without replacing unrelated structured salary evidence.
+
+## 0.1.40 - 2026-10-21
+
+- Prefer SmartRecruiters public posting URLs over preview/application aliases after a live preview URL returned HTTP 403 while the canonical listing and form were accessible.
+- Verify the platform's observed JavaScript application control and ignore empty notification headings when matching the vacancy title; retain the public listing as the application destination.
+- Correct two further live-review cases: a remote-Spain label cannot override explicit residence in Galicia, and experience of up to three years is an upper limit rather than a three-year minimum.
+- Recheck availability when a source corrects the listing URL, without retaining a cached access failure for the old URL.
+
+## 0.1.39 - 2026-10-21
+
+- Verify current listing/application availability with bounded public GET requests, explicit active/closed/unverified states, a 24-hour evidence lifetime, and cached access failures. Never submit applications or bypass blocked pages.
+- Add a verified-active filter and direct application link to the dashboard/API, and include verification counts in ingestion summaries and a dedicated CLI command.
+- Restore original description boundaries from source payloads when rescoring legacy offers, retain RSS HTML for future refreshes, and prevent unrelated AI evaluation tasks or operations-heavy SRE duties from inflating the backend ranking.
+- Preserve vacancy verification across source updates, keep user application state, and invalidate stale or mismatched URL evidence.
+
+
+## 0.1.38 - 2026-10-21
+
+- Keep the repository's tested SQLAlchemy 2.0 typing contract and make SmartRecruiters payload typing explicit for newer type-checker releases; validate this boundary in CI before deployment.
+
+- Preserve private/custom profile identifiers across API, CLI and dashboard policy selection; expose the installed version and image revision through health metadata.
+- Support a read-only runtime configuration mount for deployment without publishing private candidate profiles or replacing existing user/profile identities.
+
+- Added an opt-in Engineering career policy with professional tenure calculated from a start month, separate professional/project evidence, and explainable fit, growth, and application viability dimensions.
+- Separated current applications, strategic senior/architecture references, and excluded offers in the API, dashboard, statistics, and CLI listing while retaining the Operations scoring policy.
+- Classified mandatory, desirable, and indicative experience, used range minima, and distinguished residence eligibility, salary uncertainty, unsupported languages, stale offers, and development responsibilities from keyword mentions.
+- Set Engineering's minimum change salary to EUR 24,000 and its preferred range to EUR 26,000–35,000; stopped using unverified fixed exchange rates for Engineering decisions.
+- Refresh Engineering assessments daily through the existing ingestion schedule and when profile/scoring settings change; preserve application status and refresh stored experience/modality evidence.
+- Preserved job-description boundaries and decoded escaped HTML; canonicalize documented tracking parameters for cross-source deduplication.
+- Reused existing ATS adapters and added a bounded official SmartRecruiters source for T-Systems Iberia after local public-feed verification. Removed premature Engineering seniority exclusions so strategic references can reach scoring.
+- Added functional, persistence, HTTP, dashboard, and source-bound tests, a read-only sample evaluator, and a dated diagnosis/validation report in `docs/career-radar-review-2026-10-21.md`.
+
+
 ## 0.1.34 - 2026-08-10
 
 - Repaired corrupted UTF-8 text in source filters, scoring expressions, and public documentation so accented Spanish and Portuguese terms match correctly and render professionally.

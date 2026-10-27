@@ -1,20 +1,46 @@
+# Synthetic backend career example. Keep personal runtime overrides outside Git.
 profile:
-  current_role: "Backend developer"
+  current_role: Backend developer
+  career:
+    professional_start_month: 2025-08
+    english_certified_level: B2
+    english_goal_level: C1
+    professional_technologies:
+    - Java
+    - Spring Boot
+    - REST
+    - SQL
+    - Docker
+    - Linux
+    - Git
+    - GitHub Actions
+    - CI/CD
+    project_technologies:
+    - AWS
+    - Terraform
+    - Kubernetes
+    - Redis
+    - PostgreSQL
+    - Microservices
+    - RabbitMQ
   location:
-    city: "Spain"
-    country: "Spain"
+    city: Sevilla
+    country: Spain
     preferred_locations:
-      - "Spain"
-      - "Europe"
+    - Sevilla
+    - Seville
+    - Dos Hermanas
+    - Mairena del Aljarafe
+    - Tomares
+    - Alcala de Guadaira
   salary:
-    minimum_annual_eur: 22000
-    target_min_annual_eur: 26000
-    target_max_annual_eur: 42000
+    minimum_annual_eur: 24000
+    target_min_annual_eur: 28000
+    target_max_annual_eur: 35000
   priorities:
-    - "Backend Engineer with AWS"
-    - "Junior Cloud Engineer"
-    - "Junior DevOps Engineer"
-    - "Junior Platform Engineer"
-    - "Junior DevSecOps Engineer"
-    - "Junior Application Security Engineer"
-    - "Junior Cloud Security Engineer"
+  - Java Backend Engineer
+  - Spring Boot Developer
+  - Backend Engineer with AWS
+  - Distributed Systems Engineer
+  - Software Platform Engineer
+  - Application Security Engineer

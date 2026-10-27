@@ -11,6 +11,7 @@ from app.scoring.salary import extract_salary
 from app.scoring.text import (
     canonical_url,
     clean_html,
+    clean_job_text,
     content_hash,
     detect_language,
     detect_remote_type,
@@ -57,8 +58,8 @@ class JobNormalizer:
         self.scoring_config = load_yaml_config(get_profile(self.profile_key).scoring_config)
 
     def normalize(self, raw_job: RawJob) -> NormalizedJob:
-        description = clean_html(raw_job.description)
-        requirements = clean_html(raw_job.requirements or "") or None
+        description = clean_job_text(raw_job.description)
+        requirements = clean_job_text(raw_job.requirements or "") or None
         combined_text = " ".join(
             part
             for part in (
@@ -75,7 +76,9 @@ class JobNormalizer:
         )
         salary = extract_salary(salary_text)
         exp_min, exp_max = extract_experience_years(combined_text)
-        remote_type = detect_remote_type(combined_text, raw_job.remote_type)
+        remote_type = detect_remote_type(
+            combined_text, raw_job.remote_type, location=raw_job.location,
+        )
         normalized = normalize_title(raw_job.title)
         url = canonical_url(raw_job.url)
         job_hash = content_hash(raw_job.company_name, normalized, raw_job.location, description)
