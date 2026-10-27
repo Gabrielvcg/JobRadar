@@ -22,9 +22,10 @@ previous build version was established. The current CI and vulnerability audit
 must validate it. Runtime versions are not upgraded by this change.
 
 CI, dependency audit, and Docker first install the hash-checked build tools and
-dependencies. The editable local package then uses `--no-index --no-deps
---no-build-isolation`, preventing a second remote resolution or hidden backend
-download. The audit examines this installed environment rather than resolving
+dependencies. The pinned setuptools backend builds the local wheel directly;
+pip installs exactly `jobradar==0.1.51` from `dist` with `--no-index --no-deps`,
+preventing a second remote resolution or hidden backend download. The audit
+examines this installed environment rather than resolving
 the project's broad version ranges again. CI also runs `pip check`.
 
 To update dependencies, deliberately select versions in a disposable Linux
