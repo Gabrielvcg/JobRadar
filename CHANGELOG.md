@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Require binary distributions for downloaded Python dependencies in CI and app
+  images while retaining the reviewed local editable package build.
 - Repair test-only typing to run the full app and test Mypy gate without relaxing it.
 - Require the external SonarCloud quality gate before any manual production promotion.
 - Validate all PostgreSQL release gates in CI and carry the exact source revision
