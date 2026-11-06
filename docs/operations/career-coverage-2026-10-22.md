@@ -129,7 +129,7 @@ interface was bypassed or source added solely to increase volume.
 | 0.1.42 | 75f964e | CI 39754428508, 230 tests; official-source coverage and identity fixes |
 | 0.1.43 | e2023d9 | CI 39790307079, 234 tests; real Teamtailor forms and explicit source affinity |
 | 0.1.44 | 45c95ee | CI 39792946567, 244 tests; eligibility, account gates and salary context |
-| 0.1.45 | c7c0b75 | [CI 39794443083](https://github.com/Gabrielvcg/JobRadar/actions/runs/39794443083), 245 tests; abbreviated salary ceilings |
+| 0.1.45 | c7c0b75 | CI 39794443083 (historical record retained privately), 245 tests; abbreviated salary ceilings |
 
 Final local validation: 242 passed and three PostgreSQL tests skipped locally;
 CI ran all 245, plus lint, typing and Docker build. Dependency audit passed.

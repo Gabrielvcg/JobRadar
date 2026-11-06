@@ -108,17 +108,17 @@ Application proof expires after 24 hours and should be refreshed before use.
 
 ## Delivery and preservation
 
-- [Commit 9f72c6a](https://github.com/Gabrielvcg/JobRadar/commit/9f72c6ae3e094b30b4095f4f707c6186ca165f44),
+- Commit 9f72c6a (historical record retained privately),
   pushed to `career-radar-release`; no merge.
 - A final live anonymous check found the expanded CSV accessible without a
   session. The pre-existing export route had not required authentication.
-  [Commit 66ab599](https://github.com/Gabrielvcg/JobRadar/commit/66ab5992a94da4965fc98b4306caea70f6ce4e94),
+  Commit 66ab599 (historical record retained privately),
   release 0.1.47, requires a signed-in user and adds an HTTP rejection assertion.
-- [CI 39810047591](https://github.com/Gabrielvcg/JobRadar/actions/runs/39810047591):
+- CI 39810047591 (historical record retained privately):
   **269 tests passed**, including PostgreSQL; lint, typing (81 files) and Docker
   build passed. Local validation: 266 passed, three PostgreSQL checks skipped.
   Dependency security also passed.
-- [Final CI 39812216421](https://github.com/Gabrielvcg/JobRadar/actions/runs/39812216421)
+- Final CI 39812216421 (historical record retained privately)
   passed for the exact 0.1.47 revision, with the same 269-test suite and build checks.
 - Pre-deploy backup `jobradar_20261022T160031Z.sql.gz` created and gzip integrity
   checked. This is not a claim of a new restore drill. Previous image, environment,

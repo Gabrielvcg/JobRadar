@@ -83,9 +83,9 @@ collection schedule, not a guarantee of new vacancies.
 
 ## Development and release evidence
 
-- Feature commit: [22c0b08](https://github.com/Gabrielvcg/JobRadar/commit/22c0b085d781319d3624bd052f1c24487904e031).
-- [CI 39846372959](https://github.com/Gabrielvcg/JobRadar/actions/runs/39846372959): successful Ruff, Mypy, **279 tests with PostgreSQL**, and Docker build.
-- [Dependency security 39846372997](https://github.com/Gabrielvcg/JobRadar/actions/runs/39846372997): successful.
+- Feature commit: 22c0b08 (historical record retained privately).
+- CI 39846372959 (historical record retained privately): successful Ruff, Mypy, **279 tests with PostgreSQL**, and Docker build.
+- Dependency security 39846372997 (historical record retained privately): successful.
 - Local checks: Ruff and Mypy pass; 276 tests pass, three PostgreSQL-only tests skipped locally and exercised successfully in CI. Existing Starlette/httpx deprecation warning remains.
 - Production image built from the exact committed Git archive, SHA-256 `bc58c1b34a3ebf3f49e4deda6c36431d528f550293e626d030d7b3dc0b0aaf55`; working-tree/private files excluded.
 - Before deployment: database backup `jobradar_20261022T201100Z.sql.gz`, approximately 3 MiB; `gzip -t` successful. This was an archive-integrity check, not a restore drill.

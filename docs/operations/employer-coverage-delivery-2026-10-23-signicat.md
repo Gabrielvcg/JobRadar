@@ -59,11 +59,11 @@ provenance. Seven RSS items were screened; the other countries were filtered out
 
 ## Release, validation and preservation
 
-- Feature commit [a09cc20](https://github.com/Gabrielvcg/JobRadar/commit/a09cc2015d1df138689fe32859f148bd6b7eed2a).
+- Feature commit a09cc20 (historical record retained privately).
 - Local Ruff/Mypy successful; 285 tests passed and three PostgreSQL tests skipped.
-- [Exact-revision CI](https://github.com/Gabrielvcg/JobRadar/actions/runs/40001275810)
+- Exact-revision CI (historical record retained privately)
   successful before deployment: **288 tests**, PostgreSQL, Ruff, Mypy, Docker.
-- [Dependency security](https://github.com/Gabrielvcg/JobRadar/actions/runs/40001275805)
+- Dependency security (historical record retained privately)
   successful on the exact feature revision before deployment.
 - Production backup `jobradar_20261023T181237Z.sql.gz` completed; gzip integrity
   verified. No old backup was deleted. This was not a restore drill.

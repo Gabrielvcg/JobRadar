@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Documentation
+
+- Clarify that historical CI runs and delivery commits are retained privately; the public repository does not present those records as current public CI evidence.
+
 ### Fixed
 
 - Retain a seven-day CI image artifact with source, image identity and

@@ -77,9 +77,9 @@ introduced to reach a target count.
 
 ## Release and runtime evidence
 
-- Feature commit [56fb900](https://github.com/Gabrielvcg/JobRadar/commit/56fb9005d154c260e47398e510d3ef78b06f1278).
-- [CI 39974922760](https://github.com/Gabrielvcg/JobRadar/actions/runs/39974922760): successful Ruff, Mypy, **283 tests with PostgreSQL**, and Docker build. Local checks passed with 280 tests and three PostgreSQL-only tests skipped; those ran in CI.
-- [Dependency security 39974922810](https://github.com/Gabrielvcg/JobRadar/actions/runs/39974922810): successful.
+- Feature commit 56fb900 (historical record retained privately).
+- CI 39974922760 (historical record retained privately): successful Ruff, Mypy, **283 tests with PostgreSQL**, and Docker build. Local checks passed with 280 tests and three PostgreSQL-only tests skipped; those ran in CI.
+- Dependency security 39974922810 (historical record retained privately): successful.
 - Production image built from the committed Git archive, SHA-256 `0ae80da651dab8478280eb625a339900f602a79b30078d4ec43a38e926ab546b`; unrelated working-tree changes and private files excluded.
 - Backup before deployment: `jobradar_20261023T150410Z.sql.gz`, approximately 3.1 MiB; `gzip -t` successful. This was an archive-integrity check, not a restore drill.
 - Rollback retained the 0.1.48 image, previous runtime-config symlink target, environment and Compose copies. Only the JobRadar application container was recreated.

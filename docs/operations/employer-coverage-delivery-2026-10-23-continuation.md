@@ -74,12 +74,12 @@ no CSRF tokens, credentials or complete application pages were committed.
 
 ## Validation, deployment and preservation
 
-- Feature commit: [e601e01](https://github.com/Gabrielvcg/JobRadar/commit/e601e01601344d80b2abd6e8407b55bb38853fcb).
+- Feature commit: e601e01 (historical record retained privately).
 - Local checks: Ruff and Mypy passed; 285 tests passed, with three PostgreSQL tests
   skipped locally and subsequently exercised in CI.
-- [Exact-revision CI](https://github.com/Gabrielvcg/JobRadar/actions/runs/39987256956):
+- Exact-revision CI (historical record retained privately):
   successful, including **288 tests**, PostgreSQL, Ruff, Mypy and Docker build.
-- [Dependency security](https://github.com/Gabrielvcg/JobRadar/actions/runs/39987256969):
+- Dependency security (historical record retained privately):
   successful on the same revision, before deployment.
 - Production backup: `jobradar_20261023T163230Z.sql.gz`; compressed archive integrity
   checked successfully. This was not a restore drill.

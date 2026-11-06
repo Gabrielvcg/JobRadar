@@ -51,7 +51,7 @@ must be recorded below only after their actual checks finish.
 
 - Published work branch: `career-radar-release`, revision
   `2eebad07c06fa4f1de92763b92b00d7dba44ad2d`.
-- [CI](https://github.com/Gabrielvcg/JobRadar/actions/runs/39665444696) passed:
+- CI (historical record retained privately) passed:
   175 tests including PostgreSQL, Ruff, mypy and Docker build. The first candidate
   exposed a SQLAlchemy 2.1 typing change; the corrected release stays on the tested
   2.0 series and passed before deployment.
@@ -80,7 +80,7 @@ and operations-heavy SRE duties receive no backend-career recommendation.
 ## Verified release 0.1.39 and corrective release 0.1.40
 
 - Revision `43fa81531f1168ab72897040baa7b83546b515ba` passed
-  [CI](https://github.com/Gabrielvcg/JobRadar/actions/runs/39667403011):
+  CI (historical record retained privately):
   196 tests including PostgreSQL, Ruff, mypy and image build.
 - Public health confirmed 0.1.39 and that revision after deployment. All 688 offers
   then present were rescored, including four added by the existing schedule after
@@ -111,7 +111,7 @@ and operations-heavy SRE duties receive no backend-career recommendation.
 ## Verified release 0.1.40
 
 - Deployed revision `d56c83017d866e623cc995d642dd3fcfab1b8bf5` after
-  [201-test CI](https://github.com/Gabrielvcg/JobRadar/actions/runs/39669315266)
+  201-test CI (historical record retained privately)
   passed, including PostgreSQL and Docker. Public health matched exactly.
 - Two real curated-source GET refreshes each returned six records, updated the
   same three stored offers, created zero, and rejected three at the score gate.
@@ -138,7 +138,7 @@ The release is not considered deployed until the following evidence is recorded.
 ## Final production result — 2026-10-21, 20:27 UTC
 
 Release **0.1.41**, revision `d4ea420191cbb266e1f0007f4c086fa1c7f6d6e5`, is live.
-[CI passed 205 tests](https://github.com/Gabrielvcg/JobRadar/actions/runs/39669994964),
+CI passed 205 tests (historical record retained privately),
 including PostgreSQL, type checks, lint and the image build. The dependency workflow
 also passed. Local tests passed 203 with the two PostgreSQL cases deferred to CI.
 The exact hash-checked source was built on the VPS; public HTTPS health matched
