@@ -8,6 +8,13 @@
 
 ### Fixed
 
+- Pin development, CI and production PostgreSQL to the reviewed 16.15 Alpine
+  image digest, covering PostgreSQL 16.14 security issues including
+  CVE-2026-16239 and CVE-2026-14664 without changing the database major version.
+  Production activation requires a retained private backup, isolated restore,
+  compatibility checks and coordinated maintenance; editing Compose alone
+  does not update an existing database container.
+
 - Retain a seven-day CI image artifact with source, image identity and
   checksums for credential-free transfer to the existing production host.
   Build its context only from tracked public source, excluding CI-generated data.
